@@ -1,0 +1,95 @@
+==============================
+Error Time: 2023/07/18 16:50:58
+Error Location: Void BtnPara_Refresh_Click(System.Object, System.EventArgs)
+Error Line: 262
+Error Area : BtnPara_Refresh_Click
+CPU Usage: 0
+Memory Usage: 21640507392
+Error Message: 無法將類型 '<CastIterator>d__97`1[System.Object]' 的物件轉換為類型 'System.Object[]'。
+System.InvalidCastException: 無法將類型 '<CastIterator>d__97`1[System.Object]' 的物件轉換為類型 'System.Object[]'。
+   於 ProductionReport_Setting.ProductionReport_Setting.BtnPara_Refresh_Click(Object sender, EventArgs e) 於 D:\Software\ProductionReport\ProductionReport_Setting\SettingUI.vb: 行 262
+
+==============================
+Error Time: 2023/07/18 17:18:45
+Error Location: Void set_SelectedIndex(Int32)
+Error Line: 0
+Error Area : DgvPara_CellContentClick
+CPU Usage: 0
+Memory Usage: 21616676864
+Error Message: InvalidArgument='0' 不是 'SelectedIndex' 的有效值。
+參數名稱: SelectedIndex
+System.ArgumentOutOfRangeException: InvalidArgument='0' 不是 'SelectedIndex' 的有效值。
+參數名稱: SelectedIndex
+   於 System.Windows.Forms.ComboBox.set_SelectedIndex(Int32 value)
+   於 ProductionReport_Setting.ProductionReport_Setting.DgvPara_CellContentClick(Object sender, DataGridViewCellEventArgs e) 於 D:\Software\ProductionReport\ProductionReport_Setting\SettingUI.vb: 行 325
+
+==============================
+Error Time: 2023/07/18 17:19:39
+Error Location: Int32 ToInteger(System.String)
+Error Line: 0
+Error Area : DgvPara_CellContentClick
+CPU Usage: 0
+Memory Usage: 21533884416
+Error Message: 從字串 "False" 至類型 'Integer' 的轉換是無效的。
+System.InvalidCastException: 從字串 "False" 至類型 'Integer' 的轉換是無效的。 ---> System.FormatException: 輸入字串格式不正確。
+   於 Microsoft.VisualBasic.CompilerServices.Conversions.ParseDouble(String Value, NumberFormatInfo NumberFormat)
+   於 Microsoft.VisualBasic.CompilerServices.Conversions.ToInteger(String Value)
+   --- 內部例外狀況堆疊追蹤的結尾 ---
+   於 Microsoft.VisualBasic.CompilerServices.Conversions.ToInteger(String Value)
+   於 ProductionReport_Setting.ProductionReport_Setting.DgvPara_CellContentClick(Object sender, DataGridViewCellEventArgs e) 於 D:\Software\ProductionReport\ProductionReport_Setting\SettingUI.vb: 行 321
+
+==============================
+Error Time: 2023/07/18 17:21:28
+Error Location: Int32 ToInteger(System.String)
+Error Line: 0
+Error Area : DgvPara_CellContentClick
+CPU Usage: 0
+Memory Usage: 21551083520
+Error Message: 從字串 "False" 至類型 'Integer' 的轉換是無效的。
+System.InvalidCastException: 從字串 "False" 至類型 'Integer' 的轉換是無效的。 ---> System.FormatException: 輸入字串格式不正確。
+   於 Microsoft.VisualBasic.CompilerServices.Conversions.ParseDouble(String Value, NumberFormatInfo NumberFormat)
+   於 Microsoft.VisualBasic.CompilerServices.Conversions.ToInteger(String Value)
+   --- 內部例外狀況堆疊追蹤的結尾 ---
+   於 Microsoft.VisualBasic.CompilerServices.Conversions.ToInteger(String Value)
+   於 ProductionReport_Setting.ProductionReport_Setting.DgvPara_CellContentClick(Object sender, DataGridViewCellEventArgs e) 於 D:\Software\ProductionReport\ProductionReport_Setting\SettingUI.vb: 行 321
+
+==============================
+Error Time: 2023/07/18 17:22:27
+Error Location: Int32 ToInteger(System.String)
+Error Line: 0
+Error Area : DgvPara_CellContentClick
+CPU Usage: 0
+Memory Usage: 21509885952
+Error Message: 從字串 "False" 至類型 'Integer' 的轉換是無效的。
+System.InvalidCastException: 從字串 "False" 至類型 'Integer' 的轉換是無效的。 ---> System.FormatException: 輸入字串格式不正確。
+   於 Microsoft.VisualBasic.CompilerServices.Conversions.ParseDouble(String Value, NumberFormatInfo NumberFormat)
+   於 Microsoft.VisualBasic.CompilerServices.Conversions.ToInteger(String Value)
+   --- 內部例外狀況堆疊追蹤的結尾 ---
+   於 Microsoft.VisualBasic.CompilerServices.Conversions.ToInteger(String Value)
+   於 ProductionReport_Setting.ProductionReport_Setting.DgvPara_CellContentClick(Object sender, DataGridViewCellEventArgs e) 於 D:\Software\ProductionReport\ProductionReport_Setting\SettingUI.vb: 行 321
+
+==============================
+Error Time: 2023/07/18 17:49:21
+Error Location: Void set_SelectedIndex(Int32)
+Error Line: 0
+Error Area : DgvPara_CellContentClick
+CPU Usage: 0
+Memory Usage: 21507936256
+Error Message: InvalidArgument='0' 不是 'SelectedIndex' 的有效值。
+參數名稱: SelectedIndex
+System.ArgumentOutOfRangeException: InvalidArgument='0' 不是 'SelectedIndex' 的有效值。
+參數名稱: SelectedIndex
+   於 System.Windows.Forms.ComboBox.set_SelectedIndex(Int32 value)
+   於 ProductionReport_Setting.ProductionReport_Setting.DgvPara_CellContentClick(Object sender, DataGridViewCellEventArgs e) 於 D:\Software\ProductionReport\ProductionReport_Setting\SettingUI.vb: 行 325
+
+==============================
+Error Time: 2023/07/18 18:38:20
+Error Location: Void DgvPara_CellContentClick(System.Object, System.Windows.Forms.DataGridViewCellEventArgs)
+Error Line: 343
+Error Area : DgvPara_CellContentClick
+CPU Usage: 0
+Memory Usage: 21843566592
+Error Message: 並未將物件參考設定為物件的執行個體。
+System.NullReferenceException: 並未將物件參考設定為物件的執行個體。
+   於 ProductionReport_Setting.ProductionReport_Setting.DgvPara_CellContentClick(Object sender, DataGridViewCellEventArgs e) 於 D:\Software\ProductionReport\ProductionReport_Setting\SettingUI.vb: 行 343
+

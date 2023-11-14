@@ -1,0 +1,1048 @@
+﻿Imports System.IO
+Imports Microsoft.VisualBasic.FileIO
+
+
+
+Public Class ProductionReport_Setting
+
+    ' 檔案名稱 : 生產報表欄位設定介面
+    ' 檔案簡短描述 : 
+    '
+    ' 檔案詳細描述, 內容包含哪些函式或類別, 實作了哪些功能, 
+    '
+    ' 作者名稱 : Boris_Li@unimicron.com
+    ' 更新日期 : 2023/07/25
+    Dim Version As String = "1.0.23.7.25.1"
+    Dim Program As String = "ProductionReport_Setting"
+    Dim isException As Boolean = False
+    Dim ProcPkey As String = ""
+    Dim ParaPkey As String = ""
+    Dim QID As String
+    Dim QueryCommand As String = ""
+    Dim ServerCommand As New Dictionary(Of String, String)
+    Dim SelectCommand As New Dictionary(Of String, String)
+    Dim DefaulfFilter As New Dictionary(Of String, String)
+    Dim SPCGroup As New Dictionary(Of String, String)
+    Dim isError As Boolean = False
+    Dim ParaColumn As String
+    Dim F_SaveType As String
+
+    Private Sub ProductionReport_Setting_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        '標題初始化
+        Me.Text = "生產報表欄位設定程式 v" & Version & " [維運 : 李博軒]"
+
+        TabMain.SelectedIndex = 0
+        BtnProc_Refresh.PerformClick()
+        Command_Initialize()
+
+
+        Using dt As DataTable = SQL_Query(SQL_Conn_MQL03, "SELECT  [OnlineVersion],CASE WHEN ISNULL([TestVersion],'') = '' THEN '0' END AS [TestVersion] FROM [Datamation_H3].[dbo].[H3_Leo_Program_Version] WHERE [Program] = '" & Program & "'") '搜尋資料庫內的所有站點和密碼
+            If Not (CInt(Version.Replace(".", "")) > CInt(dt(0)(0).ToString.Replace(".", "")) OrElse CInt(Version.Replace(".", "")) = CInt(dt(0)(1).ToString.Replace(".", ""))) Then
+                MessageBox.Show("請確認是否使用最新版本")
+                Environment.Exit(Environment.ExitCode)
+                Application.Exit()
+            End If
+        End Using
+
+    End Sub
+
+    Private Sub TabMain_SelectedIndexChanged(sender As Object, e As EventArgs) Handles TabMain.SelectedIndexChanged
+        Try
+            If TabMain.SelectedIndex = 0 Then
+                BtnProc_Refresh.PerformClick()
+            ElseIf TabMain.SelectedIndex = 1 Then
+
+            ElseIf TabMain.SelectedIndex = 2 Then
+
+            End If
+        Catch ex As Exception
+            WriteLog(ex, "TabMain_SelectedIndexChanged")
+        End Try
+    End Sub
+#Region "站點設定"
+
+    'Private Sub DgvProc_CellFormatting(sender As Object, e As DataGridViewCellFormattingEventArgs) Handles DgvProc.CellFormatting
+    '    Try
+    '        If e.ColumnIndex = 4 Then
+    '            e.Value = "****"
+    '        End If
+    '    Catch ex As Exception
+    '        WriteLog(ex, "DgvProc_CellFormatting")
+    '    End Try
+    'End Sub
+
+    Private Sub BtnProc_Refresh_Click(sender As Object, e As EventArgs) Handles BtnProc_Refresh.Click
+        Try
+            'DgvProc初始化
+            DgvProc.DataSource = Nothing
+            DgvProc.Rows.Clear()
+            DgvProc.Columns.Clear()
+            '查詢目前站點資料
+
+            Dim cmd As String = "SELECT [Pkey],[Module] AS [模組] ,[Section] AS [課別] ,[Area] AS [區域名稱] ,[ProcName] AS [站點]  ,'****' AS [密碼] ,ISNULL([Location],'') AS [Location] ,ISNULL([MachineNo],'') AS [機台愉進編號] ,[Machine] AS [機台愉進名稱] FROM [H3_Systematic].[dbo].[H3_Proc] WITH(NOLOCK) ORDER BY [Pkey] DESC"
+            Dim ProcData As DataTable = SQL_Query(SQL_Conn_MQL03, cmd)
+            DgvProc.DataSource = ProcData
+            '將Pkey欄位轉成Button
+
+            Proc_PkeyToButton()
+
+            Dim buttonColumn As New DataGridViewButtonColumn()
+            buttonColumn.HeaderText = "欄位設定"
+            buttonColumn.Text = "編輯"
+            buttonColumn.Name = "欄位設定"
+            buttonColumn.FlatStyle = FlatStyle.Flat
+            buttonColumn.UseColumnTextForButtonValue = True
+            DgvProc.Columns.Insert(0, buttonColumn)
+
+            TxtProc_Module.Text = ""
+            TxtProc_Section.Text = ""
+            TxtProc_Area.Text = ""
+            TxtProc_ProcName.Text = ""
+            TxtProc_Password.Text = ""
+            TxtProc_Machine.Text = ""
+            TxtProc_Pkey.Text = ""
+            TxtProc_ProcQuery.Text = ""
+            CboProc_Location.Items.Clear()
+            CboProc_Location.Enabled = False
+            BtnProc_Add.Enabled = True
+            BtnProc_Update.Enabled = False
+
+        Catch ex As Exception
+            WriteLog(ex, "BtnProc_Refresh_Click")
+        End Try
+    End Sub
+
+    Private Sub TxtProc_ProcName_KeyUp(sender As Object, e As KeyEventArgs) Handles TxtProc_ProcName.KeyUp
+        Try
+            If e.KeyData = Keys.Enter Then
+                Dim cmd As String = "SELECT DISTINCT [MachinePosition] FROM [utchfacmrpt].[acme].[dbo].[PDL_Machine] WHERE [EnId] = 29 AND [GTID] IN (SELECT [data] FROM [Datamation_H3].[dbo].[my_SplitToTable]('" & TxtProc_ProcName.Text & "',','))"
+                Dim dt As DataTable = SQL_Query(SQL_Conn_MQL03, cmd)
+
+                CboProc_Location.Items.Clear()
+                CboProc_Location.Enabled = True
+                CboProc_Location.Items.Add("")
+                For Each row As DataRow In dt.Rows
+                    CboProc_Location.Items.Add(row(0))
+                Next
+                CboProc_Location.SelectedIndex = 0
+            End If
+        Catch ex As Exception
+            WriteLog(ex, "TxtProc_ProcName_KeyUp")
+        End Try
+    End Sub
+
+    Private Sub TxtProc_ProcName_LostFocus(sender As Object, e As EventArgs) Handles TxtProc_ProcName.LostFocus
+        Try
+            If TxtProc_ProcName.Text <> "" Then
+                Dim args As New KeyEventArgs(Keys.Enter)
+                TxtProc_ProcName_KeyUp(sender, args)
+            End If
+        Catch ex As Exception
+            WriteLog(ex, "TxtProc_ProcName_LostFocus")
+        End Try
+    End Sub
+
+    Private Sub TxtProc_Password_Leave(sender As Object, e As EventArgs) Handles TxtProc_Password.Leave
+        Try
+            If TxtProc_Password.Text.Length > 20 OrElse Not IsNumeric(TxtProc_Password.Text) Then
+                TxtProc_Password.Text = ""
+                MessageBox.Show("請輸入20位以內數字")
+            End If
+        Catch ex As Exception
+            WriteLog(ex, "TxtProc_Password_Leave")
+        End Try
+    End Sub
+    Private Sub TxtProc_Module_Leave(sender As Object, e As EventArgs) Handles TxtProc_Module.Leave
+        Try
+            If TxtProc_Module.Text.Length > 1 OrElse Not IsNumeric(TxtProc_Module.Text) Then
+                TxtProc_Module.Text = ""
+                MessageBox.Show("請輸入1位以內數字")
+            End If
+        Catch ex As Exception
+            WriteLog(ex, "TxtProc_Password_Leave")
+        End Try
+    End Sub
+    Private Sub TxtProc_Section_Leave(sender As Object, e As EventArgs) Handles TxtProc_Section.Leave
+        Try
+            If TxtProc_Section.Text.Length > 3 Then
+                TxtProc_Section.Text = ""
+                MessageBox.Show("請輸入課別3碼")
+            End If
+        Catch ex As Exception
+            WriteLog(ex, "TxtProc_Section_Leave")
+        End Try
+    End Sub
+
+    Private Sub BtnProc_Add_Click(sender As Object, e As EventArgs) Handles BtnProc_Add.Click
+        Try
+            If Proc_Check() Then
+                isException = True
+                Return
+            End If
+            For Each row As DataGridViewRow In DgvProc.Rows
+                If row.Cells("區域名稱").Value IsNot Nothing AndAlso row.Cells("區域名稱").Value.ToString = TxtProc_Area.Text Then
+                    MessageBox.Show("已有相同名稱的的區域，請確認是否重複建立")
+                    Return
+                End If
+            Next
+            Dim cmd As String = "DECLARE @ID INT
+                                                 INSERT INTO [H3_Systematic].[dbo].[H3_Proc] 
+                                                 ([Module],[Section],[Area],[ProcName],[Password],[Location],[MachineNo])
+                                                 VALUES ('" & TxtProc_Module.Text & "','" & TxtProc_Section.Text & "','" & Trim(TxtProc_Area.Text) & "','" & Trim(TxtProc_ProcName.Text) & "','" & TxtProc_Password.Text & "','" & CboProc_Location.SelectedText & "','" & TxtProc_Machine.Text & "')
+                                                 SET @ID = (SELECT [Pkey] FROM [H3_Systematic].[dbo].[H3_Proc]  where [Area] = '" & TxtProc_Area.Text & "')
+                                                 SELECT @ID"
+            Dim dt As DataTable = SQL_Query(SQL_Conn_MQL03, cmd)
+            ProcPkey = dt(0)(0).ToString
+
+            isException = False
+        Catch ex As Exception
+            WriteLog(ex, "BtnProc_Add_Click")
+            isException = True
+        Finally
+            Dim Status As String = ""
+            If isException Then
+                Status = "Fail"
+                ChangeLog("站點設定", ProcPkey, TxtProc_Area.Text, "Add", Status)
+            Else
+                Status = "Success"
+                ChangeLog("站點設定", ProcPkey, TxtProc_Area.Text, "Add", Status)
+                BtnProc_Refresh.PerformClick()
+            End If
+
+        End Try
+    End Sub
+
+    Private Sub BtnProc_Update_Click(sender As Object, e As EventArgs) Handles BtnProc_Update.Click
+        Try
+            If Proc_Check() Then
+                isException = True
+                Return
+            End If
+
+            Dim cmd As String = "UPDATE [H3_Systematic].[dbo].[H3_Proc]
+                                                 SET [Module] = '" & TxtProc_Module.Text & "',[Section] = '" & TxtProc_Section.Text & "',[Area] = '" & TxtProc_Area.Text & "',[ProcName] = '" & TxtProc_ProcName.Text & "',[Password] = '" & TxtProc_Password.Text & "',[Location] = '" & CboProc_Location.SelectedText & "',[MachineNo] = '" & TxtProc_Machine.Text & "'
+                                                 WHERE [Pkey] = '" & TxtProc_Pkey.Text & "'"
+            SQL_Query(SQL_Conn_MQL03, cmd)
+            ProcPkey = TxtProc_Pkey.Text
+            isException = False
+        Catch ex As Exception
+            WriteLog(ex, "BtnProc_Update_Click")
+            isException = True
+        Finally
+            Dim Status As String = ""
+            If isException Then
+                Status = "Fail"
+                ChangeLog("站點設定", ProcPkey, TxtProc_Area.Text, "Update", Status)
+            Else
+                Status = "Success"
+                ChangeLog("站點設定", ProcPkey, TxtProc_Area.Text, "Update", Status)
+                BtnProc_Refresh.PerformClick()
+            End If
+
+        End Try
+    End Sub
+
+    Private Sub BtnProc_ProcQuery_Click(sender As Object, e As EventArgs) Handles BtnProc_ProcQuery.Click
+        Dim cmd As String = ""
+        If TxtProc_ProcQuery.Text = "" OrElse TxtProc_ProcQuery.Text = "*" Then
+            cmd = "SELECT [Pkey],[Module] AS [模組] ,[Section] AS [課別] ,[Area] AS [區域名稱] ,[ProcName] AS [站點]  ,'****' AS [密碼] ,ISNULL([Location],'') AS [Location] ,ISNULL([MachineNo],'') AS [機台愉進編號] ,[Machine] AS [機台愉進名稱] FROM [H3_Systematic].[dbo].[H3_Proc] WITH(NOLOCK) ORDER BY [Pkey] DESC"
+        Else
+            cmd = "SELECT [Pkey],[Module] AS [模組] ,[Section] AS [課別] ,[Area] AS [區域名稱] ,[ProcName] AS [站點]  ,'****' AS [密碼] ,ISNULL([Location],'') AS [Location] ,ISNULL([MachineNo],'') AS [機台愉進編號] ,[Machine] AS [機台愉進名稱] FROM [H3_Systematic].[dbo].[H3_Proc] WITH(NOLOCK) WHERE [ProcName] LIKE '%" & TxtProc_ProcQuery.Text & "%'  ORDER BY [Pkey] DESC"
+        End If
+        Dim dt As DataTable = SQL_Query(SQL_Conn_MQL03, cmd)
+
+        DgvProc.DataSource = Nothing
+        DgvProc.DataSource = dt
+        Proc_PkeyToButton()
+    End Sub
+
+    Private Sub DgvProc_CellContentClick(sender As Object, e As DataGridViewCellEventArgs) Handles DgvProc.CellContentClick
+        Try
+            If e.ColumnIndex = DgvProc.Columns("Pkey").Index AndAlso e.RowIndex >= 0 Then
+                '現有資料填入欄位
+                TxtProc_Module.Text = DgvProc.Rows(e.RowIndex).Cells("模組").Value.ToString
+                TxtProc_Section.Text = DgvProc.Rows(e.RowIndex).Cells("課別").Value.ToString
+                TxtProc_Area.Text = DgvProc.Rows(e.RowIndex).Cells("區域名稱").Value.ToString
+                TxtProc_ProcName.Text = DgvProc.Rows(e.RowIndex).Cells("站點").Value.ToString
+                Dim args As New KeyEventArgs(Keys.Enter)
+                TxtProc_ProcName_KeyUp(sender, args)
+                TxtProc_Password.Text = DgvProc.Rows(e.RowIndex).Cells("密碼").Value.ToString
+                TxtProc_Machine.Text = DgvProc.Rows(e.RowIndex).Cells("機台愉進編號").Value.ToString
+                TxtProc_Pkey.Text = DgvProc.Rows(e.RowIndex).Cells("Pkey").Value.ToString
+                If DgvProc.Rows(e.RowIndex).Cells("Location").Value.ToString = "" Then
+                    CboProc_Location.SelectedIndex = 0
+                Else
+                    CboProc_Location.SelectedItem = DgvProc.Rows(e.RowIndex).Cells("Location").Value.ToString
+                End If
+
+                BtnProc_Update.Enabled = True
+                BtnProc_Add.Enabled = False
+            ElseIf e.ColumnIndex = DgvProc.Columns("欄位設定").Index AndAlso e.RowIndex >= 0 Then
+                TabMain.SelectedIndex = 1
+                TxtPara_Area.Text = DgvProc.Rows(e.RowIndex).Cells("區域名稱").Value.ToString
+                TxtPara_AreaID.Text = DgvProc.Rows(e.RowIndex).Cells("Pkey").Value.ToString
+                BtnPara_Refresh.PerformClick()
+                TxtF_Pkey.Text = ""
+                TxtF_QID.Text = ""
+                CboF_Type.Items.Clear()
+                CboF_Value.Items.Clear()
+                CboF_Value.Enabled = False
+                SPC_ComboBox_Invisible()
+                TxtF_QueryCommand.Text = ""
+            End If
+        Catch ex As Exception
+            WriteLog(ex, "DgvProc_CellContentClick")
+        End Try
+    End Sub
+
+    Private Sub DgvProc_Sorted(sender As Object, e As EventArgs) Handles DgvProc.Sorted
+        Proc_PkeyToButton()
+    End Sub
+
+    Private Function Proc_Check() As Boolean
+        Dim sender As Object
+        Dim e As New EventArgs
+        TxtProc_Password_Leave(sender, e)
+        TxtProc_Module_Leave(sender, e)
+        TxtProc_Section_Leave(sender, e)
+
+
+        If TxtProc_Module.Text = "" OrElse TxtProc_Section.Text = "" OrElse TxtProc_Area.Text = "" OrElse TxtProc_ProcName.Text = "" OrElse TxtProc_Password.Text = "" Then
+            MessageBox.Show("請確認必填欄位輸入完畢")
+            Return True
+        End If
+
+        Return False
+    End Function
+
+    Private Sub Proc_PkeyToButton()
+        For Each row As DataGridViewRow In DgvProc.Rows
+            Dim ButtonCell As New DataGridViewButtonCell
+            ButtonCell.Value = row.Cells("Pkey").Value.ToString
+            ButtonCell.FlatStyle = FlatStyle.Flat
+            'ButtonCell.Style.BackColor = SystemColors.ControlLight
+            row.Cells("Pkey") = ButtonCell
+        Next
+    End Sub
+
+#End Region
+
+#Region "欄位設定"
+    Private Sub BtnPara_Refresh_Click(sender As Object, e As EventArgs) Handles BtnPara_Refresh.Click
+        Try
+            'DgvPara初始化
+            DgvPara.DataSource = Nothing
+            DgvPara.Rows.Clear()
+            DgvPara.Columns.Clear()
+            '查詢目前站點資料
+            Dim cmd As String = "SELECT [Pkey],[PID] AS [順序],[Area] AS [區域名稱],[ParameterName] AS [欄位名稱],ISNULL([isQuery],'') AS [是否自動代入數值],ISNULL([QID],'') AS [QID]
+                                                 FROM [H3_Systematic].[dbo].[H3_Production_ProcParameter]
+                                                 WHERE [AreaID] = '" & TxtPara_AreaID.Text & "'
+                                                 ORDER BY [PID]"
+            Dim ParaData As DataTable = SQL_Query(SQL_Conn_MQL03, cmd)
+            DgvPara.DataSource = ParaData
+            CboPara_Sort.Items.Clear()
+            BtnPara_Add.Enabled = True
+            BtnPara_Update.Enabled = False
+
+            For i = 1 To DgvPara.Rows.Count + 1
+                CboPara_Sort.Items.Add(i)
+            Next
+
+            Para_PkeyToButton()
+
+
+            Dim buttonColumn As New DataGridViewButtonColumn()
+            buttonColumn.HeaderText = "查詢(運算)設定"
+            buttonColumn.Text = "編輯"
+            buttonColumn.Name = "編輯"
+            buttonColumn.FlatStyle = FlatStyle.Flat
+            buttonColumn.UseColumnTextForButtonValue = True
+            DgvPara.Columns.Insert(0, buttonColumn)
+
+            TxtPara_ParaName.Text = ""
+            CboPara_isQuery.Items.Clear()
+            CboPara_isQuery.Items.Add("否")
+            CboPara_isQuery.Items.Add("是")
+            CboPara_isQuery.SelectedIndex = 0
+            ChkPara_isQuery.Checked = False
+            TxtPara_QID.Text = ""
+            TxtPara_Pkey.Text = ""
+
+        Catch ex As Exception
+            WriteLog(ex, "BtnPara_Refresh_Click")
+        End Try
+    End Sub
+
+    Private Sub BtnPara_Add_Click(sender As Object, e As EventArgs) Handles BtnPara_Add.Click
+        Try
+            If Para_Check() Then
+                isException = True
+                Return
+            End If
+            For Each row As DataGridViewRow In DgvPara.Rows
+                If row.Cells("欄位名稱").Value IsNot Nothing AndAlso row.Cells("欄位名稱").Value.ToString = TxtPara_ParaName.Text Then
+                    MessageBox.Show("已有相同名稱的的欄位，請確認是否重複建立")
+                    Return
+                End If
+            Next
+            Dim ChBoolean As New Dictionary(Of String, String)
+            ChBoolean.Add("否", "0")
+            ChBoolean.Add("是", "1")
+
+            Dim cmd As String = "DECLARE @ID INT
+                                                 INSERT INTO [H3_Systematic].[dbo].[H3_Production_ProcParameter] 
+                                                 ([AreaID],[PID],[Area],[ParameterName],[isQuery],[QID])
+                                                 VALUES(" & TxtPara_AreaID.Text & ",'" & CboPara_Sort.Text & "','" & TxtPara_Area.Text & "','" & Trim(TxtPara_ParaName.Text) & "','" & Convert.ToInt32(ChkPara_isQuery.Checked).ToString & "','0')
+                                                 SET @ID = (SELECT [Pkey] FROM [H3_Systematic].[dbo].[H3_Production_ProcParameter]  where [Area] = '" & TxtPara_Area.Text & "' AND [ParameterName] = '" & TxtPara_ParaName.Text & "')
+                                                 SELECT @ID"
+            Dim dt As DataTable = SQL_Query(SQL_Conn_MQL03, cmd)
+            ParaPkey = dt(0)(0).ToString
+
+            isException = False
+        Catch ex As Exception
+            WriteLog(ex, "BtnPara_Add_Click")
+            isException = True
+        Finally
+            Dim Status As String = ""
+            If isException Then
+                Status = "Fail"
+                ChangeLog("欄位設定", ParaPkey, TxtPara_ParaName.Text, "Add", Status)
+            Else
+                Status = "Success"
+                ChangeLog("欄位設定", ParaPkey, TxtPara_ParaName.Text, "Add", Status)
+                BtnPara_Refresh.PerformClick()
+            End If
+
+        End Try
+    End Sub
+
+    Private Sub BtnPara_Update_Click(sender As Object, e As EventArgs) Handles BtnPara_Update.Click
+        Try
+            If Para_Check() Then
+                isException = True
+                Return
+            End If
+            Dim ChBoolean As New Dictionary(Of String, String)
+            ChBoolean.Add("否", "0")
+            ChBoolean.Add("是", "1")
+
+            Dim cmd As String = "UPDATE [H3_Systematic].[dbo].[H3_Production_ProcParameter] 
+                                                 SET [PID] = '" & CboPara_Sort.Text & "',[Area] = '" & TxtPara_Area.Text & "',[ParameterName] = '" & TxtPara_ParaName.Text & "',[isQuery] = '" & Convert.ToInt32(ChkPara_isQuery.Checked).ToString & "'
+                                                 WHERE [Pkey] = '" & TxtPara_Pkey.Text & "'"
+            SQL_Query(SQL_Conn_MQL03, cmd)
+            ParaPkey = TxtPara_Pkey.Text
+            isException = False
+        Catch ex As Exception
+            WriteLog(ex, "BtnPara_Update_Click")
+            isException = True
+        Finally
+            Dim Status As String = ""
+            If isException Then
+                Status = "Fail"
+                ChangeLog("欄位設定", ParaPkey, TxtPara_ParaName.Text, "Update", Status)
+            Else
+                Status = "Success"
+                ChangeLog("欄位設定", ParaPkey, TxtPara_ParaName.Text, "Update", Status)
+                BtnPara_Refresh.PerformClick()
+            End If
+
+        End Try
+    End Sub
+
+    Private Sub DgvPara_CellContentClick(sender As Object, e As DataGridViewCellEventArgs) Handles DgvPara.CellContentClick
+        Try
+            If e.ColumnIndex = DgvPara.Columns("Pkey").Index AndAlso e.RowIndex >= 0 Then
+                '現有資料填入欄位
+                TxtPara_Pkey.Text = DgvPara.Rows(e.RowIndex).Cells("Pkey").Value.ToString
+                CboPara_Sort.SelectedIndex = CInt(DgvPara.Rows(e.RowIndex).Cells("順序").Value.ToString) - 1
+                TxtPara_ParaName.Text = DgvPara.Rows(e.RowIndex).Cells("欄位名稱").Value.ToString
+                ChkPara_isQuery.Checked = Convert.ToBoolean(DgvPara.Rows(e.RowIndex).Cells("是否自動代入數值").Value)
+                TxtPara_QID.Text = DgvPara.Rows(e.RowIndex).Cells("QID").Value.ToString
+
+
+                BtnPara_Update.Enabled = True
+                BtnPara_Add.Enabled = False
+            ElseIf e.ColumnIndex = DgvPara.Columns("編輯").Index AndAlso e.RowIndex >= 0 Then
+                TabMain.SelectedIndex = 2
+                If DgvPara.Rows(e.RowIndex).Cells("QID").Value.ToString = "0" Then TxtF_QID.Text = "" Else TxtF_QID.Text = DgvPara.Rows(e.RowIndex).Cells("QID").Value.ToString
+                TxtF_Pkey.Text = DgvPara.Rows(e.RowIndex).Cells("Pkey").Value.ToString
+                ParaColumn = ""
+                For Each pararow As DataGridViewRow In DgvPara.Rows
+                    ParaColumn += pararow.Cells("欄位名稱").Value.ToString + ","
+                Next
+                ParaColumn = ParaColumn.Substring(0, ParaColumn.Length - 1)
+                BtnF_Refresh.PerformClick()
+            End If
+        Catch ex As Exception
+            WriteLog(ex, "DgvPara_CellContentClick")
+        End Try
+    End Sub
+
+    Private Sub DgvPara_Sorted(sender As Object, e As EventArgs) Handles DgvPara.Sorted
+        Para_PkeyToButton()
+    End Sub
+
+    Private Function Para_Check() As Boolean
+        Dim sender As Object
+        Dim e As New EventArgs
+
+
+        If TxtPara_ParaName.Text = "" OrElse CboPara_isQuery.Text = "" Then
+            MessageBox.Show("請確認必填欄位輸入完畢")
+            Return True
+        End If
+
+        Return False
+    End Function
+
+    Private Sub Para_PkeyToButton()
+        '將Pkey欄位轉成Button
+        For Each row As DataGridViewRow In DgvPara.Rows
+            Dim ButtonCell As New DataGridViewButtonCell
+            ButtonCell.Value = row.Cells("Pkey").Value.ToString
+            ButtonCell.FlatStyle = FlatStyle.Flat
+            'ButtonCell.Style.BackColor = SystemColors.ControlLight
+            row.Cells("Pkey") = ButtonCell
+        Next
+    End Sub
+#End Region
+
+#Region "查詢(運算)設定"
+
+    Private Sub BtnF_Refresh_Click(sender As Object, e As EventArgs) Handles BtnF_Refresh.Click
+        Try
+            QueryCommand = ""
+            DgvF.AllowUserToAddRows = False
+            SPC_ComboBox_Invisible()
+            DgvF_Operator.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
+            CboF_Type.Items.Clear()
+            CboF_Type.Items.Add("OP參數")
+            CboF_Type.Items.Add("SPC")
+            CboF_Type.Items.Add("愉進系統")
+            CboF_Type.Items.Add("欄位間計算")
+            CboF_Type.Items.Add("其他")
+            CboF_Value.Items.Clear()
+            CboF_Value.Enabled = False
+            If TxtF_QID.Text <> "" Then
+                Dim cmd As String = "SELECT [QueryCommand],[QueryType],[QueryValue],[Filter1_operator],[Filter1],[Filter2_operator],[Filter2],[Filter3_operator],[Filter3],[Filter4_operator],[Filter4],[Filter5_operator],[Filter5]
+                                                 FROM [H3_Systematic].[dbo].[H3_Production_ProcParameter_Rule]
+                                                 WHERE [QID] = " & TxtF_QID.Text & ""
+                Dim dt As DataTable = SQL_Query(SQL_Conn_MQL03, cmd)
+
+                TxtF_QueryCommand.Text = dt(0)(0).ToString
+                CboF_Type.Text = dt(0)(1).ToString
+                'Call CboF_Type_SelectedIndexChanged(Nothing, e)
+                CboF_Value.Text = dt(0)(2).ToString
+                Dim index As Integer = 0
+                For Each row As DataGridViewRow In DgvF.Rows
+                    index += 1
+                    row.Cells(DgvF_Operator.Index).Value = dt(0)(2 + index * 2 - 1)
+                    row.Cells(DgvF_Values.Index).Value = dt(0)(2 + index * 2)
+                Next
+                CboF_SPC_Condition.Text = dt(0)(11)
+                CboF_SPC_Group.Text = dt(0)(12)
+            End If
+
+            TxtF_QueryCommand.ReadOnly = True
+            If TxtF_QID.Text = "" Then TxtF_QueryCommand.Text = ""
+
+        Catch ex As Exception
+            WriteLog(ex, "BtnF_Refresh_Click")
+        End Try
+    End Sub
+
+    Private Sub CboF_Type_SelectedIndexChanged(sender As Object, e As EventArgs) Handles CboF_Type.SelectedIndexChanged
+        DgvF.ReadOnly = False
+        If CboF_Type.SelectedIndex = 0 Then
+            '初始化
+            SPC_ComboBox_Invisible()
+            DgvF_Operator.ReadOnly = False
+            TxtF_QueryCommand.ReadOnly = True
+            TxtF_QueryCommand.Text = ""
+            DgvF.Rows.Add("製程代碼(8碼)", "[ProcName]", "=", "", "若留空白則查詢當站資訊 Ex. SMK1CLN1")
+            DgvF.Rows.Add("OP參數名稱", "[PARAMETER_DESC]", "=", "", "Ex. 基材銅厚中值")
+            DgvTest.Rows.Add("層別", "VarLayer", "")
+            DgvTest.Rows.Add("料號", "VarPart", "")
+            DgvTest.Rows.Add("版序", "VarRev", "")
+            CboF_Value.Items.Clear()
+            CboF_Value.Enabled = True
+            CboF_Value.Items.Add("OP參數")
+            CboF_Value.SelectedIndex = 0
+
+        ElseIf CboF_Type.SelectedIndex = 1 Then
+            '初始化
+            DgvF.Rows.Clear()
+            CboF_SPC_Condition.Visible = True
+            LblF_SPC_Condition.Visible = True
+            CboF_SPC_Group.Visible = True
+            LblF_SPC_Group.Visible = True
+            DgvF_Operator.ReadOnly = False
+            TxtF_QueryCommand.ReadOnly = True
+            TxtF_QueryCommand.Text = ""
+            DgvF.Rows.Add("一階", "d.[FileFactory]", "=", "", "Ex. 13新豐廠H3")
+            DgvF.Rows.Add("二階", "e.[FileGroupName]", "=", "", "Ex. 15MDL_機械鑽孔")
+            DgvF.Rows.Add("三階", "d.[FileName]", "=", "", "Ex. 15MDL_SUEP_ETCHINIG AMOUNT_EQP")
+            DgvF.Rows.Add("四階", "c.[CtrlName]", "=", "", "Ex. Etching Amount")
+            DgvTest.Rows.Clear()
+            DgvTest.Rows.Add("批號", "VarLot", "")
+            CboF_Value.Items.Clear()
+            CboF_Value.Enabled = True
+            CboF_Value.Items.Add("AVG")
+            CboF_Value.Items.Add("MAX")
+            CboF_Value.Items.Add("MIN")
+            CboF_Value.Items.Add("CL")
+            CboF_Value.Items.Add("SL")
+            CboF_Value.Items.Add("AL")
+            CboF_Value.SelectedIndex = 0
+            CboF_SPC_Condition.Items.Clear()
+            CboF_SPC_Condition.Items.Add("批號")
+            CboF_SPC_Condition.Items.Add("最近一筆")
+            CboF_SPC_Condition.SelectedIndex = 0
+
+        ElseIf CboF_Type.SelectedIndex = 2 Then
+            SPC_ComboBox_Invisible()
+            DgvF_Operator.ReadOnly = False
+            TxtF_QueryCommand.ReadOnly = True
+            TxtF_QueryCommand.Text = ""
+            DgvF.Rows.Add("製程代碼(8碼)", "[ProcName]", "=", "", "若留空白則查詢當站資訊 Ex. SMK1CLN1")
+            DgvF.Rows.Add("愉進過帳狀態", "[AftStatus]", "=", "", "MoveIn Or CheckIn Or CheckOut Or MoveOut")
+            DgvTest.Rows.Add("批號", "VarPart", "")
+            DgvTest.Rows.Add("層別", "VarLayer", "")
+            CboF_Value.Items.Clear()
+            CboF_Value.Enabled = True
+            CboF_Value.Items.Add("過帳時間")
+            CboF_Value.Items.Add("PCS數量")
+            CboF_Value.SelectedIndex = 0
+
+        ElseIf CboF_Type.SelectedIndex = 3 Then
+            SPC_ComboBox_Invisible()
+            DgvF_Operator.ReadOnly = True
+            TxtF_QueryCommand.ReadOnly = True
+            TxtF_QueryCommand.Text = ""
+            DgvF.Rows.Add("計算欄位", "Var", "", "", "請按照順序填寫，複數欄位請以逗號("","")分隔 Ex. " & ParaColumn & " ")
+            DgvF.Rows.Add("計算公式", "Formula", "", "", "填寫公式時請按照上面填寫的順序將變數命名為var1、var2... Ex. (var1/var2)*100")
+            CboF_Value.Items.Clear()
+            CboF_Value.Enabled = False
+
+            '建立語法
+            QueryCommand_Create()
+        ElseIf CboF_Type.SelectedIndex = 4 Then
+            SPC_ComboBox_Invisible()
+            TxtF_QueryCommand.ReadOnly = False
+            CboF_Value.Items.Clear()
+            CboF_Value.Enabled = False
+
+        End If
+    End Sub
+
+    Private Sub CboF_Value_SelectedIndexChanged(sender As Object, e As EventArgs) Handles CboF_Value.SelectedIndexChanged
+        QueryCommand_Create()
+    End Sub
+
+    Private Sub CboF_SPC_Condition_SelectedIndexChanged(sender As Object, e As EventArgs) Handles CboF_SPC_Condition.SelectedIndexChanged
+        CboF_SPC_Group.Items.Clear()
+        If CboF_SPC_Condition.SelectedIndex = 0 Then
+            CboF_SPC_Group.Items.Add("一階")
+            CboF_SPC_Group.Items.Add("二階")
+            CboF_SPC_Group.Items.Add("三階")
+            CboF_SPC_Group.Items.Add("四階")
+            CboF_SPC_Group.Items.Add("樣本平均")
+            CboF_SPC_Group.SelectedIndex = 0
+        End If
+        QueryCommand_Create()
+    End Sub
+    Private Sub CboF_SPC_Group_SelectedIndexChanged(sender As Object, e As EventArgs) Handles CboF_SPC_Group.SelectedIndexChanged
+        QueryCommand_Create()
+    End Sub
+
+    Private Sub BtnF_Save_Click(sender As Object, e As EventArgs) Handles BtnF_Save.Click
+        Try
+            F_SaveType = ""
+            If F_Check() Then
+                isException = True
+                Return
+            ElseIf isError Then
+                MessageBox.Show("請確認各欄位資料格式正確")
+                isException = True
+                Return
+            End If
+            Dim cmd As String = ""
+
+            If TxtF_QID.Text IsNot Nothing AndAlso TxtF_QID.Text <> "" Then
+                F_SaveType = "Update"
+                cmd = "UPDATE [H3_Systematic].[dbo].[H3_Production_ProcParameter_Rule]
+                             SET [QueryCommand] = '" & TxtF_QueryCommand.Text.Replace("'", "''") & "'
+                             ,[QueryType] = '" & CboF_Type.SelectedItem & "'
+                             ,[QueryValue] = '" & CboF_Value.SelectedItem & "'
+                             ,[Filter1] = 'f1'
+                             ,[Filter1_operator] = 'ff1'
+                             ,[Filter2] = 'f2'
+                             ,[Filter2_operator] = 'ff2'
+                             ,[Filter3] = 'f3'
+                             ,[Filter3_operator] = 'ff3'
+                             ,[Filter4] = 'f4'
+                             ,[Filter4_operator] = 'ff4'
+                             ,[Filter5] = 'f5'
+                             ,[Filter5_operator] = 'ff5'
+                             WHERE [QID] = '" & TxtF_QID.Text & "'"
+                Dim index As Integer = 0
+                For Each row As DataGridViewRow In DgvF.Rows
+                    index += 1
+                    Dim ope As String
+                    Dim val As String
+                    If row.Cells(DgvF_Operator.Index).Value IsNot Nothing Then
+                        ope = row.Cells(DgvF_Operator.Index).Value.ToString
+                    Else
+                        ope = ""
+                    End If
+                    If row.Cells(DgvF_Values.Index).Value IsNot Nothing Then
+                        val = row.Cells(DgvF_Values.Index).Value.ToString
+                    Else
+                        val = ""
+                    End If
+                    cmd = cmd.Replace("ff" + index.ToString, ope).Replace("f" + index.ToString, val)
+                Next
+                For i = index + 1 To 5
+                    cmd = cmd.Replace("ff" + i.ToString, "").Replace("f" + i.ToString, "")
+                Next
+            Else
+                F_SaveType = "Add"
+                cmd = "DECLARE @ID TABLE (id INT)
+                             INSERT INTO [H3_Systematic].[dbo].[H3_Production_ProcParameter_Rule]
+                             ([PID],[QueryCommand],[QueryType],[QueryValue],[Filter1],[Filter1_operator],[Filter2],[Filter2_operator],[Filter3],[Filter3_operator],[Filter4],[Filter4_operator],[Filter5],[Filter5_operator])
+                             OUTPUT INSERTED.[QID] INTO @ID 
+                             VALUES('" & TxtF_Pkey.Text & "','" & TxtF_QueryCommand.Text.Replace("'", "''") & "','" & CboF_Type.SelectedItem & "','" & CboF_Value.SelectedItem & "','f1','ff1','f2','ff2','f3','ff3','f4','ff4','f5','ff5')
+                             UPDATE [H3_Systematic].[dbo].[H3_Production_ProcParameter]
+                             SET [QID] = (SELECT id FROM @ID)
+                             WHERE [Pkey] = '" & TxtF_Pkey.Text & "'"
+                Dim index As Integer = 0
+                For Each row As DataGridViewRow In DgvF.Rows
+                    index += 1
+                    Dim ope As String
+                    Dim val As String
+                    If row.Cells(DgvF_Operator.Index).Value IsNot Nothing Then
+                        ope = row.Cells(DgvF_Operator.Index).Value.ToString
+                    Else
+                        ope = ""
+                    End If
+                    If row.Cells(DgvF_Values.Index).Value IsNot Nothing Then
+                        val = row.Cells(DgvF_Values.Index).Value.ToString
+                    Else
+                        val = ""
+                    End If
+                    cmd = cmd.Replace("ff" + index.ToString, ope).Replace("f" + index.ToString, val)
+                Next
+                For i = index + 1 To 5
+                    If i = 5 Then
+                        cmd = cmd.Replace("ff5", CboF_SPC_Group.Text).Replace("f5", CboF_SPC_Condition.Text)
+                    Else
+                        cmd = cmd.Replace("ff" + i.ToString, "").Replace("f" + i.ToString, "")
+                    End If
+                Next
+                'For Each row As DataGridViewRow In DgvF.Rows
+                '    index += 1
+                '    cmd2 += ",'" & row.Cells(DgvF_Values.Index).Value.ToString & "','" & row.Cells(DgvF_Operator.Index).Value.ToString & "'"
+                'Next
+                'For i = 0 To 4 - index
+                '    cmd2 += ",'',''"
+                'Next
+
+            End If
+
+            SQL_Query(SQL_Conn_MQL03, cmd)
+            isException = False
+            MessageBox.Show("儲存成功")
+        Catch ex As Exception
+            WriteLog(ex, "BtnF_Save_Click")
+            isException = True
+        Finally
+            Dim Status As String = ""
+            If isException Then
+                Status = "Fail"
+                ChangeLog("邏輯設定", TxtF_QID.Text, CboF_Type.Text, F_SaveType, Status)
+            Else
+                Status = "Success"
+                ChangeLog("邏輯設定", TxtF_QID.Text, CboF_Type.Text, F_SaveType, Status)
+                BtnF_Refresh.PerformClick()
+                TabMain.SelectedIndex = 1
+                BtnPara_Refresh_Click(sender, e)
+            End If
+
+        End Try
+    End Sub
+
+
+    Private Function F_Check() As Boolean
+
+        If CboF_Type.SelectedItem = "" Then
+            MessageBox.Show("請確認必填欄位輸入完畢")
+            Return True
+        Else
+            For Each row As DataGridViewRow In DgvF.Rows
+                If (row.Cells(DgvF_ColumnName.Index).Value.ToString.Contains("AftStatus") OrElse row.Cells(DgvF_ColumnName.Index).Value.ToString.Contains("Var") OrElse row.Cells(DgvF_ColumnName.Index).Value.ToString.Contains("Formula") OrElse row.Cells(DgvF_ColumnName.Index).Value.ToString.Contains("PARAMETER_DESC") OrElse row.Cells(DgvF_ColumnName.Index).Value.ToString.Contains("FileFactory") OrElse row.Cells(DgvF_ColumnName.Index).Value.ToString.Contains("FileGroupName")) And (row.Cells(DgvF_Values.Index).Value Is Nothing OrElse row.Cells(DgvF_Values.Index).Value.ToString = "") Then
+                    MessageBox.Show("請確認必填欄位輸入完畢")
+                    Return True
+                End If
+            Next
+        End If
+        Return False
+    End Function
+
+    Private Sub DgvF_CellValueChanged(sender As Object, e As DataGridViewCellEventArgs) Handles DgvF.CellValueChanged
+        Try
+            If TxtF_Pkey.Text <> "" Then
+                Dim AlarmMessages As String = ""
+                For Each row As DataGridViewRow In DgvF.Rows
+                    If row.Cells(DgvF_ColumnName.Index).Value.ToString.Contains("ProcName") Then
+                        If row.Cells(DgvF_Values.Index).Value IsNot Nothing AndAlso row.Cells(DgvF_Values.Index).Value.ToString <> "" Then
+                            Dim procs As String() = row.Cells(DgvF_Values.Index).Value.ToString.Split(",")
+                            For Each proc In procs
+                                If Trim(proc) <> "" AndAlso Trim(proc).Length <> 8 Then
+                                    AlarmMessages += "請確認輸入的製程代碼為8位字元" + vbCrLf
+                                End If
+                            Next
+                        End If
+                    ElseIf row.Cells(DgvF_ColumnName.Index).Value.ToString.Contains("AftStatus") Then
+                        If row.Cells(DgvF_Values.Index).Value IsNot Nothing AndAlso row.Cells(DgvF_Values.Index).Value.ToString <> "" Then
+                            Dim AftStatus As String = ""
+                            Dim TrimStr As String = ""
+                            If Not IsNumeric(AftStatus) Then AftStatus = row.Cells(DgvF_Values.Index).Value.ToString.ToLower
+                            AftStatus = AftStatus.Replace("movein", "MoveIn").Replace("checkin", "CheckIn").Replace("checkout", "CheckOut").Replace("moveout", "MoveOut")
+                            Dim Status As String() = AftStatus.Split(",")
+                            For Each item In Status
+                                If Trim(item) <> "" AndAlso Not (Trim(item) = "MoveIn" OrElse Trim(item) = "CheckIn" OrElse Trim(item) = "CheckOut" OrElse Trim(item) = "MoveOut") Then
+                                    AlarmMessages += "請確認輸入正確的過帳狀態(MoveIn 、 CheckIn 、 CheckOut 、 MoveOut)" + vbCrLf
+                                    GoTo AftError
+                                Else
+                                    TrimStr += Trim(item) + ","
+                                End If
+                            Next
+                            row.Cells(DgvF_Values.Index).Value = TrimStr.Substring(0, TrimStr.Length - 1)
+AftError:
+                        End If
+                    ElseIf row.Cells(DgvF_ColumnName.Index).Value.ToString.Contains("Var") Then
+                        If row.Cells(DgvF_Values.Index).Value IsNot Nothing AndAlso row.Cells(DgvF_Values.Index).Value.ToString <> "" Then
+                            Dim Vars As String() = row.Cells(DgvF_Values.Index).Value.ToString.Split(",")
+                            DgvTest.Rows.Clear()
+                            Dim index As Integer = 0
+                            For Each Var In Vars
+                                index += 1
+                                DgvTest.Rows.Add(Var, "var" & index.ToString, "")
+                                For Each para In ParaColumn.Split(",")
+                                    If Trim(Var) <> para Then
+                                        AlarmMessages = "請輸入正確的欄位名稱"
+                                    Else
+                                        AlarmMessages = ""
+                                        Exit For
+                                    End If
+                                Next
+                            Next
+                        End If
+                    End If
+                Next
+                If AlarmMessages <> "" Then
+                    MessageBox.Show(AlarmMessages)
+                    isError = True
+                    Exit Sub
+                Else
+                    isError = False
+                End If
+                QueryCommand_Create()
+            End If
+        Catch ex As Exception
+            WriteLog(ex, "DgvF_CellValueChanged")
+        End Try
+    End Sub
+
+    Private Sub SPC_ComboBox_Invisible()
+        DgvF.Rows.Clear()
+        DgvTest.Rows.Clear()
+        LblF_SPC_Condition.Visible = False
+        CboF_SPC_Condition.Visible = False
+        CboF_SPC_Condition.Items.Clear()
+        LblF_SPC_Group.Visible = False
+        CboF_SPC_Group.Visible = False
+        CboF_SPC_Group.Items.Clear()
+    End Sub
+
+    Private Sub QueryCommand_Create()
+        Try
+            If CboF_Type.SelectedIndex <> 3 AndAlso CboF_Type.SelectedIndex <> 4 Then
+                QueryCommand = SelectCommand(CboF_Value.SelectedItem.ToString) + vbCrLf + ServerCommand(CboF_Type.SelectedItem.ToString)
+                For Each row As DataGridViewRow In DgvF.Rows
+                    Dim column As String = row.Cells(DgvF_ColumnName.Index).Value.ToString
+                    Dim op As String = ""
+                    If row.Cells(DgvF_Operator.Index).Value IsNot Nothing AndAlso row.Cells(DgvF_Operator.Index).Value.ToString <> "" Then
+                        op = row.Cells(DgvF_Operator.Index).Value.ToString
+                    End If
+                    Dim val As String = ""
+                    If row.Cells(DgvF_Values.Index).Value IsNot Nothing AndAlso row.Cells(DgvF_Values.Index).Value.ToString <> "" Then
+                        val = Trim(row.Cells(DgvF_Values.Index).Value.ToString)
+                    End If
+                    If op <> "" And val <> "" Then
+                        QueryCommand += vbCrLf + "AND " + column + Space(1) + Operator_Values_Check(op, val)
+                    ElseIf DefaulfFilter.ContainsKey(column) Then
+                        QueryCommand += vbCrLf + "AND " + DefaulfFilter(column)
+                    End If
+                Next
+
+                If CboF_SPC_Condition.SelectedIndex = 0 Then
+                    QueryCommand += vbCrLf + "AND b.[L2] LIKE '%VarLot%'" + vbCrLf + SPCGroup(CboF_SPC_Group.SelectedItem)
+                    If CboF_Value.SelectedItem = "CL" Then
+                        QueryCommand += ",c.[TopCL],c.[TopUCL],c.[TopLCL]"
+                    ElseIf CboF_Value.SelectedItem = "SL" Then
+                        QueryCommand += ",c.[SL],c.[USL],c.[LSL]"
+                    ElseIf CboF_Value.SelectedItem = "AL" Then
+                        QueryCommand += ",c.[AL],c.[UAL],c.[LAL]"
+                    End If
+                ElseIf CboF_Type.SelectedIndex = 1 Then
+                    QueryCommand += vbCrLf + "ORDER BY a.[MeasTime]"
+                End If
+
+            ElseIf CboF_Type.SelectedIndex = 3 Then
+                QueryCommand = ServerCommand(CboF_Type.SelectedItem.ToString)
+                If DgvF.Rows(0).Cells(DgvF_Values.Index).Value IsNot Nothing AndAlso DgvF.Rows(1).Cells(DgvF_Values.Index).Value IsNot Nothing AndAlso DgvF.Rows(0).Cells(DgvF_Values.Index).Value.ToString <> "" AndAlso DgvF.Rows(1).Cells(DgvF_Values.Index).Value.ToString <> "" Then
+                    Dim FormulaCommand As String = ""
+                    Dim FormulaColumn As String()
+                    FormulaColumn = DgvF.Rows(0).Cells(DgvF_Values.Index).Value.ToString.Split(",")
+                    FormulaCommand = DgvF.Rows(1).Cells(DgvF_Values.Index).Value.ToString
+                    FormulaCommand = FormulaCommand.ToUpper()
+                    For i = FormulaColumn.Count To 1 Step -1
+                        FormulaCommand = FormulaCommand.Replace("VAR" + i.ToString + "", "CDbl(""var" + i.ToString + """)")
+                    Next
+                    QueryCommand = QueryCommand.Replace("0.0", FormulaCommand)
+                End If
+            End If
+
+            TxtF_QueryCommand.Text = QueryCommand
+        Catch ex As Exception
+            WriteLog(ex, "QueryCommand_Create")
+        End Try
+
+    End Sub
+
+    Private Sub BtnF_Test_Click(sender As Object, e As EventArgs) Handles BtnF_Test.Click
+        Try
+            If F_Check() Then
+                Return
+            ElseIf isError Then
+                MessageBox.Show("請確認各欄位資料格式正確")
+                Return
+            End If
+
+            Dim cmd As String = ""
+
+            cmd = TxtF_QueryCommand.Text
+            For i = DgvTest.Rows.Count - 1 To 0 Step -1
+                If DgvTest.Rows(i).Cells(DgvTest_Values.Index).Value IsNot Nothing AndAlso DgvTest.Rows(i).Cells(DgvTest_Values.Index).Value.ToString <> "" Then
+                    cmd = cmd.Replace(DgvTest.Rows(i).Cells(DgvTest_ColumnName.Index).Value.ToString, DgvTest.Rows(i).Cells(DgvTest_Values.Index).Value.ToString)
+                Else
+                    MessageBox.Show("請確認測試參數已填寫完畢")
+                    Exit Sub
+                End If
+            Next
+
+            If CboF_Type.SelectedIndex <> 3 AndAlso CboF_Type.SelectedIndex <> 4 Then
+
+                Dim dt As DataTable = SQL_Query(SQL_Conn_MQL03, cmd)
+                If dt.Rows.Count > 0 Then
+                    MessageBox.Show("連線 : 成功 " + vbCrLf + "結果 : " + dt(0)(0).ToString)
+                Else
+                    MessageBox.Show("連線 : 成功 " + vbCrLf + "結果 : 查無資料")
+                End If
+            ElseIf CboF_Type.SelectedIndex = 3 Then
+                Dim result As Double = -999
+                result = ReCoding(cmd)
+                If result <> -999 Then
+                    MessageBox.Show("測試 : 成功 " + vbCrLf + "結果 : " + result.ToString)
+                Else
+                    MessageBox.Show("測試 : 失敗 ")
+                End If
+            End If
+        Catch ex As Exception
+            WriteLog(ex, "BtnF_Test_Click")
+        End Try
+    End Sub
+
+#End Region
+
+    Private Function Operator_Values_Check(ByVal op As String, ByVal val As String) As String
+        Dim str As String = ""
+        val = val.Replace("'", "''")
+        If op = "=" OrElse op = "<>" Then
+            val = "'" + val + "'"
+            str = op + Space(1) + val
+        ElseIf op = "IN" Then
+            Dim trimval As String = ""
+            For Each item In val.Split(",")
+                trimval += Trim(item) + ","
+            Next
+            val = trimval.Substring(0, trimval.Length - 1)
+            val = "('" + val + "')"
+            val = val.Replace(",", "','")
+            str = op + Space(1) + val
+        ElseIf op.Contains("LIKE") Then
+            val = "'%" + val + "%'"
+            str = op + Space(1) + val
+        ElseIf op.Contains("NULL") Then
+            str = op
+        End If
+        Return str
+    End Function
+
+    Private Sub Command_Initialize()
+
+        '查詢種類
+        ServerCommand.Add("OP參數", "FROM [utchfacmrpt].[report].[dbo].[view_OPParam] WITH (NOLOCK)
+WHERE [LayerName] = 'VarLayer'
+AND [PartNum] = 'VarPart'
+AND [Revision] = 'VarRev'")
+        ServerCommand.Add("SPC", "FROM [10.44.65.110].[SPC_PPT].[dbo].[Var_Data] AS a WITH (NOLOCK)
+	  INNER JOIN [10.44.65.110].[SPC_PPT].[dbo].[Var_DataGroup] AS b WITH (NOLOCK) ON a.[DataGroupID] = b.[DataGroupID] 
+	  INNER JOIN [10.44.65.110].[SPC_PPT].[dbo].[Var_Ctrl] AS c WITH (NOLOCK) ON b.[CtrlID] = c.[CtrlID]
+	  INNER JOIN [10.44.65.110].[SPC_PPT].[dbo].[Var_File] AS d WITH (NOLOCK) ON c.[FileID] = d.[FileID]
+	  INNER JOIN [10.44.65.110].[SPC_PPT].[dbo].[Var_FileGroup] AS e WITH (NOLOCK) ON d.[FileGroupID] = e.[FileGroupID]
+WHERE 1=1")
+        ServerCommand.Add("愉進系統", "FROM [utchfacmrpt].[report].[dbo].[view_HIST]
+WHERE [lotnum] = 'VarLot'
+AND [LayerName] = 'VarLayer'")
+        ServerCommand.Add("欄位間計算", "Imports System
+  Public Class Calculator
+    Public Function Calculate() as Double
+    Dim result As Double = 0
+    result = 0.0
+    Return result
+  End Function
+End Class")
+
+
+        '結果查詢
+        SelectCommand.Add("OP參數", "SELECT TOP 1 [PARAMETER_VALUE]")
+        SelectCommand.Add("AVG", "SELECT TOP 1 ISNULL(ROUND(AVG(CONVERT(float,a.[MeasData])),3),'') as 'AVG'")
+        SelectCommand.Add("MAX", "SELECT TOP 1 ISNULL(ROUND(MAX(CONVERT(float,a.[MeasData])),3),'') as 'MAX'")
+        SelectCommand.Add("MIN", "SELECT TOP 1 ISNULL(ROUND(MIN(CONVERT(float,a.[MeasData])),3),'') as 'MIN'")
+        SelectCommand.Add("CL", "SELECT TOP 1 ISNULL(CAST(ROUND(c.[TopCL],4) AS nvarchar) + ' / ' + CAST(ROUND(c.[TopUCL],4) AS nvarchar) + ' / ' + CAST(ROUND(c.[TopLCL],4) AS nvarchar),'') as 'CL'")
+        SelectCommand.Add("SL", "SELECT TOP 1 ISNULL(CAST(ROUND(c.[SL],4) AS nvarchar) + ' / ' + CAST(ROUND(c.[USL],4) AS nvarchar) + ' / ' + CAST(ROUND(c.[LSL],4) AS nvarchar),'') as 'SL'")
+        SelectCommand.Add("AL", "SELECT TOP 1 ISNULL(CAST(ROUND(c.[AL],4) AS nvarchar) + ' / ' + CAST(ROUND(c.[UAL],4) AS nvarchar) + ' / ' + CAST(ROUND(c.[LAL],4) AS nvarchar),'') as 'AL'")
+        SelectCommand.Add("過帳時間", "SELECT TOP 1 [ChangeTime]")
+        SelectCommand.Add("PCS數量", "SELECT TOP 1 [Qnty_S]")
+
+        '預設查詢條件
+        DefaulfFilter.Add("[ProcName]", "[ProcName] = 'VarProc'")
+        DefaulfFilter.Add("[Lotnum]", "[Lotnum] = 'VarLot'")
+        DefaulfFilter.Add("[LayerName]", "[LayerName] = 'VarLayer'")
+        DefaulfFilter.Add("[PartNum]", "[PartNum] = 'VarPart'")
+        DefaulfFilter.Add("[Revision]", "[Revision] = 'VarRev'")
+        DefaulfFilter.Add("b.[L2]", "b.[L2] = 'VarLot'")
+
+        'SPC分組
+        SPCGroup.Add("一階", "GROUP BY d.[FileFactory]")
+        SPCGroup.Add("二階", "GROUP BY e.[FileGroupName]")
+        SPCGroup.Add("三階", "GROUP BY d.[FileName]")
+        SPCGroup.Add("四階", "GROUP BY c.[CtrlName]")
+        SPCGroup.Add("樣本平均", "GROUP BY a.[DataGroupID]")
+
+    End Sub
+
+End Class

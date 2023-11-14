@@ -1,0 +1,178 @@
+﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
+Partial Class ReportUI
+    Inherits System.Windows.Forms.Form
+
+    'Form 覆寫 Dispose 以清除元件清單。
+    <System.Diagnostics.DebuggerNonUserCode()> _
+    Protected Overrides Sub Dispose(ByVal disposing As Boolean)
+        Try
+            If disposing AndAlso components IsNot Nothing Then
+                components.Dispose()
+            End If
+        Finally
+            MyBase.Dispose(disposing)
+        End Try
+    End Sub
+
+    '為 Windows Form 設計工具的必要項
+    Private components As System.ComponentModel.IContainer
+
+    '注意: 以下為 Windows Form 設計工具所需的程序
+    '可以使用 Windows Form 設計工具進行修改。
+    '請勿使用程式碼編輯器進行修改。
+    <System.Diagnostics.DebuggerStepThrough()> _
+    Private Sub InitializeComponent()
+        Me.components = New System.ComponentModel.Container()
+        Me.MenuBar = New System.Windows.Forms.MenuStrip()
+        Me.歷史紀錄ToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.修改ToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ReportUI_DataGridView = New System.Windows.Forms.DataGridView()
+        Me.TimerRefresh = New System.Windows.Forms.Timer(Me.components)
+        Me.ProcName = New System.Windows.Forms.ComboBox()
+        Me.Btn_TEST = New System.Windows.Forms.Button()
+        Me.Notice = New System.Windows.Forms.Label()
+        Me.Button1 = New System.Windows.Forms.Button()
+        Me.TextBox1 = New System.Windows.Forms.TextBox()
+        Me.TextBox2 = New System.Windows.Forms.TextBox()
+        Me.Label1 = New System.Windows.Forms.Label()
+        Me.MenuBar.SuspendLayout()
+        CType(Me.ReportUI_DataGridView, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.SuspendLayout()
+        '
+        'MenuBar
+        '
+        Me.MenuBar.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.歷史紀錄ToolStripMenuItem, Me.修改ToolStripMenuItem})
+        Me.MenuBar.Location = New System.Drawing.Point(0, 0)
+        Me.MenuBar.Name = "MenuBar"
+        Me.MenuBar.Size = New System.Drawing.Size(1584, 24)
+        Me.MenuBar.TabIndex = 154
+        Me.MenuBar.Text = "菜單"
+        '
+        '歷史紀錄ToolStripMenuItem
+        '
+        Me.歷史紀錄ToolStripMenuItem.Name = "歷史紀錄ToolStripMenuItem"
+        Me.歷史紀錄ToolStripMenuItem.Size = New System.Drawing.Size(43, 20)
+        Me.歷史紀錄ToolStripMenuItem.Text = "查詢"
+        '
+        '修改ToolStripMenuItem
+        '
+        Me.修改ToolStripMenuItem.Name = "修改ToolStripMenuItem"
+        Me.修改ToolStripMenuItem.Size = New System.Drawing.Size(43, 20)
+        Me.修改ToolStripMenuItem.Text = "修改"
+        '
+        'ReportUI_DataGridView
+        '
+        Me.ReportUI_DataGridView.AllowUserToAddRows = False
+        Me.ReportUI_DataGridView.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+            Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.ReportUI_DataGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill
+        Me.ReportUI_DataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
+        Me.ReportUI_DataGridView.Location = New System.Drawing.Point(0, 56)
+        Me.ReportUI_DataGridView.Name = "ReportUI_DataGridView"
+        Me.ReportUI_DataGridView.RowTemplate.Height = 24
+        Me.ReportUI_DataGridView.Size = New System.Drawing.Size(1584, 539)
+        Me.ReportUI_DataGridView.TabIndex = 155
+        '
+        'TimerRefresh
+        '
+        Me.TimerRefresh.Interval = 300000
+        '
+        'ProcName
+        '
+        Me.ProcName.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.ProcName.FormattingEnabled = True
+        Me.ProcName.Location = New System.Drawing.Point(12, 30)
+        Me.ProcName.Name = "ProcName"
+        Me.ProcName.RightToLeft = System.Windows.Forms.RightToLeft.Yes
+        Me.ProcName.Size = New System.Drawing.Size(121, 20)
+        Me.ProcName.TabIndex = 156
+        '
+        'Btn_TEST
+        '
+        Me.Btn_TEST.Location = New System.Drawing.Point(139, 27)
+        Me.Btn_TEST.Name = "Btn_TEST"
+        Me.Btn_TEST.Size = New System.Drawing.Size(75, 23)
+        Me.Btn_TEST.TabIndex = 157
+        Me.Btn_TEST.Text = "測試"
+        Me.Btn_TEST.UseVisualStyleBackColor = True
+        '
+        'Notice
+        '
+        Me.Notice.AutoSize = True
+        Me.Notice.Font = New System.Drawing.Font("新細明體", 14.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.Notice.ForeColor = System.Drawing.Color.Red
+        Me.Notice.Location = New System.Drawing.Point(325, 30)
+        Me.Notice.Name = "Notice"
+        Me.Notice.Size = New System.Drawing.Size(0, 19)
+        Me.Notice.TabIndex = 158
+        '
+        'Button1
+        '
+        Me.Button1.Location = New System.Drawing.Point(705, 30)
+        Me.Button1.Name = "Button1"
+        Me.Button1.Size = New System.Drawing.Size(99, 23)
+        Me.Button1.TabIndex = 159
+        Me.Button1.Text = "測試動態編譯"
+        Me.Button1.UseVisualStyleBackColor = True
+        '
+        'TextBox1
+        '
+        Me.TextBox1.Location = New System.Drawing.Point(810, 30)
+        Me.TextBox1.Name = "TextBox1"
+        Me.TextBox1.Size = New System.Drawing.Size(100, 22)
+        Me.TextBox1.TabIndex = 160
+        '
+        'TextBox2
+        '
+        Me.TextBox2.Location = New System.Drawing.Point(916, 30)
+        Me.TextBox2.Name = "TextBox2"
+        Me.TextBox2.Size = New System.Drawing.Size(100, 22)
+        Me.TextBox2.TabIndex = 161
+        '
+        'Label1
+        '
+        Me.Label1.AutoSize = True
+        Me.Label1.Location = New System.Drawing.Point(1022, 35)
+        Me.Label1.Name = "Label1"
+        Me.Label1.Size = New System.Drawing.Size(37, 12)
+        Me.Label1.TabIndex = 162
+        Me.Label1.Text = "Label1"
+        '
+        'ReportUI
+        '
+        Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 12.0!)
+        Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
+        Me.ClientSize = New System.Drawing.Size(1584, 599)
+        Me.Controls.Add(Me.Label1)
+        Me.Controls.Add(Me.TextBox2)
+        Me.Controls.Add(Me.TextBox1)
+        Me.Controls.Add(Me.Button1)
+        Me.Controls.Add(Me.Notice)
+        Me.Controls.Add(Me.Btn_TEST)
+        Me.Controls.Add(Me.ProcName)
+        Me.Controls.Add(Me.ReportUI_DataGridView)
+        Me.Controls.Add(Me.MenuBar)
+        Me.Name = "ReportUI"
+        Me.Text = "ReportUI"
+        Me.MenuBar.ResumeLayout(False)
+        Me.MenuBar.PerformLayout()
+        CType(Me.ReportUI_DataGridView, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.ResumeLayout(False)
+        Me.PerformLayout()
+
+    End Sub
+
+    Friend WithEvents MenuBar As MenuStrip
+    Friend WithEvents 歷史紀錄ToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents 修改ToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents ReportUI_DataGridView As DataGridView
+    Friend WithEvents TimerRefresh As Timer
+    Friend WithEvents ProcName As ComboBox
+    Friend WithEvents Btn_TEST As Button
+    Friend WithEvents Notice As Label
+    Friend WithEvents Button1 As Button
+    Friend WithEvents TextBox1 As TextBox
+    Friend WithEvents TextBox2 As TextBox
+    Friend WithEvents Label1 As Label
+End Class

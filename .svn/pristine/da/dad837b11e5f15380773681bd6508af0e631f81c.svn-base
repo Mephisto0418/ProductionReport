@@ -1,0 +1,17 @@
+﻿Imports System.Data.SqlClient
+
+Module SQL
+    Public SQL_Conn_MQL03 As String = "Data Source=10.44.66.105;Initial Catalog=master;User ID=pptcim;Password=cim945"
+
+    Friend Function SQL_Query(ByVal cmd As String)
+        Dim conn As New SqlConnection(SQL_Conn_MQL03)
+        Dim Command As SqlCommand = New SqlCommand(cmd, conn)
+        conn.Open()
+        Dim rs As New SqlDataAdapter(Command)
+        Dim dt As New DataTable()
+        rs.Fill(dt)
+        conn.Close()
+        Return dt
+    End Function
+
+End Module

@@ -1,0 +1,1261 @@
+﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()>
+Partial Class ProductionReport_Setting
+    Inherits System.Windows.Forms.Form
+
+    'Form 覆寫 Dispose 以清除元件清單。
+    <System.Diagnostics.DebuggerNonUserCode()>
+    Protected Overrides Sub Dispose(ByVal disposing As Boolean)
+        Try
+            If disposing AndAlso components IsNot Nothing Then
+                components.Dispose()
+            End If
+        Finally
+            MyBase.Dispose(disposing)
+        End Try
+    End Sub
+
+    '為 Windows Form 設計工具的必要項
+    Private components As System.ComponentModel.IContainer
+
+    '注意: 以下為 Windows Form 設計工具所需的程序
+    '可以使用 Windows Form 設計工具進行修改。
+    '請勿使用程式碼編輯器進行修改。
+    <System.Diagnostics.DebuggerStepThrough()>
+    Private Sub InitializeComponent()
+        Me.TabMain = New System.Windows.Forms.TabControl()
+        Me.TabProc = New System.Windows.Forms.TabPage()
+        Me.BtnProc_ProcQuery = New System.Windows.Forms.Button()
+        Me.TxtProc_ProcQuery = New System.Windows.Forms.TextBox()
+        Me.BtnProc_Update = New System.Windows.Forms.Button()
+        Me.LblProc_ProcQuery = New System.Windows.Forms.Label()
+        Me.BtnProc_Add = New System.Windows.Forms.Button()
+        Me.PnlProc_Optional1 = New System.Windows.Forms.Panel()
+        Me.TxtProc_Pkey = New System.Windows.Forms.TextBox()
+        Me.LblProc_Tag_Machine = New System.Windows.Forms.Label()
+        Me.LblProc_Pkey = New System.Windows.Forms.Label()
+        Me.TxtProc_Machine = New System.Windows.Forms.TextBox()
+        Me.LblProc_Machine = New System.Windows.Forms.Label()
+        Me.CboProc_Location = New System.Windows.Forms.ComboBox()
+        Me.LblProc_Location = New System.Windows.Forms.Label()
+        Me.PnlProc_Required = New System.Windows.Forms.Panel()
+        Me.LblProc_Tag_Module = New System.Windows.Forms.Label()
+        Me.LblProc_Tag_Section = New System.Windows.Forms.Label()
+        Me.LblProc_Tag_Area = New System.Windows.Forms.Label()
+        Me.LblProc_Tag_ProcName = New System.Windows.Forms.Label()
+        Me.TxtProc_Password = New System.Windows.Forms.TextBox()
+        Me.LblProc_Password = New System.Windows.Forms.Label()
+        Me.TxtProc_ProcName = New System.Windows.Forms.TextBox()
+        Me.LblProc_ProcName = New System.Windows.Forms.Label()
+        Me.TxtProc_Area = New System.Windows.Forms.TextBox()
+        Me.LblProc_Area = New System.Windows.Forms.Label()
+        Me.TxtProc_Section = New System.Windows.Forms.TextBox()
+        Me.LblProc_Section = New System.Windows.Forms.Label()
+        Me.TxtProc_Module = New System.Windows.Forms.TextBox()
+        Me.LblProc_Module = New System.Windows.Forms.Label()
+        Me.LblProc_Optional = New System.Windows.Forms.Label()
+        Me.LblProc_Required = New System.Windows.Forms.Label()
+        Me.BtnProc_Refresh = New System.Windows.Forms.Button()
+        Me.DgvProc = New System.Windows.Forms.DataGridView()
+        Me.TabPara = New System.Windows.Forms.TabPage()
+        Me.BtnPara_Update = New System.Windows.Forms.Button()
+        Me.BtnPara_Add = New System.Windows.Forms.Button()
+        Me.PnlPara = New System.Windows.Forms.Panel()
+        Me.TxtPara_Default = New System.Windows.Forms.TextBox()
+        Me.LblPara_Default = New System.Windows.Forms.Label()
+        Me.ChkPara_isRequire = New System.Windows.Forms.CheckBox()
+        Me.LblPara_isRequire = New System.Windows.Forms.Label()
+        Me.TxtPara_EngName = New System.Windows.Forms.TextBox()
+        Me.LblPara_EngName = New System.Windows.Forms.Label()
+        Me.ChkPara_isQuery = New System.Windows.Forms.CheckBox()
+        Me.TxtPara_AreaID = New System.Windows.Forms.TextBox()
+        Me.LblPara_AreaID = New System.Windows.Forms.Label()
+        Me.TxtPara_Pkey = New System.Windows.Forms.TextBox()
+        Me.LblPara_Pkey = New System.Windows.Forms.Label()
+        Me.CboPara_Sort = New System.Windows.Forms.ComboBox()
+        Me.CboPara_isQuery = New System.Windows.Forms.ComboBox()
+        Me.LblPara_isQuery = New System.Windows.Forms.Label()
+        Me.TxtPara_QID = New System.Windows.Forms.TextBox()
+        Me.LblPara_QID = New System.Windows.Forms.Label()
+        Me.TxtPara_ParaName = New System.Windows.Forms.TextBox()
+        Me.LblPara_ParaName = New System.Windows.Forms.Label()
+        Me.TxtPara_Area = New System.Windows.Forms.TextBox()
+        Me.LblPara_Area = New System.Windows.Forms.Label()
+        Me.LblPara_Sort = New System.Windows.Forms.Label()
+        Me.BtnPara_Refresh = New System.Windows.Forms.Button()
+        Me.DgvPara = New System.Windows.Forms.DataGridView()
+        Me.TabQuery = New System.Windows.Forms.TabPage()
+        Me.BtnF_Test = New System.Windows.Forms.Button()
+        Me.DgvTest = New System.Windows.Forms.DataGridView()
+        Me.DgvTest_ParaName = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.DgvTest_ColumnName = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.DgvTest_Values = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.LblF_QueryCommand = New System.Windows.Forms.Label()
+        Me.TxtF_QueryCommand = New System.Windows.Forms.TextBox()
+        Me.BtnF_Save = New System.Windows.Forms.Button()
+        Me.PnlF = New System.Windows.Forms.Panel()
+        Me.CboF_SPC_Group = New System.Windows.Forms.ComboBox()
+        Me.LblF_SPC_Group = New System.Windows.Forms.Label()
+        Me.CboF_SPC_Condition = New System.Windows.Forms.ComboBox()
+        Me.LblF_SPC_Condition = New System.Windows.Forms.Label()
+        Me.CboF_Value = New System.Windows.Forms.ComboBox()
+        Me.LblF_Value = New System.Windows.Forms.Label()
+        Me.CboF_Type = New System.Windows.Forms.ComboBox()
+        Me.LblF_Type = New System.Windows.Forms.Label()
+        Me.TxtF_Pkey = New System.Windows.Forms.TextBox()
+        Me.LblF_Pkey = New System.Windows.Forms.Label()
+        Me.TxtF_QID = New System.Windows.Forms.TextBox()
+        Me.LblF_QID = New System.Windows.Forms.Label()
+        Me.BtnF_Refresh = New System.Windows.Forms.Button()
+        Me.DgvF = New System.Windows.Forms.DataGridView()
+        Me.DgvF_Filter = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.DgvF_ColumnName = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.DgvF_Operator = New System.Windows.Forms.DataGridViewComboBoxColumn()
+        Me.DgvF_Values = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.DgvF_Remark = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.TabMain.SuspendLayout()
+        Me.TabProc.SuspendLayout()
+        Me.PnlProc_Optional1.SuspendLayout()
+        Me.PnlProc_Required.SuspendLayout()
+        CType(Me.DgvProc, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.TabPara.SuspendLayout()
+        Me.PnlPara.SuspendLayout()
+        CType(Me.DgvPara, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.TabQuery.SuspendLayout()
+        CType(Me.DgvTest, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.PnlF.SuspendLayout()
+        CType(Me.DgvF, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.SuspendLayout()
+        '
+        'TabMain
+        '
+        Me.TabMain.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+            Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.TabMain.Controls.Add(Me.TabProc)
+        Me.TabMain.Controls.Add(Me.TabPara)
+        Me.TabMain.Controls.Add(Me.TabQuery)
+        Me.TabMain.Location = New System.Drawing.Point(1, -1)
+        Me.TabMain.Name = "TabMain"
+        Me.TabMain.SelectedIndex = 0
+        Me.TabMain.Size = New System.Drawing.Size(1171, 541)
+        Me.TabMain.TabIndex = 0
+        '
+        'TabProc
+        '
+        Me.TabProc.Controls.Add(Me.BtnProc_ProcQuery)
+        Me.TabProc.Controls.Add(Me.TxtProc_ProcQuery)
+        Me.TabProc.Controls.Add(Me.BtnProc_Update)
+        Me.TabProc.Controls.Add(Me.LblProc_ProcQuery)
+        Me.TabProc.Controls.Add(Me.BtnProc_Add)
+        Me.TabProc.Controls.Add(Me.PnlProc_Optional1)
+        Me.TabProc.Controls.Add(Me.PnlProc_Required)
+        Me.TabProc.Controls.Add(Me.LblProc_Optional)
+        Me.TabProc.Controls.Add(Me.LblProc_Required)
+        Me.TabProc.Controls.Add(Me.BtnProc_Refresh)
+        Me.TabProc.Controls.Add(Me.DgvProc)
+        Me.TabProc.Location = New System.Drawing.Point(4, 22)
+        Me.TabProc.Name = "TabProc"
+        Me.TabProc.Padding = New System.Windows.Forms.Padding(3)
+        Me.TabProc.Size = New System.Drawing.Size(1163, 515)
+        Me.TabProc.TabIndex = 0
+        Me.TabProc.Text = "站點設定"
+        Me.TabProc.UseVisualStyleBackColor = True
+        '
+        'BtnProc_ProcQuery
+        '
+        Me.BtnProc_ProcQuery.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.BtnProc_ProcQuery.Font = New System.Drawing.Font("微軟正黑體", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.BtnProc_ProcQuery.Location = New System.Drawing.Point(980, 73)
+        Me.BtnProc_ProcQuery.Name = "BtnProc_ProcQuery"
+        Me.BtnProc_ProcQuery.Size = New System.Drawing.Size(85, 29)
+        Me.BtnProc_ProcQuery.TabIndex = 29
+        Me.BtnProc_ProcQuery.Text = "查詢"
+        Me.BtnProc_ProcQuery.UseVisualStyleBackColor = True
+        '
+        'TxtProc_ProcQuery
+        '
+        Me.TxtProc_ProcQuery.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.TxtProc_ProcQuery.Font = New System.Drawing.Font("微軟正黑體", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.TxtProc_ProcQuery.Location = New System.Drawing.Point(864, 74)
+        Me.TxtProc_ProcQuery.Name = "TxtProc_ProcQuery"
+        Me.TxtProc_ProcQuery.Size = New System.Drawing.Size(100, 25)
+        Me.TxtProc_ProcQuery.TabIndex = 28
+        Me.TxtProc_ProcQuery.Tag = "1"
+        '
+        'BtnProc_Update
+        '
+        Me.BtnProc_Update.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.BtnProc_Update.Enabled = False
+        Me.BtnProc_Update.Font = New System.Drawing.Font("微軟正黑體", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.BtnProc_Update.Location = New System.Drawing.Point(1072, 38)
+        Me.BtnProc_Update.Name = "BtnProc_Update"
+        Me.BtnProc_Update.Size = New System.Drawing.Size(85, 29)
+        Me.BtnProc_Update.TabIndex = 24
+        Me.BtnProc_Update.Text = "修改"
+        Me.BtnProc_Update.UseVisualStyleBackColor = True
+        '
+        'LblProc_ProcQuery
+        '
+        Me.LblProc_ProcQuery.AutoSize = True
+        Me.LblProc_ProcQuery.Font = New System.Drawing.Font("微軟正黑體", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.LblProc_ProcQuery.Location = New System.Drawing.Point(860, 55)
+        Me.LblProc_ProcQuery.Name = "LblProc_ProcQuery"
+        Me.LblProc_ProcQuery.Size = New System.Drawing.Size(85, 20)
+        Me.LblProc_ProcQuery.TabIndex = 27
+        Me.LblProc_ProcQuery.Text = "站點查詢 : "
+        '
+        'BtnProc_Add
+        '
+        Me.BtnProc_Add.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.BtnProc_Add.Font = New System.Drawing.Font("微軟正黑體", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.BtnProc_Add.Location = New System.Drawing.Point(1072, 3)
+        Me.BtnProc_Add.Name = "BtnProc_Add"
+        Me.BtnProc_Add.Size = New System.Drawing.Size(85, 29)
+        Me.BtnProc_Add.TabIndex = 23
+        Me.BtnProc_Add.Text = "新增"
+        Me.BtnProc_Add.UseVisualStyleBackColor = True
+        '
+        'PnlProc_Optional1
+        '
+        Me.PnlProc_Optional1.Controls.Add(Me.TxtProc_Pkey)
+        Me.PnlProc_Optional1.Controls.Add(Me.LblProc_Tag_Machine)
+        Me.PnlProc_Optional1.Controls.Add(Me.LblProc_Pkey)
+        Me.PnlProc_Optional1.Controls.Add(Me.TxtProc_Machine)
+        Me.PnlProc_Optional1.Controls.Add(Me.LblProc_Machine)
+        Me.PnlProc_Optional1.Controls.Add(Me.CboProc_Location)
+        Me.PnlProc_Optional1.Controls.Add(Me.LblProc_Location)
+        Me.PnlProc_Optional1.Location = New System.Drawing.Point(82, 56)
+        Me.PnlProc_Optional1.Name = "PnlProc_Optional1"
+        Me.PnlProc_Optional1.Size = New System.Drawing.Size(761, 59)
+        Me.PnlProc_Optional1.TabIndex = 22
+        '
+        'TxtProc_Pkey
+        '
+        Me.TxtProc_Pkey.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.TxtProc_Pkey.Enabled = False
+        Me.TxtProc_Pkey.Font = New System.Drawing.Font("微軟正黑體", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.TxtProc_Pkey.Location = New System.Drawing.Point(711, 15)
+        Me.TxtProc_Pkey.Name = "TxtProc_Pkey"
+        Me.TxtProc_Pkey.Size = New System.Drawing.Size(45, 25)
+        Me.TxtProc_Pkey.TabIndex = 26
+        Me.TxtProc_Pkey.Tag = "1"
+        '
+        'LblProc_Tag_Machine
+        '
+        Me.LblProc_Tag_Machine.AutoSize = True
+        Me.LblProc_Tag_Machine.Font = New System.Drawing.Font("微軟正黑體", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.LblProc_Tag_Machine.ForeColor = System.Drawing.Color.Red
+        Me.LblProc_Tag_Machine.Location = New System.Drawing.Point(403, 40)
+        Me.LblProc_Tag_Machine.Name = "LblProc_Tag_Machine"
+        Me.LblProc_Tag_Machine.Size = New System.Drawing.Size(263, 16)
+        Me.LblProc_Tag_Machine.TabIndex = 23
+        Me.LblProc_Tag_Machine.Text = "Ex : SMKCLN1013,SMKMEC1023 (以逗號分隔)"
+        '
+        'LblProc_Pkey
+        '
+        Me.LblProc_Pkey.AutoSize = True
+        Me.LblProc_Pkey.Font = New System.Drawing.Font("微軟正黑體", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.LblProc_Pkey.Location = New System.Drawing.Point(648, 17)
+        Me.LblProc_Pkey.Name = "LblProc_Pkey"
+        Me.LblProc_Pkey.Size = New System.Drawing.Size(57, 20)
+        Me.LblProc_Pkey.TabIndex = 25
+        Me.LblProc_Pkey.Text = "Pkey : "
+        '
+        'TxtProc_Machine
+        '
+        Me.TxtProc_Machine.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.TxtProc_Machine.Font = New System.Drawing.Font("微軟正黑體", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.TxtProc_Machine.Location = New System.Drawing.Point(399, 12)
+        Me.TxtProc_Machine.Name = "TxtProc_Machine"
+        Me.TxtProc_Machine.RightToLeft = System.Windows.Forms.RightToLeft.No
+        Me.TxtProc_Machine.Size = New System.Drawing.Size(217, 25)
+        Me.TxtProc_Machine.TabIndex = 22
+        Me.TxtProc_Machine.Tag = "1"
+        '
+        'LblProc_Machine
+        '
+        Me.LblProc_Machine.AutoSize = True
+        Me.LblProc_Machine.Font = New System.Drawing.Font("微軟正黑體", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.LblProc_Machine.Location = New System.Drawing.Point(284, 12)
+        Me.LblProc_Machine.Name = "LblProc_Machine"
+        Me.LblProc_Machine.RightToLeft = System.Windows.Forms.RightToLeft.No
+        Me.LblProc_Machine.Size = New System.Drawing.Size(115, 40)
+        Me.LblProc_Machine.TabIndex = 14
+        Me.LblProc_Machine.Text = "愉進機台碼 : " & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "(Machine No.)"
+        '
+        'CboProc_Location
+        '
+        Me.CboProc_Location.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.CboProc_Location.Enabled = False
+        Me.CboProc_Location.Font = New System.Drawing.Font("微軟正黑體", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.CboProc_Location.FormattingEnabled = True
+        Me.CboProc_Location.Location = New System.Drawing.Point(94, 12)
+        Me.CboProc_Location.Name = "CboProc_Location"
+        Me.CboProc_Location.Size = New System.Drawing.Size(134, 25)
+        Me.CboProc_Location.TabIndex = 13
+        Me.CboProc_Location.Tag = "1"
+        '
+        'LblProc_Location
+        '
+        Me.LblProc_Location.AutoSize = True
+        Me.LblProc_Location.Font = New System.Drawing.Font("微軟正黑體", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.LblProc_Location.Location = New System.Drawing.Point(3, 12)
+        Me.LblProc_Location.Name = "LblProc_Location"
+        Me.LblProc_Location.Size = New System.Drawing.Size(86, 20)
+        Me.LblProc_Location.TabIndex = 12
+        Me.LblProc_Location.Text = "Location : "
+        '
+        'PnlProc_Required
+        '
+        Me.PnlProc_Required.Controls.Add(Me.LblProc_Tag_Module)
+        Me.PnlProc_Required.Controls.Add(Me.LblProc_Tag_Section)
+        Me.PnlProc_Required.Controls.Add(Me.LblProc_Tag_Area)
+        Me.PnlProc_Required.Controls.Add(Me.LblProc_Tag_ProcName)
+        Me.PnlProc_Required.Controls.Add(Me.TxtProc_Password)
+        Me.PnlProc_Required.Controls.Add(Me.LblProc_Password)
+        Me.PnlProc_Required.Controls.Add(Me.TxtProc_ProcName)
+        Me.PnlProc_Required.Controls.Add(Me.LblProc_ProcName)
+        Me.PnlProc_Required.Controls.Add(Me.TxtProc_Area)
+        Me.PnlProc_Required.Controls.Add(Me.LblProc_Area)
+        Me.PnlProc_Required.Controls.Add(Me.TxtProc_Section)
+        Me.PnlProc_Required.Controls.Add(Me.LblProc_Section)
+        Me.PnlProc_Required.Controls.Add(Me.TxtProc_Module)
+        Me.PnlProc_Required.Controls.Add(Me.LblProc_Module)
+        Me.PnlProc_Required.Location = New System.Drawing.Point(82, 3)
+        Me.PnlProc_Required.Name = "PnlProc_Required"
+        Me.PnlProc_Required.Size = New System.Drawing.Size(983, 51)
+        Me.PnlProc_Required.TabIndex = 14
+        '
+        'LblProc_Tag_Module
+        '
+        Me.LblProc_Tag_Module.AutoSize = True
+        Me.LblProc_Tag_Module.Font = New System.Drawing.Font("微軟正黑體", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.LblProc_Tag_Module.ForeColor = System.Drawing.Color.Red
+        Me.LblProc_Tag_Module.Location = New System.Drawing.Point(74, 34)
+        Me.LblProc_Tag_Module.Name = "LblProc_Tag_Module"
+        Me.LblProc_Tag_Module.Size = New System.Drawing.Size(37, 16)
+        Me.LblProc_Tag_Module.TabIndex = 25
+        Me.LblProc_Tag_Module.Text = "Ex : 4"
+        '
+        'LblProc_Tag_Section
+        '
+        Me.LblProc_Tag_Section.AutoSize = True
+        Me.LblProc_Tag_Section.Font = New System.Drawing.Font("微軟正黑體", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.LblProc_Tag_Section.ForeColor = System.Drawing.Color.Red
+        Me.LblProc_Tag_Section.Location = New System.Drawing.Point(213, 34)
+        Me.LblProc_Tag_Section.Name = "LblProc_Tag_Section"
+        Me.LblProc_Tag_Section.Size = New System.Drawing.Size(56, 16)
+        Me.LblProc_Tag_Section.TabIndex = 24
+        Me.LblProc_Tag_Section.Text = "Ex : SMK"
+        '
+        'LblProc_Tag_Area
+        '
+        Me.LblProc_Tag_Area.AutoSize = True
+        Me.LblProc_Tag_Area.Font = New System.Drawing.Font("微軟正黑體", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.LblProc_Tag_Area.ForeColor = System.Drawing.Color.Red
+        Me.LblProc_Tag_Area.Location = New System.Drawing.Point(371, 34)
+        Me.LblProc_Tag_Area.Name = "LblProc_Tag_Area"
+        Me.LblProc_Tag_Area.Size = New System.Drawing.Size(80, 16)
+        Me.LblProc_Tag_Area.TabIndex = 23
+        Me.LblProc_Tag_Area.Text = "Ex : SMKCLN"
+        '
+        'LblProc_Tag_ProcName
+        '
+        Me.LblProc_Tag_ProcName.AutoSize = True
+        Me.LblProc_Tag_ProcName.Font = New System.Drawing.Font("微軟正黑體", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.LblProc_Tag_ProcName.ForeColor = System.Drawing.Color.Red
+        Me.LblProc_Tag_ProcName.Location = New System.Drawing.Point(606, 34)
+        Me.LblProc_Tag_ProcName.Name = "LblProc_Tag_ProcName"
+        Me.LblProc_Tag_ProcName.Size = New System.Drawing.Size(207, 16)
+        Me.LblProc_Tag_ProcName.TabIndex = 22
+        Me.LblProc_Tag_ProcName.Text = "Ex : SMKCLN,SMKMEC (以逗號分隔)"
+        '
+        'TxtProc_Password
+        '
+        Me.TxtProc_Password.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.TxtProc_Password.Font = New System.Drawing.Font("微軟正黑體", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.TxtProc_Password.Location = New System.Drawing.Point(891, 8)
+        Me.TxtProc_Password.Name = "TxtProc_Password"
+        Me.TxtProc_Password.Size = New System.Drawing.Size(78, 25)
+        Me.TxtProc_Password.TabIndex = 21
+        Me.TxtProc_Password.Tag = "1"
+        '
+        'LblProc_Password
+        '
+        Me.LblProc_Password.AutoSize = True
+        Me.LblProc_Password.Font = New System.Drawing.Font("微軟正黑體", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.LblProc_Password.Location = New System.Drawing.Point(808, 10)
+        Me.LblProc_Password.Name = "LblProc_Password"
+        Me.LblProc_Password.Size = New System.Drawing.Size(90, 40)
+        Me.LblProc_Password.TabIndex = 20
+        Me.LblProc_Password.Text = "密碼 : " & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "(Password)"
+        '
+        'TxtProc_ProcName
+        '
+        Me.TxtProc_ProcName.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.TxtProc_ProcName.Font = New System.Drawing.Font("微軟正黑體", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.TxtProc_ProcName.Location = New System.Drawing.Point(602, 8)
+        Me.TxtProc_ProcName.Name = "TxtProc_ProcName"
+        Me.TxtProc_ProcName.Size = New System.Drawing.Size(152, 25)
+        Me.TxtProc_ProcName.TabIndex = 19
+        Me.TxtProc_ProcName.Tag = "1"
+        '
+        'LblProc_ProcName
+        '
+        Me.LblProc_ProcName.AutoSize = True
+        Me.LblProc_ProcName.Font = New System.Drawing.Font("微軟正黑體", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.LblProc_ProcName.Location = New System.Drawing.Point(512, 10)
+        Me.LblProc_ProcName.Name = "LblProc_ProcName"
+        Me.LblProc_ProcName.Size = New System.Drawing.Size(99, 40)
+        Me.LblProc_ProcName.TabIndex = 18
+        Me.LblProc_ProcName.Text = "站點六碼: " & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "(ProcName)"
+        '
+        'TxtProc_Area
+        '
+        Me.TxtProc_Area.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.TxtProc_Area.Font = New System.Drawing.Font("微軟正黑體", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.TxtProc_Area.Location = New System.Drawing.Point(374, 8)
+        Me.TxtProc_Area.Name = "TxtProc_Area"
+        Me.TxtProc_Area.Size = New System.Drawing.Size(137, 25)
+        Me.TxtProc_Area.TabIndex = 17
+        Me.TxtProc_Area.Tag = "1"
+        '
+        'LblProc_Area
+        '
+        Me.LblProc_Area.AutoSize = True
+        Me.LblProc_Area.Font = New System.Drawing.Font("微軟正黑體", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.LblProc_Area.Location = New System.Drawing.Point(284, 10)
+        Me.LblProc_Area.Name = "LblProc_Area"
+        Me.LblProc_Area.Size = New System.Drawing.Size(85, 40)
+        Me.LblProc_Area.TabIndex = 16
+        Me.LblProc_Area.Text = "區域名稱 : " & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "(Area)"
+        '
+        'TxtProc_Section
+        '
+        Me.TxtProc_Section.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.TxtProc_Section.Font = New System.Drawing.Font("微軟正黑體", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.TxtProc_Section.Location = New System.Drawing.Point(216, 8)
+        Me.TxtProc_Section.Name = "TxtProc_Section"
+        Me.TxtProc_Section.Size = New System.Drawing.Size(62, 25)
+        Me.TxtProc_Section.TabIndex = 15
+        Me.TxtProc_Section.Tag = "1"
+        '
+        'LblProc_Section
+        '
+        Me.LblProc_Section.AutoSize = True
+        Me.LblProc_Section.Font = New System.Drawing.Font("微軟正黑體", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.LblProc_Section.Location = New System.Drawing.Point(137, 10)
+        Me.LblProc_Section.Name = "LblProc_Section"
+        Me.LblProc_Section.Size = New System.Drawing.Size(78, 40)
+        Me.LblProc_Section.TabIndex = 14
+        Me.LblProc_Section.Text = "課別3碼 : " & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "(Section)"
+        '
+        'TxtProc_Module
+        '
+        Me.TxtProc_Module.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.TxtProc_Module.Font = New System.Drawing.Font("微軟正黑體", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.TxtProc_Module.Location = New System.Drawing.Point(77, 8)
+        Me.TxtProc_Module.Name = "TxtProc_Module"
+        Me.TxtProc_Module.Size = New System.Drawing.Size(45, 25)
+        Me.TxtProc_Module.TabIndex = 13
+        Me.TxtProc_Module.Tag = "1"
+        '
+        'LblProc_Module
+        '
+        Me.LblProc_Module.AutoSize = True
+        Me.LblProc_Module.Font = New System.Drawing.Font("微軟正黑體", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.LblProc_Module.Location = New System.Drawing.Point(3, 10)
+        Me.LblProc_Module.Name = "LblProc_Module"
+        Me.LblProc_Module.Size = New System.Drawing.Size(81, 40)
+        Me.LblProc_Module.TabIndex = 12
+        Me.LblProc_Module.Text = "模組 : " & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "(Module) "
+        '
+        'LblProc_Optional
+        '
+        Me.LblProc_Optional.AutoSize = True
+        Me.LblProc_Optional.Font = New System.Drawing.Font("微軟正黑體", 20.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.LblProc_Optional.ForeColor = System.Drawing.Color.Blue
+        Me.LblProc_Optional.Location = New System.Drawing.Point(7, 65)
+        Me.LblProc_Optional.Name = "LblProc_Optional"
+        Me.LblProc_Optional.Size = New System.Drawing.Size(69, 34)
+        Me.LblProc_Optional.TabIndex = 13
+        Me.LblProc_Optional.Text = "選填"
+        '
+        'LblProc_Required
+        '
+        Me.LblProc_Required.AutoSize = True
+        Me.LblProc_Required.Font = New System.Drawing.Font("微軟正黑體", 20.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.LblProc_Required.ForeColor = System.Drawing.Color.Red
+        Me.LblProc_Required.Location = New System.Drawing.Point(7, 11)
+        Me.LblProc_Required.Name = "LblProc_Required"
+        Me.LblProc_Required.Size = New System.Drawing.Size(69, 34)
+        Me.LblProc_Required.TabIndex = 12
+        Me.LblProc_Required.Text = "必填"
+        '
+        'BtnProc_Refresh
+        '
+        Me.BtnProc_Refresh.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.BtnProc_Refresh.Font = New System.Drawing.Font("微軟正黑體", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.BtnProc_Refresh.Location = New System.Drawing.Point(1072, 73)
+        Me.BtnProc_Refresh.Name = "BtnProc_Refresh"
+        Me.BtnProc_Refresh.Size = New System.Drawing.Size(85, 29)
+        Me.BtnProc_Refresh.TabIndex = 1
+        Me.BtnProc_Refresh.Text = "重新整理"
+        Me.BtnProc_Refresh.UseVisualStyleBackColor = True
+        '
+        'DgvProc
+        '
+        Me.DgvProc.AllowUserToAddRows = False
+        Me.DgvProc.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+            Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.DgvProc.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells
+        Me.DgvProc.ClipboardCopyMode = System.Windows.Forms.DataGridViewClipboardCopyMode.EnableWithoutHeaderText
+        Me.DgvProc.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
+        Me.DgvProc.Location = New System.Drawing.Point(3, 115)
+        Me.DgvProc.Name = "DgvProc"
+        Me.DgvProc.ReadOnly = True
+        Me.DgvProc.RowTemplate.Height = 24
+        Me.DgvProc.Size = New System.Drawing.Size(1149, 385)
+        Me.DgvProc.TabIndex = 0
+        '
+        'TabPara
+        '
+        Me.TabPara.Controls.Add(Me.BtnPara_Update)
+        Me.TabPara.Controls.Add(Me.BtnPara_Add)
+        Me.TabPara.Controls.Add(Me.PnlPara)
+        Me.TabPara.Controls.Add(Me.BtnPara_Refresh)
+        Me.TabPara.Controls.Add(Me.DgvPara)
+        Me.TabPara.Location = New System.Drawing.Point(4, 22)
+        Me.TabPara.Name = "TabPara"
+        Me.TabPara.Padding = New System.Windows.Forms.Padding(3)
+        Me.TabPara.Size = New System.Drawing.Size(1163, 515)
+        Me.TabPara.TabIndex = 1
+        Me.TabPara.Text = "參數欄位設定"
+        Me.TabPara.UseVisualStyleBackColor = True
+        '
+        'BtnPara_Update
+        '
+        Me.BtnPara_Update.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.BtnPara_Update.Enabled = False
+        Me.BtnPara_Update.Font = New System.Drawing.Font("微軟正黑體", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.BtnPara_Update.Location = New System.Drawing.Point(1073, 41)
+        Me.BtnPara_Update.Name = "BtnPara_Update"
+        Me.BtnPara_Update.Size = New System.Drawing.Size(85, 29)
+        Me.BtnPara_Update.TabIndex = 34
+        Me.BtnPara_Update.Text = "修改"
+        Me.BtnPara_Update.UseVisualStyleBackColor = True
+        '
+        'BtnPara_Add
+        '
+        Me.BtnPara_Add.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.BtnPara_Add.Font = New System.Drawing.Font("微軟正黑體", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.BtnPara_Add.Location = New System.Drawing.Point(1073, 6)
+        Me.BtnPara_Add.Name = "BtnPara_Add"
+        Me.BtnPara_Add.Size = New System.Drawing.Size(85, 29)
+        Me.BtnPara_Add.TabIndex = 33
+        Me.BtnPara_Add.Text = "新增"
+        Me.BtnPara_Add.UseVisualStyleBackColor = True
+        '
+        'PnlPara
+        '
+        Me.PnlPara.Controls.Add(Me.TxtPara_Default)
+        Me.PnlPara.Controls.Add(Me.LblPara_Default)
+        Me.PnlPara.Controls.Add(Me.ChkPara_isRequire)
+        Me.PnlPara.Controls.Add(Me.LblPara_isRequire)
+        Me.PnlPara.Controls.Add(Me.TxtPara_EngName)
+        Me.PnlPara.Controls.Add(Me.LblPara_EngName)
+        Me.PnlPara.Controls.Add(Me.ChkPara_isQuery)
+        Me.PnlPara.Controls.Add(Me.TxtPara_AreaID)
+        Me.PnlPara.Controls.Add(Me.LblPara_AreaID)
+        Me.PnlPara.Controls.Add(Me.TxtPara_Pkey)
+        Me.PnlPara.Controls.Add(Me.LblPara_Pkey)
+        Me.PnlPara.Controls.Add(Me.CboPara_Sort)
+        Me.PnlPara.Controls.Add(Me.CboPara_isQuery)
+        Me.PnlPara.Controls.Add(Me.LblPara_isQuery)
+        Me.PnlPara.Controls.Add(Me.TxtPara_QID)
+        Me.PnlPara.Controls.Add(Me.LblPara_QID)
+        Me.PnlPara.Controls.Add(Me.TxtPara_ParaName)
+        Me.PnlPara.Controls.Add(Me.LblPara_ParaName)
+        Me.PnlPara.Controls.Add(Me.TxtPara_Area)
+        Me.PnlPara.Controls.Add(Me.LblPara_Area)
+        Me.PnlPara.Controls.Add(Me.LblPara_Sort)
+        Me.PnlPara.Location = New System.Drawing.Point(7, 6)
+        Me.PnlPara.Name = "PnlPara"
+        Me.PnlPara.Size = New System.Drawing.Size(1060, 106)
+        Me.PnlPara.TabIndex = 31
+        '
+        'TxtPara_Default
+        '
+        Me.TxtPara_Default.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.TxtPara_Default.Font = New System.Drawing.Font("微軟正黑體", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.TxtPara_Default.Location = New System.Drawing.Point(484, 74)
+        Me.TxtPara_Default.Name = "TxtPara_Default"
+        Me.TxtPara_Default.Size = New System.Drawing.Size(178, 25)
+        Me.TxtPara_Default.TabIndex = 40
+        Me.TxtPara_Default.Tag = "1"
+        '
+        'LblPara_Default
+        '
+        Me.LblPara_Default.AutoSize = True
+        Me.LblPara_Default.Font = New System.Drawing.Font("微軟正黑體", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.LblPara_Default.Location = New System.Drawing.Point(393, 76)
+        Me.LblPara_Default.Name = "LblPara_Default"
+        Me.LblPara_Default.Size = New System.Drawing.Size(85, 20)
+        Me.LblPara_Default.TabIndex = 39
+        Me.LblPara_Default.Text = "欄位預設 : "
+        '
+        'ChkPara_isRequire
+        '
+        Me.ChkPara_isRequire.AutoSize = True
+        Me.ChkPara_isRequire.Location = New System.Drawing.Point(866, 51)
+        Me.ChkPara_isRequire.Name = "ChkPara_isRequire"
+        Me.ChkPara_isRequire.Size = New System.Drawing.Size(15, 14)
+        Me.ChkPara_isRequire.TabIndex = 38
+        Me.ChkPara_isRequire.UseVisualStyleBackColor = True
+        '
+        'LblPara_isRequire
+        '
+        Me.LblPara_isRequire.AutoSize = True
+        Me.LblPara_isRequire.Font = New System.Drawing.Font("微軟正黑體", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.LblPara_isRequire.Location = New System.Drawing.Point(668, 48)
+        Me.LblPara_isRequire.Name = "LblPara_isRequire"
+        Me.LblPara_isRequire.Size = New System.Drawing.Size(165, 20)
+        Me.LblPara_isRequire.TabIndex = 37
+        Me.LblPara_isRequire.Text = "欄位是否為必填欄位 : "
+        '
+        'TxtPara_EngName
+        '
+        Me.TxtPara_EngName.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.TxtPara_EngName.Font = New System.Drawing.Font("微軟正黑體", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.TxtPara_EngName.Location = New System.Drawing.Point(484, 43)
+        Me.TxtPara_EngName.Name = "TxtPara_EngName"
+        Me.TxtPara_EngName.Size = New System.Drawing.Size(178, 25)
+        Me.TxtPara_EngName.TabIndex = 36
+        Me.TxtPara_EngName.Tag = "1"
+        '
+        'LblPara_EngName
+        '
+        Me.LblPara_EngName.AutoSize = True
+        Me.LblPara_EngName.Font = New System.Drawing.Font("微軟正黑體", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.LblPara_EngName.Location = New System.Drawing.Point(393, 45)
+        Me.LblPara_EngName.Name = "LblPara_EngName"
+        Me.LblPara_EngName.Size = New System.Drawing.Size(85, 20)
+        Me.LblPara_EngName.TabIndex = 35
+        Me.LblPara_EngName.Text = "英文名稱 : "
+        '
+        'ChkPara_isQuery
+        '
+        Me.ChkPara_isQuery.AutoSize = True
+        Me.ChkPara_isQuery.Location = New System.Drawing.Point(866, 17)
+        Me.ChkPara_isQuery.Name = "ChkPara_isQuery"
+        Me.ChkPara_isQuery.Size = New System.Drawing.Size(15, 14)
+        Me.ChkPara_isQuery.TabIndex = 33
+        Me.ChkPara_isQuery.UseVisualStyleBackColor = True
+        '
+        'TxtPara_AreaID
+        '
+        Me.TxtPara_AreaID.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.TxtPara_AreaID.Enabled = False
+        Me.TxtPara_AreaID.Font = New System.Drawing.Font("微軟正黑體", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.TxtPara_AreaID.Location = New System.Drawing.Point(76, 63)
+        Me.TxtPara_AreaID.Name = "TxtPara_AreaID"
+        Me.TxtPara_AreaID.Size = New System.Drawing.Size(45, 25)
+        Me.TxtPara_AreaID.TabIndex = 32
+        Me.TxtPara_AreaID.Tag = "1"
+        '
+        'LblPara_AreaID
+        '
+        Me.LblPara_AreaID.AutoSize = True
+        Me.LblPara_AreaID.Font = New System.Drawing.Font("微軟正黑體", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.LblPara_AreaID.Location = New System.Drawing.Point(3, 65)
+        Me.LblPara_AreaID.Name = "LblPara_AreaID"
+        Me.LblPara_AreaID.Size = New System.Drawing.Size(73, 20)
+        Me.LblPara_AreaID.TabIndex = 31
+        Me.LblPara_AreaID.Text = "AreaID : "
+        '
+        'TxtPara_Pkey
+        '
+        Me.TxtPara_Pkey.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.TxtPara_Pkey.Enabled = False
+        Me.TxtPara_Pkey.Font = New System.Drawing.Font("微軟正黑體", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.TxtPara_Pkey.Location = New System.Drawing.Point(189, 63)
+        Me.TxtPara_Pkey.Name = "TxtPara_Pkey"
+        Me.TxtPara_Pkey.Size = New System.Drawing.Size(45, 25)
+        Me.TxtPara_Pkey.TabIndex = 30
+        Me.TxtPara_Pkey.Tag = "1"
+        '
+        'LblPara_Pkey
+        '
+        Me.LblPara_Pkey.AutoSize = True
+        Me.LblPara_Pkey.Font = New System.Drawing.Font("微軟正黑體", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.LblPara_Pkey.Location = New System.Drawing.Point(132, 65)
+        Me.LblPara_Pkey.Name = "LblPara_Pkey"
+        Me.LblPara_Pkey.Size = New System.Drawing.Size(57, 20)
+        Me.LblPara_Pkey.TabIndex = 29
+        Me.LblPara_Pkey.Text = "Pkey : "
+        '
+        'CboPara_Sort
+        '
+        Me.CboPara_Sort.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.CboPara_Sort.Font = New System.Drawing.Font("微軟正黑體", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.CboPara_Sort.FormattingEnabled = True
+        Me.CboPara_Sort.Items.AddRange(New Object() {"是", "否"})
+        Me.CboPara_Sort.Location = New System.Drawing.Point(327, 13)
+        Me.CboPara_Sort.Name = "CboPara_Sort"
+        Me.CboPara_Sort.Size = New System.Drawing.Size(43, 25)
+        Me.CboPara_Sort.TabIndex = 28
+        '
+        'CboPara_isQuery
+        '
+        Me.CboPara_isQuery.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.CboPara_isQuery.Font = New System.Drawing.Font("微軟正黑體", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.CboPara_isQuery.FormattingEnabled = True
+        Me.CboPara_isQuery.Items.AddRange(New Object() {"否", "是"})
+        Me.CboPara_isQuery.Location = New System.Drawing.Point(255, 62)
+        Me.CboPara_isQuery.Name = "CboPara_isQuery"
+        Me.CboPara_isQuery.Size = New System.Drawing.Size(43, 25)
+        Me.CboPara_isQuery.TabIndex = 27
+        Me.CboPara_isQuery.Visible = False
+        '
+        'LblPara_isQuery
+        '
+        Me.LblPara_isQuery.AutoSize = True
+        Me.LblPara_isQuery.Font = New System.Drawing.Font("微軟正黑體", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.LblPara_isQuery.Location = New System.Drawing.Point(668, 14)
+        Me.LblPara_isQuery.Name = "LblPara_isQuery"
+        Me.LblPara_isQuery.Size = New System.Drawing.Size(191, 20)
+        Me.LblPara_isQuery.TabIndex = 26
+        Me.LblPara_isQuery.Text = "欄位是否需要查詢(運算) : "
+        '
+        'TxtPara_QID
+        '
+        Me.TxtPara_QID.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.TxtPara_QID.Enabled = False
+        Me.TxtPara_QID.Font = New System.Drawing.Font("微軟正黑體", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.TxtPara_QID.Location = New System.Drawing.Point(972, 11)
+        Me.TxtPara_QID.Name = "TxtPara_QID"
+        Me.TxtPara_QID.Size = New System.Drawing.Size(45, 25)
+        Me.TxtPara_QID.TabIndex = 21
+        Me.TxtPara_QID.Tag = "1"
+        '
+        'LblPara_QID
+        '
+        Me.LblPara_QID.AutoSize = True
+        Me.LblPara_QID.Font = New System.Drawing.Font("微軟正黑體", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.LblPara_QID.Location = New System.Drawing.Point(915, 14)
+        Me.LblPara_QID.Name = "LblPara_QID"
+        Me.LblPara_QID.Size = New System.Drawing.Size(51, 20)
+        Me.LblPara_QID.TabIndex = 20
+        Me.LblPara_QID.Text = "QID : "
+        '
+        'TxtPara_ParaName
+        '
+        Me.TxtPara_ParaName.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.TxtPara_ParaName.Font = New System.Drawing.Font("微軟正黑體", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.TxtPara_ParaName.Location = New System.Drawing.Point(484, 12)
+        Me.TxtPara_ParaName.Name = "TxtPara_ParaName"
+        Me.TxtPara_ParaName.Size = New System.Drawing.Size(178, 25)
+        Me.TxtPara_ParaName.TabIndex = 19
+        Me.TxtPara_ParaName.Tag = "1"
+        '
+        'LblPara_ParaName
+        '
+        Me.LblPara_ParaName.AutoSize = True
+        Me.LblPara_ParaName.Font = New System.Drawing.Font("微軟正黑體", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.LblPara_ParaName.Location = New System.Drawing.Point(393, 14)
+        Me.LblPara_ParaName.Name = "LblPara_ParaName"
+        Me.LblPara_ParaName.Size = New System.Drawing.Size(85, 20)
+        Me.LblPara_ParaName.TabIndex = 18
+        Me.LblPara_ParaName.Text = "欄位名稱 : "
+        '
+        'TxtPara_Area
+        '
+        Me.TxtPara_Area.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.TxtPara_Area.Enabled = False
+        Me.TxtPara_Area.Font = New System.Drawing.Font("微軟正黑體", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.TxtPara_Area.Location = New System.Drawing.Point(93, 15)
+        Me.TxtPara_Area.Name = "TxtPara_Area"
+        Me.TxtPara_Area.Size = New System.Drawing.Size(137, 25)
+        Me.TxtPara_Area.TabIndex = 17
+        Me.TxtPara_Area.Tag = "1"
+        '
+        'LblPara_Area
+        '
+        Me.LblPara_Area.AutoSize = True
+        Me.LblPara_Area.Font = New System.Drawing.Font("微軟正黑體", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.LblPara_Area.Location = New System.Drawing.Point(3, 17)
+        Me.LblPara_Area.Name = "LblPara_Area"
+        Me.LblPara_Area.Size = New System.Drawing.Size(85, 40)
+        Me.LblPara_Area.TabIndex = 16
+        Me.LblPara_Area.Text = "區域名稱 : " & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "(Area)"
+        '
+        'LblPara_Sort
+        '
+        Me.LblPara_Sort.AutoSize = True
+        Me.LblPara_Sort.Font = New System.Drawing.Font("微軟正黑體", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.LblPara_Sort.Location = New System.Drawing.Point(236, 14)
+        Me.LblPara_Sort.Name = "LblPara_Sort"
+        Me.LblPara_Sort.Size = New System.Drawing.Size(85, 40)
+        Me.LblPara_Sort.TabIndex = 12
+        Me.LblPara_Sort.Text = "排列順序 : " & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "(Sort)"
+        '
+        'BtnPara_Refresh
+        '
+        Me.BtnPara_Refresh.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.BtnPara_Refresh.Font = New System.Drawing.Font("微軟正黑體", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.BtnPara_Refresh.Location = New System.Drawing.Point(1073, 76)
+        Me.BtnPara_Refresh.Name = "BtnPara_Refresh"
+        Me.BtnPara_Refresh.Size = New System.Drawing.Size(85, 29)
+        Me.BtnPara_Refresh.TabIndex = 28
+        Me.BtnPara_Refresh.Text = "重新整理"
+        Me.BtnPara_Refresh.UseVisualStyleBackColor = True
+        '
+        'DgvPara
+        '
+        Me.DgvPara.AllowUserToAddRows = False
+        Me.DgvPara.AllowUserToDeleteRows = False
+        Me.DgvPara.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+            Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.DgvPara.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells
+        Me.DgvPara.ClipboardCopyMode = System.Windows.Forms.DataGridViewClipboardCopyMode.EnableWithoutHeaderText
+        Me.DgvPara.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
+        Me.DgvPara.Location = New System.Drawing.Point(3, 115)
+        Me.DgvPara.Name = "DgvPara"
+        Me.DgvPara.ReadOnly = True
+        Me.DgvPara.RowTemplate.Height = 24
+        Me.DgvPara.Size = New System.Drawing.Size(1149, 385)
+        Me.DgvPara.TabIndex = 27
+        '
+        'TabQuery
+        '
+        Me.TabQuery.Controls.Add(Me.BtnF_Test)
+        Me.TabQuery.Controls.Add(Me.DgvTest)
+        Me.TabQuery.Controls.Add(Me.LblF_QueryCommand)
+        Me.TabQuery.Controls.Add(Me.TxtF_QueryCommand)
+        Me.TabQuery.Controls.Add(Me.BtnF_Save)
+        Me.TabQuery.Controls.Add(Me.PnlF)
+        Me.TabQuery.Controls.Add(Me.BtnF_Refresh)
+        Me.TabQuery.Controls.Add(Me.DgvF)
+        Me.TabQuery.Location = New System.Drawing.Point(4, 22)
+        Me.TabQuery.Name = "TabQuery"
+        Me.TabQuery.Size = New System.Drawing.Size(1163, 515)
+        Me.TabQuery.TabIndex = 2
+        Me.TabQuery.Text = "參數查詢(運算)設定"
+        Me.TabQuery.UseVisualStyleBackColor = True
+        '
+        'BtnF_Test
+        '
+        Me.BtnF_Test.Font = New System.Drawing.Font("微軟正黑體", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.BtnF_Test.Location = New System.Drawing.Point(757, 272)
+        Me.BtnF_Test.Name = "BtnF_Test"
+        Me.BtnF_Test.Size = New System.Drawing.Size(72, 29)
+        Me.BtnF_Test.TabIndex = 42
+        Me.BtnF_Test.Text = "測試"
+        Me.BtnF_Test.UseVisualStyleBackColor = True
+        '
+        'DgvTest
+        '
+        Me.DgvTest.AllowUserToAddRows = False
+        Me.DgvTest.AllowUserToDeleteRows = False
+        Me.DgvTest.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill
+        Me.DgvTest.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
+        Me.DgvTest.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.DgvTest_ParaName, Me.DgvTest_ColumnName, Me.DgvTest_Values})
+        Me.DgvTest.Location = New System.Drawing.Point(835, 272)
+        Me.DgvTest.Name = "DgvTest"
+        Me.DgvTest.RowTemplate.Height = 24
+        Me.DgvTest.Size = New System.Drawing.Size(321, 234)
+        Me.DgvTest.TabIndex = 41
+        '
+        'DgvTest_ParaName
+        '
+        Me.DgvTest_ParaName.HeaderText = "參數名稱"
+        Me.DgvTest_ParaName.Name = "DgvTest_ParaName"
+        Me.DgvTest_ParaName.ReadOnly = True
+        Me.DgvTest_ParaName.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
+        '
+        'DgvTest_ColumnName
+        '
+        Me.DgvTest_ColumnName.HeaderText = "ColumnName"
+        Me.DgvTest_ColumnName.Name = "DgvTest_ColumnName"
+        Me.DgvTest_ColumnName.ReadOnly = True
+        Me.DgvTest_ColumnName.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
+        '
+        'DgvTest_Values
+        '
+        Me.DgvTest_Values.HeaderText = "輸入"
+        Me.DgvTest_Values.Name = "DgvTest_Values"
+        Me.DgvTest_Values.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
+        '
+        'LblF_QueryCommand
+        '
+        Me.LblF_QueryCommand.AutoSize = True
+        Me.LblF_QueryCommand.Font = New System.Drawing.Font("微軟正黑體", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.LblF_QueryCommand.Location = New System.Drawing.Point(3, 249)
+        Me.LblF_QueryCommand.Name = "LblF_QueryCommand"
+        Me.LblF_QueryCommand.Size = New System.Drawing.Size(85, 20)
+        Me.LblF_QueryCommand.TabIndex = 33
+        Me.LblF_QueryCommand.Text = "查詢語法 : "
+        '
+        'TxtF_QueryCommand
+        '
+        Me.TxtF_QueryCommand.Font = New System.Drawing.Font("新細明體", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.TxtF_QueryCommand.Location = New System.Drawing.Point(7, 272)
+        Me.TxtF_QueryCommand.Multiline = True
+        Me.TxtF_QueryCommand.Name = "TxtF_QueryCommand"
+        Me.TxtF_QueryCommand.ReadOnly = True
+        Me.TxtF_QueryCommand.Size = New System.Drawing.Size(744, 234)
+        Me.TxtF_QueryCommand.TabIndex = 40
+        '
+        'BtnF_Save
+        '
+        Me.BtnF_Save.Font = New System.Drawing.Font("微軟正黑體", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.BtnF_Save.Location = New System.Drawing.Point(7, 49)
+        Me.BtnF_Save.Name = "BtnF_Save"
+        Me.BtnF_Save.Size = New System.Drawing.Size(85, 29)
+        Me.BtnF_Save.TabIndex = 38
+        Me.BtnF_Save.Text = "儲存"
+        Me.BtnF_Save.UseVisualStyleBackColor = True
+        '
+        'PnlF
+        '
+        Me.PnlF.Controls.Add(Me.CboF_SPC_Group)
+        Me.PnlF.Controls.Add(Me.LblF_SPC_Group)
+        Me.PnlF.Controls.Add(Me.CboF_SPC_Condition)
+        Me.PnlF.Controls.Add(Me.LblF_SPC_Condition)
+        Me.PnlF.Controls.Add(Me.CboF_Value)
+        Me.PnlF.Controls.Add(Me.LblF_Value)
+        Me.PnlF.Controls.Add(Me.CboF_Type)
+        Me.PnlF.Controls.Add(Me.LblF_Type)
+        Me.PnlF.Controls.Add(Me.TxtF_Pkey)
+        Me.PnlF.Controls.Add(Me.LblF_Pkey)
+        Me.PnlF.Controls.Add(Me.TxtF_QID)
+        Me.PnlF.Controls.Add(Me.LblF_QID)
+        Me.PnlF.Location = New System.Drawing.Point(7, 6)
+        Me.PnlF.Name = "PnlF"
+        Me.PnlF.Size = New System.Drawing.Size(1060, 37)
+        Me.PnlF.TabIndex = 37
+        '
+        'CboF_SPC_Group
+        '
+        Me.CboF_SPC_Group.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.CboF_SPC_Group.Font = New System.Drawing.Font("微軟正黑體", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.CboF_SPC_Group.FormattingEnabled = True
+        Me.CboF_SPC_Group.Location = New System.Drawing.Point(964, 4)
+        Me.CboF_SPC_Group.Name = "CboF_SPC_Group"
+        Me.CboF_SPC_Group.Size = New System.Drawing.Size(93, 25)
+        Me.CboF_SPC_Group.TabIndex = 42
+        Me.CboF_SPC_Group.Visible = False
+        '
+        'LblF_SPC_Group
+        '
+        Me.LblF_SPC_Group.AutoSize = True
+        Me.LblF_SPC_Group.Font = New System.Drawing.Font("微軟正黑體", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.LblF_SPC_Group.Location = New System.Drawing.Point(852, 7)
+        Me.LblF_SPC_Group.Name = "LblF_SPC_Group"
+        Me.LblF_SPC_Group.Size = New System.Drawing.Size(106, 20)
+        Me.LblF_SPC_Group.TabIndex = 41
+        Me.LblF_SPC_Group.Text = "SPC_Group : "
+        Me.LblF_SPC_Group.Visible = False
+        '
+        'CboF_SPC_Condition
+        '
+        Me.CboF_SPC_Condition.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.CboF_SPC_Condition.Font = New System.Drawing.Font("微軟正黑體", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.CboF_SPC_Condition.FormattingEnabled = True
+        Me.CboF_SPC_Condition.Location = New System.Drawing.Point(750, 5)
+        Me.CboF_SPC_Condition.Name = "CboF_SPC_Condition"
+        Me.CboF_SPC_Condition.Size = New System.Drawing.Size(96, 25)
+        Me.CboF_SPC_Condition.TabIndex = 40
+        Me.CboF_SPC_Condition.Visible = False
+        '
+        'LblF_SPC_Condition
+        '
+        Me.LblF_SPC_Condition.AutoSize = True
+        Me.LblF_SPC_Condition.Font = New System.Drawing.Font("微軟正黑體", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.LblF_SPC_Condition.Location = New System.Drawing.Point(629, 8)
+        Me.LblF_SPC_Condition.Name = "LblF_SPC_Condition"
+        Me.LblF_SPC_Condition.Size = New System.Drawing.Size(115, 20)
+        Me.LblF_SPC_Condition.TabIndex = 39
+        Me.LblF_SPC_Condition.Text = "SPC查詢條件 : "
+        Me.LblF_SPC_Condition.Visible = False
+        '
+        'CboF_Value
+        '
+        Me.CboF_Value.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.CboF_Value.Font = New System.Drawing.Font("微軟正黑體", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.CboF_Value.FormattingEnabled = True
+        Me.CboF_Value.Location = New System.Drawing.Point(526, 4)
+        Me.CboF_Value.Name = "CboF_Value"
+        Me.CboF_Value.Size = New System.Drawing.Size(97, 25)
+        Me.CboF_Value.TabIndex = 38
+        '
+        'LblF_Value
+        '
+        Me.LblF_Value.AutoSize = True
+        Me.LblF_Value.Font = New System.Drawing.Font("微軟正黑體", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.LblF_Value.Location = New System.Drawing.Point(435, 7)
+        Me.LblF_Value.Name = "LblF_Value"
+        Me.LblF_Value.Size = New System.Drawing.Size(85, 20)
+        Me.LblF_Value.TabIndex = 37
+        Me.LblF_Value.Text = "查詢結果 : "
+        '
+        'CboF_Type
+        '
+        Me.CboF_Type.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.CboF_Type.Font = New System.Drawing.Font("微軟正黑體", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.CboF_Type.FormattingEnabled = True
+        Me.CboF_Type.Items.AddRange(New Object() {"OP參數", "SPC", "愉進系統", "欄位間運算", "其他"})
+        Me.CboF_Type.Location = New System.Drawing.Point(308, 4)
+        Me.CboF_Type.Name = "CboF_Type"
+        Me.CboF_Type.Size = New System.Drawing.Size(121, 25)
+        Me.CboF_Type.TabIndex = 36
+        '
+        'LblF_Type
+        '
+        Me.LblF_Type.AutoSize = True
+        Me.LblF_Type.Font = New System.Drawing.Font("微軟正黑體", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.LblF_Type.Location = New System.Drawing.Point(217, 7)
+        Me.LblF_Type.Name = "LblF_Type"
+        Me.LblF_Type.Size = New System.Drawing.Size(85, 20)
+        Me.LblF_Type.TabIndex = 35
+        Me.LblF_Type.Text = "查詢種類 : "
+        '
+        'TxtF_Pkey
+        '
+        Me.TxtF_Pkey.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.TxtF_Pkey.Enabled = False
+        Me.TxtF_Pkey.Font = New System.Drawing.Font("微軟正黑體", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.TxtF_Pkey.Location = New System.Drawing.Point(59, 5)
+        Me.TxtF_Pkey.Name = "TxtF_Pkey"
+        Me.TxtF_Pkey.Size = New System.Drawing.Size(45, 25)
+        Me.TxtF_Pkey.TabIndex = 32
+        Me.TxtF_Pkey.Tag = "1"
+        '
+        'LblF_Pkey
+        '
+        Me.LblF_Pkey.AutoSize = True
+        Me.LblF_Pkey.Font = New System.Drawing.Font("微軟正黑體", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.LblF_Pkey.Location = New System.Drawing.Point(2, 7)
+        Me.LblF_Pkey.Name = "LblF_Pkey"
+        Me.LblF_Pkey.Size = New System.Drawing.Size(57, 20)
+        Me.LblF_Pkey.TabIndex = 31
+        Me.LblF_Pkey.Text = "Pkey : "
+        '
+        'TxtF_QID
+        '
+        Me.TxtF_QID.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.TxtF_QID.Enabled = False
+        Me.TxtF_QID.Font = New System.Drawing.Font("微軟正黑體", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.TxtF_QID.Location = New System.Drawing.Point(166, 5)
+        Me.TxtF_QID.Name = "TxtF_QID"
+        Me.TxtF_QID.Size = New System.Drawing.Size(45, 25)
+        Me.TxtF_QID.TabIndex = 21
+        Me.TxtF_QID.Tag = "1"
+        '
+        'LblF_QID
+        '
+        Me.LblF_QID.AutoSize = True
+        Me.LblF_QID.Font = New System.Drawing.Font("微軟正黑體", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.LblF_QID.Location = New System.Drawing.Point(109, 8)
+        Me.LblF_QID.Name = "LblF_QID"
+        Me.LblF_QID.Size = New System.Drawing.Size(38, 20)
+        Me.LblF_QID.TabIndex = 20
+        Me.LblF_QID.Text = "ID : "
+        '
+        'BtnF_Refresh
+        '
+        Me.BtnF_Refresh.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.BtnF_Refresh.Font = New System.Drawing.Font("微軟正黑體", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.BtnF_Refresh.Location = New System.Drawing.Point(1071, 10)
+        Me.BtnF_Refresh.Name = "BtnF_Refresh"
+        Me.BtnF_Refresh.Size = New System.Drawing.Size(85, 29)
+        Me.BtnF_Refresh.TabIndex = 36
+        Me.BtnF_Refresh.Text = "重新整理"
+        Me.BtnF_Refresh.UseVisualStyleBackColor = True
+        '
+        'DgvF
+        '
+        Me.DgvF.AllowUserToAddRows = False
+        Me.DgvF.AllowUserToDeleteRows = False
+        Me.DgvF.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.DgvF.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill
+        Me.DgvF.ClipboardCopyMode = System.Windows.Forms.DataGridViewClipboardCopyMode.EnableWithoutHeaderText
+        Me.DgvF.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
+        Me.DgvF.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.DgvF_Filter, Me.DgvF_ColumnName, Me.DgvF_Operator, Me.DgvF_Values, Me.DgvF_Remark})
+        Me.DgvF.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter
+        Me.DgvF.Location = New System.Drawing.Point(7, 84)
+        Me.DgvF.Name = "DgvF"
+        Me.DgvF.RowTemplate.Height = 24
+        Me.DgvF.Size = New System.Drawing.Size(1149, 162)
+        Me.DgvF.TabIndex = 35
+        '
+        'DgvF_Filter
+        '
+        Me.DgvF_Filter.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells
+        Me.DgvF_Filter.FillWeight = 99.47188!
+        Me.DgvF_Filter.HeaderText = "判別項目"
+        Me.DgvF_Filter.Name = "DgvF_Filter"
+        Me.DgvF_Filter.ReadOnly = True
+        Me.DgvF_Filter.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
+        Me.DgvF_Filter.Width = 59
+        '
+        'DgvF_ColumnName
+        '
+        Me.DgvF_ColumnName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None
+        Me.DgvF_ColumnName.HeaderText = "ColumnName"
+        Me.DgvF_ColumnName.Name = "DgvF_ColumnName"
+        Me.DgvF_ColumnName.ReadOnly = True
+        '
+        'DgvF_Operator
+        '
+        Me.DgvF_Operator.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None
+        Me.DgvF_Operator.FillWeight = 152.2843!
+        Me.DgvF_Operator.HeaderText = "Operator"
+        Me.DgvF_Operator.Items.AddRange(New Object() {"=", "<>", "IN", "LIKE", "NOT LIKE", "IS NULL", "IS NOT NULL"})
+        Me.DgvF_Operator.Name = "DgvF_Operator"
+        '
+        'DgvF_Values
+        '
+        Me.DgvF_Values.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells
+        Me.DgvF_Values.FillWeight = 48.24385!
+        Me.DgvF_Values.HeaderText = "Values"
+        Me.DgvF_Values.MinimumWidth = 400
+        Me.DgvF_Values.Name = "DgvF_Values"
+        Me.DgvF_Values.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
+        Me.DgvF_Values.Width = 400
+        '
+        'DgvF_Remark
+        '
+        Me.DgvF_Remark.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells
+        Me.DgvF_Remark.HeaderText = "備註"
+        Me.DgvF_Remark.MinimumWidth = 300
+        Me.DgvF_Remark.Name = "DgvF_Remark"
+        Me.DgvF_Remark.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
+        Me.DgvF_Remark.Width = 300
+        '
+        'ProductionReport_Setting
+        '
+        Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 12.0!)
+        Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
+        Me.ClientSize = New System.Drawing.Size(1173, 539)
+        Me.Controls.Add(Me.TabMain)
+        Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow
+        Me.Name = "ProductionReport_Setting"
+        Me.Text = "ProductionReport_Setting"
+        Me.TopMost = True
+        Me.TabMain.ResumeLayout(False)
+        Me.TabProc.ResumeLayout(False)
+        Me.TabProc.PerformLayout()
+        Me.PnlProc_Optional1.ResumeLayout(False)
+        Me.PnlProc_Optional1.PerformLayout()
+        Me.PnlProc_Required.ResumeLayout(False)
+        Me.PnlProc_Required.PerformLayout()
+        CType(Me.DgvProc, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.TabPara.ResumeLayout(False)
+        Me.PnlPara.ResumeLayout(False)
+        Me.PnlPara.PerformLayout()
+        CType(Me.DgvPara, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.TabQuery.ResumeLayout(False)
+        Me.TabQuery.PerformLayout()
+        CType(Me.DgvTest, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.PnlF.ResumeLayout(False)
+        Me.PnlF.PerformLayout()
+        CType(Me.DgvF, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.ResumeLayout(False)
+
+    End Sub
+
+    Friend WithEvents TabMain As TabControl
+    Friend WithEvents TabProc As TabPage
+    Friend WithEvents TabPara As TabPage
+    Friend WithEvents TabQuery As TabPage
+    Friend WithEvents DgvProc As DataGridView
+    Friend WithEvents BtnProc_Refresh As Button
+    Friend WithEvents LblProc_Required As Label
+    Friend WithEvents PnlProc_Optional1 As Panel
+    Friend WithEvents LblProc_Location As Label
+    Friend WithEvents PnlProc_Required As Panel
+    Friend WithEvents TxtProc_Password As TextBox
+    Friend WithEvents LblProc_Password As Label
+    Friend WithEvents TxtProc_ProcName As TextBox
+    Friend WithEvents LblProc_ProcName As Label
+    Friend WithEvents TxtProc_Area As TextBox
+    Friend WithEvents LblProc_Area As Label
+    Friend WithEvents TxtProc_Section As TextBox
+    Friend WithEvents LblProc_Section As Label
+    Friend WithEvents TxtProc_Module As TextBox
+    Friend WithEvents LblProc_Module As Label
+    Friend WithEvents LblProc_Optional As Label
+    Friend WithEvents CboProc_Location As ComboBox
+    Friend WithEvents TxtProc_Machine As TextBox
+    Friend WithEvents LblProc_Machine As Label
+    Friend WithEvents LblProc_Tag_Machine As Label
+    Friend WithEvents LblProc_Tag_ProcName As Label
+    Friend WithEvents BtnProc_Add As Button
+    Friend WithEvents BtnProc_Update As Button
+    Friend WithEvents LblProc_Tag_Module As Label
+    Friend WithEvents LblProc_Tag_Section As Label
+    Friend WithEvents LblProc_Tag_Area As Label
+    Friend WithEvents TxtProc_Pkey As TextBox
+    Friend WithEvents LblProc_Pkey As Label
+    Friend WithEvents BtnPara_Update As Button
+    Friend WithEvents BtnPara_Add As Button
+    Friend WithEvents BtnPara_Refresh As Button
+    Friend WithEvents DgvPara As DataGridView
+    Friend WithEvents PnlPara As Panel
+    Friend WithEvents TxtPara_QID As TextBox
+    Friend WithEvents LblPara_QID As Label
+    Friend WithEvents TxtPara_ParaName As TextBox
+    Friend WithEvents LblPara_ParaName As Label
+    Friend WithEvents TxtPara_Area As TextBox
+    Friend WithEvents LblPara_Area As Label
+    Friend WithEvents LblPara_Sort As Label
+    Friend WithEvents CboPara_isQuery As ComboBox
+    Friend WithEvents LblPara_isQuery As Label
+    Friend WithEvents CboPara_Sort As ComboBox
+    Friend WithEvents TxtPara_Pkey As TextBox
+    Friend WithEvents LblPara_Pkey As Label
+    Friend WithEvents BtnF_Save As Button
+    Friend WithEvents PnlF As Panel
+    Friend WithEvents TxtF_QID As TextBox
+    Friend WithEvents LblF_QID As Label
+    Friend WithEvents BtnF_Refresh As Button
+    Friend WithEvents DgvF As DataGridView
+    Friend WithEvents TxtF_Pkey As TextBox
+    Friend WithEvents LblF_Pkey As Label
+    Friend WithEvents LblF_QueryCommand As Label
+    Friend WithEvents TxtF_QueryCommand As TextBox
+    Friend WithEvents CboF_Type As ComboBox
+    Friend WithEvents LblF_Type As Label
+    Friend WithEvents CboF_Value As ComboBox
+    Friend WithEvents LblF_Value As Label
+    Friend WithEvents CboF_SPC_Condition As ComboBox
+    Friend WithEvents LblF_SPC_Condition As Label
+    Friend WithEvents BtnProc_ProcQuery As Button
+    Friend WithEvents TxtProc_ProcQuery As TextBox
+    Friend WithEvents LblProc_ProcQuery As Label
+    Friend WithEvents TxtPara_AreaID As TextBox
+    Friend WithEvents LblPara_AreaID As Label
+    Friend WithEvents DgvF_Filter As DataGridViewTextBoxColumn
+    Friend WithEvents DgvF_ColumnName As DataGridViewTextBoxColumn
+    Friend WithEvents DgvF_Operator As DataGridViewComboBoxColumn
+    Friend WithEvents DgvF_Values As DataGridViewTextBoxColumn
+    Friend WithEvents DgvF_Remark As DataGridViewTextBoxColumn
+    Friend WithEvents CboF_SPC_Group As ComboBox
+    Friend WithEvents LblF_SPC_Group As Label
+    Friend WithEvents BtnF_Test As Button
+    Friend WithEvents DgvTest As DataGridView
+    Friend WithEvents DgvTest_ParaName As DataGridViewTextBoxColumn
+    Friend WithEvents DgvTest_ColumnName As DataGridViewTextBoxColumn
+    Friend WithEvents DgvTest_Values As DataGridViewTextBoxColumn
+    Friend WithEvents ChkPara_isQuery As CheckBox
+    Friend WithEvents TxtPara_EngName As TextBox
+    Friend WithEvents LblPara_EngName As Label
+    Friend WithEvents TxtPara_Default As TextBox
+    Friend WithEvents LblPara_Default As Label
+    Friend WithEvents ChkPara_isRequire As CheckBox
+    Friend WithEvents LblPara_isRequire As Label
+End Class

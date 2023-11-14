@@ -1,0 +1,772 @@
+﻿Imports System.IO
+Imports Microsoft.VisualBasic.FileIO
+Imports System.Threading
+
+Public Class ReportUI
+    Public Area As String = ""
+    Public TempFolder As String = "C:\ProductionReportLog\Temp\"
+    Public UploadFolder As String = "C:\ProductionReportLog\Uploaded\"
+    Public ProcInfo As New Dictionary(Of String, String())
+    Dim isRefresh As Boolean = True '判定是否為是Timer刷新
+    Dim Column As New List(Of String) '手動輸入欄位
+    Dim Column_Query As New List(Of String) '自動帶入欄位
+    Dim Column_Formula As New List(Of String) '運算欄位
+    Dim Column_CCF As String() = {"Trace Width(TOP)", "Trace Width(BOTTOM)", "Trace Space(TOP)", "Trace Space(BOTTOM)", "CuPad(TOP)", "CuPad(BOTTOM)"} '內層線路特殊欄位
+    Dim Cmd_Param As String = ""
+    Dim Cmd_Formula As New List(Of String())
+    Dim HistPath As String = "ProductionReportHist\ProductionReportHist.exe"
+
+    Private Sub ReportUI_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+
+        '建立Log資料夾
+        If Not Directory.Exists(LogFolder) Then
+            Directory.CreateDirectory(LogFolder)
+        End If
+        If Not Directory.Exists(TempFolder) Then
+            Directory.CreateDirectory(TempFolder)
+        End If
+        If Not Directory.Exists(UploadFolder) Then
+            Directory.CreateDirectory(UploadFolder)
+        End If
+        '暫停刷新資料直到選擇站點
+        TimerRefresh.Stop()
+        '站點名稱搜尋
+        AreaName.Items.Clear()
+        Using dt As DataTable = SQL_Query("SELECT DISTINCT [Area],[Password],[ProcName] FROM [H3_Systematic].[dbo].[H3_Proc] WITH (NOLOCK)　ORDER BY [Area]") '搜尋資料庫內的所有站點和密碼
+            For Each row As DataRow In dt.Rows
+                AreaName.Items.Add(row(0)) '在站點選項添加對應項目
+                Dim procinfo As String() = {row(1), row(2)}
+                Me.ProcInfo.Add(row(0), procinfo) '新增與站點對應密碼
+            Next
+        End Using
+
+    End Sub
+    Private Sub ProcName_SelectedIndexChanged(sender As Object, e As EventArgs) Handles AreaName.SelectedIndexChanged
+        Try
+            '清空資料
+            If Area = "" Or Area <> AreaName.SelectedItem Then
+                Dim pw As String = InputBox("請輸入密碼：", "輸入密碼", "")
+                If pw <> ProcInfo(AreaName.SelectedItem.ToString)(0) Then
+                    MessageBox.Show("密碼輸入錯誤")
+                    AreaName.SelectedItem = Area
+                    Return
+                End If
+                isRefresh = True
+                'DataGridView初始化
+                ReportUI_DataGridView.DataSource = Nothing
+                ReportUI_DataGridView.Rows.Clear()
+                ReportUI_DataGridView.Columns.Clear()
+                Column.Clear()
+                Column_Query.Clear()
+                Column_Formula.Clear()
+                Cmd_Param = ""
+                Cmd_Formula.Clear()
+
+                '設定初始欄位
+                Dim ColsOrigin() As String = {"日期", "班別", "前站結束時間", "開始時間", "結束時間", "料號", "批號", "層別", "站點", "機台", "產品類型", "入料片數", "出料片數", "工號", "操作員", "備註"}
+                Dim cmd As String = "SELECT [PID],[ParameterName],[isSQL],[SQL],[isFormula],[Formula],[FormulaColumn],[hasSpec],[isSpec_SQL],[Spec_SQL],[Spec] 
+                                     FROM [H3_Systematic].[dbo].[H3_Production_ProcParameter] AS pa WITH (NOLOCK)
+									 LEFT JOIN [H3_Systematic].[dbo].[H3_Proc] AS pr WITH (NOLOCK) ON pr.[ProcName] = pa.[ProcName]
+                                     WHERE pr.[Area] = '" & AreaName.SelectedItem.ToString & "'
+                                     ORDER BY [PID]"
+                Dim dtProc As DataTable = SQL_Query(cmd)
+
+
+
+                '將手動和自動帶入參數分開儲存
+                For Each row As DataRow In dtProc.Rows
+                    If Convert.ToBoolean(row("isSQL")) Then
+                        Column_Query.Add(row("ParameterName").ToString) '儲存參數名稱
+                        Cmd_Param = Cmd_Param + row("SQL".ToString) + vbCrLf  'SQL語法串接
+                    ElseIf Convert.ToBoolean(row("isFormula")) Then
+                        Column_Formula.Add(row("ParameterName").ToString) '儲存參數名稱
+                        Dim strFormula() As String = {row("Formula").ToString, row("FormulaColumn").ToString}
+                        Cmd_Formula.Add(strFormula) '儲存計算欄位和公式
+                    Else
+                        Column.Add(row("ParameterName"))
+                    End If
+                Next
+
+
+                '生成模組通用欄位
+                For Each col As String In ColsOrigin
+                    ReportUI_DataGridView.Columns.Add(col, col)
+                Next
+
+                '生成各站點客制欄位(自動帶入)
+                For Each col As String In Column_Query
+                    ReportUI_DataGridView.Columns.Add(col, col)
+                Next
+                '生成各站點客制欄位(運算)
+                For Each col As String In Column_Formula
+                    ReportUI_DataGridView.Columns.Add(col, col)
+                    ReportUI_DataGridView.Columns(col).Tag = 1
+                Next
+                For Each dgvCol As DataGridViewColumn In ReportUI_DataGridView.Columns
+                    If dgvCol.HeaderText <> "備註" Then dgvCol.ReadOnly = True
+                    If dgvCol.HeaderText <> "備註" Then dgvCol.DefaultCellStyle.BackColor = SystemColors.ControlLight
+                    'dgvCol.SortMode = DataGridViewColumnSortMode.NotSortable '變更欄位不可排序
+                    If dgvCol.HeaderText = "班別" Then dgvCol.Width = 40
+                    If dgvCol.HeaderText = "日期" Or dgvCol.HeaderText = "前站結束時間" Or dgvCol.HeaderText = "開始時間" Or dgvCol.HeaderText = "結束時間" Or dgvCol.HeaderText = "機台" Then dgvCol.Width = 150
+                    If dgvCol.HeaderText = "批號" Then dgvCol.Width = 110
+                    If dgvCol.HeaderText = "工號" Or dgvCol.HeaderText = "入料片數" Or dgvCol.HeaderText = "出料片數" Then dgvCol.Width = 60
+                    If dgvCol.HeaderText = "操作員" Then dgvCol.Width = 60
+                Next
+
+                '生成各站點客制欄位(手動輸入)
+                For Each col As String In Column
+                    ReportUI_DataGridView.Columns.Add(col, col)
+                Next
+
+                Dim btnCol As New DataGridViewButtonColumn()
+                btnCol.HeaderText = "修改"
+                btnCol.Name = "btnModify"
+                btnCol.Text = "修改"
+                Dim bc As New DataGridViewButtonCell()
+                bc.FlatStyle = FlatStyle.Flat
+                bc.Style.BackColor = Color.Cyan
+                btnCol.CellTemplate = bc
+                ReportUI_DataGridView.Columns.Add(btnCol)
+                ReportUI_DataGridView.Columns.Add("上傳", "上傳")
+                For Each dgvCol As DataGridViewColumn In ReportUI_DataGridView.Columns
+                    'dgvCol.SortMode = DataGridViewColumnSortMode.NotSortable
+                    If dgvCol.HeaderText = "修改" Then dgvCol.Width = 40
+                    If dgvCol.HeaderText = "上傳" Then
+                        dgvCol.Width = 40
+                        dgvCol.ReadOnly = True
+                    End If
+                Next
+
+                Area = AreaName.SelectedItem
+                Dim procs As String() = ProcInfo(AreaName.SelectedItem.ToString)(1).Split(",")
+                For Each proc In procs
+                    Dim fileQuery As String = "*" + proc.Substring(0, 3) + "*" + proc.Substring(3, 3)
+
+                    ' 取得Temp資料夾底下的所有 CSV 檔案
+                    Dim tempFiles As String() = Directory.GetFiles(TempFolder, fileQuery + "*.csv")
+                    If tempFiles.Length > 0 Then
+                        ' 解析 CSV 檔案內容並加入到 DataGridView 中
+                        For Each tempFile In tempFiles
+                            Using parser As New TextFieldParser(tempFile)
+                                parser.TextFieldType = FieldType.Delimited
+                                parser.SetDelimiters(",")
+
+                                While Not parser.EndOfData
+                                    Dim fields As String() = parser.ReadFields()
+                                    ReportUI_DataGridView.Rows.Insert(0, fields)
+                                End While
+                            End Using
+                            CheckParaUploaded()
+                            ReportUI_DataGridView.Rows(0).Cells("上傳").Style.BackColor = Color.Lime
+                        Next
+                    End If
+                Next
+                For Each proc In procs
+                    Dim fileQuery As String = "*" + proc.Substring(0, 3) + "*" + proc.Substring(3, 3)
+                    ' 取得Log資料夾底下的所有 CSV 檔案
+                    Dim csvFiles As String() = Directory.GetFiles(LogFolder, fileQuery + "*.csv")
+                    If csvFiles.Length > 0 Then
+                        ' 解析 CSV 檔案內容並加入到 DataGridView 中
+                        For Each csvFile In csvFiles
+                            Using parser As New TextFieldParser(csvFile)
+                                parser.TextFieldType = FieldType.Delimited
+                                parser.SetDelimiters(",")
+
+                                While Not parser.EndOfData
+                                    Dim fields As String() = parser.ReadFields()
+                                    ReportUI_DataGridView.Rows.Insert(0, fields)
+                                End While
+                            End Using
+                            CheckPara()
+                        Next
+                    End If
+                Next
+            End If
+            TimerRefresh.Start()
+            TimerRefresh_Tick(sender, e)
+        Catch ex As Exception
+            WriteLog(ex, LogFilePath, "ProcName_SelectedIndexChanged")
+        End Try
+    End Sub
+    Private Sub TimerRefresh_Tick(sender As Object, e As EventArgs) Handles TimerRefresh.Tick
+        Try
+            isRefresh = True
+            ' 停止 DataGridView 的更新，以避免閃爍
+            ReportUI_DataGridView.SuspendLayout()
+            'If ReportUI_DataGridView.Rows.Count > 0 Then
+            '    ' 儲存 datagridview 中的資料
+            '    Dim dt As New DataTable
+            '    dt = CopyDataGridView()
+            '    Dim lots As New List(Of String)
+
+            '    ' 執行查詢，將查詢結果儲存在 DataTable 中
+            '    Dim cmd As String = "EXECUTE [H3_Systematic].[dbo].[ProductionQuery] @ProcName = '" + ProcName.SelectedItem.ToString.Substring(0, 3) + "%" + ProcName.SelectedItem.ToString.Substring(3, 3) + "%'"
+            '    Dim new_dt As DataTable = SQL_Query(cmd)
+            '    ' 將新查詢到的資料與舊的資料合併，並只新增不重複的資料
+            '    For Each new_dr As DataRow In new_dt.Rows
+            '        lots.Add(new_dr("批號").ToString)
+            '        Dim is_duplicate As Boolean = False
+            '        For Each dr As DataRow In dt.Rows
+            '            If new_dr("批號") = dr("批號") Then
+            '                is_duplicate = True
+            '                Exit For
+            '            End If
+            '        Next
+            '        Dim hist_dt As DataTable = SQL_Query("SELECT TOP (1) [Pkey] FROM [H3_Systematic].[dbo].[H3_ProductionLog] WHERE Lotnum = '" & new_dr("批號").ToString & "' AND ProcName = '" & new_dr("站點").ToString & "' AND Layer = '" & new_dr("層別").ToString & "'")
+            '        If hist_dt.Rows.Count > 0 Then Continue For
+            '        If Not is_duplicate Then
+            '            Dim DN As String = ""
+            '            Dim MoveInTime As String = ""
+            '            Dim LastEndTime As String = ""
+            '            Dim CheckInTime As String = ""
+            '            Dim CheckOutTime As String = ""
+            '            If CType(new_dr("日期"), DateTime) > DateTime.Parse("2000-01-01 00:00:00") Then MoveInTime = CType(new_dr("日期"), DateTime).ToString("yyyy-MM-dd HH:mm:ss")
+            '            If CType(new_dr("前站結束時間"), DateTime) > DateTime.Parse("2000-01-01 00:00:00") Then LastEndTime = CType(new_dr("前站結束時間"), DateTime).ToString("yyyy-MM-dd HH:mm:ss")
+            '            If CType(new_dr("開始時間"), DateTime) > DateTime.Parse("2000-01-01 00:00:00") Then
+            '                CheckInTime = CType(new_dr("開始時間"), DateTime).ToString("yyyy-MM-dd HH:mm:ss")
+            '                If CType(new_dr("開始時間"), DateTime).TimeOfDay >= TimeSpan.Parse("07:20:00") AndAlso CType(new_dr("開始時間"), DateTime).TimeOfDay < TimeSpan.Parse("19:20:00") Then DN = "D" Else DN = "N"
+            '            End If
+            '            If CType(new_dr("結束時間"), DateTime) > DateTime.Parse("2000-01-01 00:00:00") Then CheckOutTime = CType(new_dr("結束時間"), DateTime).ToString("yyyy-MM-dd HH:mm:ss")
+            '            Dim ParaArray() As Object = {MoveInTime, DN, LastEndTime, CheckInTime, CheckOutTime, new_dr("料號"), new_dr("層別"), new_dr("批號"), new_dr("站點"), new_dr("機台"), new_dr("產品類型"), new_dr("入料片數"), new_dr("出料片數"), new_dr("工號"), new_dr("操作員")}
+            '            ReportUI_DataGridView.Rows.Insert(0, ParaArray)
+            '        End If
+            '    Next
+            '    DataGridViewRefresh(new_dt, lots)
+            'Else
+            '    Dim dt As New DataTable
+            '    Dim cmd As String = "EXECUTE [H3_Systematic].[dbo].[ProductionQuery] @ProcName = '" + ProcName.SelectedItem.ToString.Substring(0, 3) + "%" + ProcName.SelectedItem.ToString.Substring(3, 3) + "%'"
+            '    dt = SQL_Query(cmd)
+            '    For Each row As DataRow In dt.Rows
+            '        Dim DN As String = ""
+            '        Dim MoveInTime As String = ""
+            '        Dim LastEndTime As String = ""
+            '        Dim CheckInTime As String = ""
+            '        Dim CheckOutTime As String = ""
+            '        If CType(row("日期"), DateTime) > DateTime.Parse("2000-01-01 00:00:00") Then MoveInTime = CType(row("日期"), DateTime).ToString("yyyy-MM-dd HH:mm:ss")
+            '        If CType(row("前站結束時間"), DateTime) > DateTime.Parse("2000-01-01 00:00:00") Then LastEndTime = CType(row("前站結束時間"), DateTime).ToString("yyyy-MM-dd HH:mm:ss")
+            '        If CType(row("開始時間"), DateTime) > DateTime.Parse("2000-01-01 00:00:00") Then
+            '            CheckInTime = CType(row("開始時間"), DateTime).ToString("yyyy-MM-dd HH:mm:ss")
+            '            If CType(row("開始時間"), DateTime).TimeOfDay >= TimeSpan.Parse("07:20:00") AndAlso CType(row("開始時間"), DateTime).TimeOfDay < TimeSpan.Parse("19:20:00") Then DN = "D" Else DN = "N"
+            '        End If
+            '        If CType(row("結束時間"), DateTime) > DateTime.Parse("2000-01-01 00:00:00") Then CheckOutTime = CType(row("結束時間"), DateTime).ToString("yyyy-MM-dd HH:mm:ss")
+            '        Dim ParaArray() As Object = {MoveInTime, DN, LastEndTime, CheckInTime, CheckOutTime, row("料號"), row("層別"), row("批號"), row("站點"), row("機台"), row("產品類型"), row("入料片數"), row("出料片數"), row("工號"), row("操作員")}
+            '        ReportUI_DataGridView.Rows.Insert(0, ParaArray)
+            '    Next
+            '    dt.Clear()
+            'End If
+            ' 儲存 datagridview 中的資料
+
+            Dim dt As New DataTable
+            dt = CopyDataGridView()
+            Dim lots As New List(Of String)
+            Dim proc As String() = ProcInfo(AreaName.SelectedItem.ToString)(1).Split(",")
+            Dim new_dt As New DataTable
+            Dim temp_dt As New DataTable
+            ' 每個站點執行查詢，將查詢結果儲存在 DataTable 中
+            For i = 0 To proc.Length - 1
+                Dim cmd As String = "EXECUTE [H3_Systematic].[dbo].[ProductionQuery] @ProcName = '" + proc(i).Substring(0, 3) + "%" + proc(i).Substring(3, 3) + "%'"
+                temp_dt = SQL_Query(cmd)
+                If new_dt.Rows.Count = 0 Then
+                    new_dt = temp_dt
+                Else
+                    new_dt.Merge(temp_dt)
+                End If
+            Next
+
+            ' 將新查詢到的資料與舊的資料合併，並只新增不重複的資料
+            For Each new_dr As DataRow In new_dt.Rows
+                lots.Add(new_dr("批號").ToString)
+                Dim is_duplicate As Boolean = False
+                For Each dr As DataRow In dt.Rows
+                    If new_dr("批號") = dr("批號") Then
+                        is_duplicate = True
+                        Exit For
+                    End If
+                Next
+                Dim hist_dt As DataTable = SQL_Query("SELECT TOP (1) [Pkey] FROM [H3_Systematic].[dbo].[H3_ProductionLog] WHERE Lotnum = '" & new_dr("批號").ToString & "' AND ProcName = '" & new_dr("站點").ToString & "' AND Layer = '" & new_dr("層別").ToString & "'")
+                If hist_dt.Rows.Count > 0 Then Continue For
+                If Not is_duplicate Then
+                    Dim DN As String = ""
+                    Dim MoveInTime As String = ""
+                    Dim LastEndTime As String = ""
+                    Dim CheckInTime As String = ""
+                    Dim CheckOutTime As String = ""
+                    If CType(new_dr("日期"), DateTime) > DateTime.Parse("2000-01-01 00:00:00") Then MoveInTime = CType(new_dr("日期"), DateTime).ToString("yyyy-MM-dd HH:mm:ss")
+                    If CType(new_dr("前站結束時間"), DateTime) > DateTime.Parse("2000-01-01 00:00:00") Then LastEndTime = CType(new_dr("前站結束時間"), DateTime).ToString("yyyy-MM-dd HH:mm:ss")
+                    If CType(new_dr("開始時間"), DateTime) > DateTime.Parse("2000-01-01 00:00:00") Then
+                        CheckInTime = CType(new_dr("開始時間"), DateTime).ToString("yyyy-MM-dd HH:mm:ss")
+                        If CType(new_dr("開始時間"), DateTime).TimeOfDay >= TimeSpan.Parse("07:20:00") AndAlso CType(new_dr("開始時間"), DateTime).TimeOfDay < TimeSpan.Parse("19:20:00") Then DN = "D" Else DN = "N"
+                    End If
+                    If CType(new_dr("結束時間"), DateTime) > DateTime.Parse("2000-01-01 00:00:00") Then CheckOutTime = CType(new_dr("結束時間"), DateTime).ToString("yyyy-MM-dd HH:mm:ss")
+                    Dim ParaArray() As Object = {MoveInTime, DN, LastEndTime, CheckInTime, CheckOutTime, new_dr("料號"), new_dr("批號"), new_dr("層別"), new_dr("站點"), new_dr("機台"), new_dr("產品類型"), new_dr("入料片數"), new_dr("出料片數"), new_dr("工號"), new_dr("操作員")}
+                    ReportUI_DataGridView.Rows.Insert(0, ParaArray)
+                End If
+            Next
+            DataGridViewRefresh(new_dt, lots)
+            new_dt.Dispose()
+            temp_dt.Dispose()
+            ExportDataGridViewToDataTable(ReportUI_DataGridView)
+            ' 恢復 DataGridView 的更新
+            isRefresh = False
+            ReportUI_DataGridView.ResumeLayout()
+        Catch ex As Exception
+            WriteLog(ex, LogFilePath, "TimerRefresh")
+        End Try
+    End Sub
+
+    Private Sub ReportUI_DataGridView_CellContentClick(sender As Object, e As DataGridViewCellEventArgs) Handles ReportUI_DataGridView.CellContentClick
+        Try
+            ' 確認是在 btncol 欄位點擊
+            If e.ColumnIndex = ReportUI_DataGridView.Columns("btnModify").Index AndAlso e.RowIndex >= 0 Then
+                ' 執行 ModifyButton_Click 事件
+                ModifyButton_Click(sender, e)
+            End If
+        Catch ex As Exception
+            If TypeOf ex Is System.NullReferenceException Then
+                MessageBox.Show("此行無資料可修改")
+            End If
+        End Try
+    End Sub
+
+    Private Sub ModifyButton_Click(ByVal sender As Object, ByVal e As DataGridViewCellEventArgs)
+        If ReportUI_DataGridView.Rows(e.RowIndex).Cells("上傳").Value IsNot Nothing AndAlso ReportUI_DataGridView.Rows(e.RowIndex).Cells("上傳").Value.ToString = "已上傳" Then
+            Return
+        End If
+
+        ' 將該行特定欄位 ReadOnly 屬性改為 False
+        For i = ReportUI_DataGridView.Columns("備註").Index To ReportUI_DataGridView.Columns("btnModify").Index - 1
+            If Column.Contains(ReportUI_DataGridView.Columns(i).Name) OrElse Column_CCF.Contains(ReportUI_DataGridView.Columns(i).Name) Then
+                ReportUI_DataGridView.Rows(e.RowIndex).Cells(i).ReadOnly = False
+                ReportUI_DataGridView.Rows(e.RowIndex).Cells(i).Style.BackColor = SystemColors.ControlLightLight
+            End If
+        Next
+    End Sub
+
+    Private Sub CheckParaUploaded()
+        For i = 0 To ReportUI_DataGridView.Columns("上傳").Index - 1
+            ReportUI_DataGridView.Rows(0).Cells(i).ReadOnly = True
+            ReportUI_DataGridView.Rows(0).Cells(i).Style.BackColor = Color.Cyan
+        Next
+    End Sub
+
+    Private Sub CheckPara()
+        For i = ReportUI_DataGridView.Columns("備註").Index + 1 To ReportUI_DataGridView.Columns("btnModify").Index - 1
+            If (ReportUI_DataGridView.Rows(0).Cells(i).Value IsNot Nothing AndAlso ReportUI_DataGridView.Rows(0).Cells(i).Value.ToString <> "") Then
+                ReportUI_DataGridView.Rows(0).Cells(i).ReadOnly = True
+                ReportUI_DataGridView.Rows(0).Cells(i).Style.BackColor = SystemColors.ControlLight
+            End If
+        Next
+    End Sub
+
+    Private Sub Btn_TEST_Click(sender As Object, e As EventArgs) Handles Btn_TEST.Click
+        TimerRefresh_Tick(sender, e)
+    End Sub
+
+    Private Sub ReportUI_DataGridView_CellValueChanged(sender As Object, e As DataGridViewCellEventArgs) Handles ReportUI_DataGridView.CellValueChanged
+        Try
+            If Not isRefresh Then
+                If e.RowIndex >= 0 AndAlso e.ColumnIndex >= 0 Then
+                    Dim Notyet As Boolean = False
+                    If Cmd_Formula.Count > 0 Then
+                        Dim row As DataGridViewRow = ReportUI_DataGridView.Rows(e.RowIndex)
+                        Dim tarcol As String = ""
+                        Dim formulacol As String()
+                        Dim cmd As String
+                        Dim index As Integer = 0
+                        For Each cols In Cmd_Formula
+                            If cols(1).Contains(ReportUI_DataGridView.Columns(e.ColumnIndex).Name) Then
+                                formulacol = cols(1).Split(",")
+                                For Each col In formulacol
+                                    If TypeOf row.Cells(col).Value Is DBNull OrElse row.Cells(col).Value Is Nothing OrElse String.IsNullOrEmpty(row.Cells(col).Value.ToString()) Then
+                                        Notyet = True
+                                        Exit For
+                                    End If
+                                Next
+                                If Notyet Then
+                                    Exit For
+                                End If
+                                tarcol = Column_Formula(index)
+                                cmd = Cmd_Formula(index)(0)
+                                index += 1
+                            Else
+                                Notyet = True
+                                Exit For
+                            End If
+                        Next
+
+                        If Not Notyet Then
+                            Dim varIndex As Integer = 0
+                            For Each col In formulacol
+                                varIndex += 1
+                                cmd = cmd.Replace("var" + varIndex.ToString, row.Cells(col).Value.ToString)
+                            Next
+
+                            Dim result As Double
+                            result = ReCoding(cmd)
+                            row.Cells(tarcol).Value = result
+                        End If
+                    End If
+                    Dim cell As DataGridViewCell = ReportUI_DataGridView.Rows(e.RowIndex).Cells(e.ColumnIndex)
+                    If cell.Value <> Nothing Then
+                        If cell.Value.ToString <> "" Then
+                            If cell.ColumnIndex <> ReportUI_DataGridView.Columns("備註").Index Then
+                                ' 設定資料格為唯讀
+                                cell.ReadOnly = True
+                                cell.Style.BackColor = SystemColors.ControlLight
+                                ExportDataGridViewRowToDataTable(ReportUI_DataGridView.Rows(e.RowIndex))
+                            Else
+                                ExportDataGridViewRowToDataTable(ReportUI_DataGridView.Rows(e.RowIndex))
+                            End If
+                        End If
+                    End If
+                End If
+            End If
+        Catch ex As Exception
+            WriteLog(ex, LogFilePath, "DataGridView_CellValueChanged")
+        End Try
+    End Sub
+
+    'Private Sub ReportUI_DataGridView_CellLeave(sender As Object, e As DataGridViewCellEventArgs) Handles ReportUI_DataGridView.CellLeave
+    '    Try
+    '        If Not isRefresh Then
+    '            If e.RowIndex >= 0 AndAlso e.ColumnIndex >= 0 Then
+    '                Dim cell As DataGridViewCell = ReportUI_DataGridView.Rows(e.RowIndex).Cells(e.ColumnIndex)
+    '                If Not cell.ReadOnly Then
+    '                    If cell.Value <> Nothing Then
+    '                        If cell.Value.ToString <> "" Then
+    '                            If cell.ColumnIndex <> ReportUI_DataGridView.Columns("備註").Index Then
+    '                                ' 設定資料格為唯讀
+    '                                cell.ReadOnly = True
+    '                                cell.Style.BackColor = SystemColors.ControlLight
+    '                                ExportDataGridViewRowToDataTable(ReportUI_DataGridView.Rows(e.RowIndex))
+    '                            Else
+    '                                ExportDataGridViewRowToDataTable(ReportUI_DataGridView.Rows(e.RowIndex))
+    '                            End If
+    '                        End If
+    '                    End If
+    '                End If
+    '            End If
+    '        End If
+    '    Catch ex As Exception
+    '        WriteLog(ex, LogFilePath, "DataGridView_CellLeave")
+    '    End Try
+    'End Sub
+
+    Private Sub RrportUI_FormClosing(sender As Object, e As FormClosingEventArgs) Handles Me.FormClosing
+        e.Cancel = True ' 取消視窗關閉操作
+    End Sub
+
+    Private Function CopyDataGridView() As DataTable
+        ' 建立一個 DataTable
+        Dim dt As New DataTable()
+
+        ' 新增 DataColumn
+        For Each column As DataGridViewColumn In ReportUI_DataGridView.Columns
+            If column.Index <> ReportUI_DataGridView.Columns("btnModify").Index And column.Index <> ReportUI_DataGridView.Columns("上傳").Index Then
+                dt.Columns.Add(column.Name)
+            End If
+        Next
+
+        ' 新增 DataRow
+        For Each row As DataGridViewRow In ReportUI_DataGridView.Rows
+            ' 如果這一列是新增列，就跳過
+            If Not row.IsNewRow Then
+                ' 建立新的 DataRow
+                Dim dataRow As DataRow = dt.NewRow()
+
+                ' 將每個儲存格的值存入 DataRow
+                For Each cell As DataGridViewCell In row.Cells
+                    If cell.ColumnIndex <> ReportUI_DataGridView.Columns("btnModify").Index And cell.ColumnIndex <> ReportUI_DataGridView.Columns("上傳").Index Then
+                        dataRow(cell.ColumnIndex) = cell.Value
+                    End If
+                Next
+
+                ' 新增 DataRow 到 DataTable
+                dt.Rows.Add(dataRow)
+            End If
+        Next
+
+        Return dt
+    End Function
+
+    Private Sub DataGridViewRefresh(ByVal new_dt As DataTable, ByVal lots As List(Of String))
+        Try
+            Dim rows As New List(Of DataGridViewRow)
+            ' 將每個資料列加入對應的 List 中
+            For Each row As DataGridViewRow In ReportUI_DataGridView.Rows
+                rows.Add(row)
+            Next
+
+            ' 比較 DataTable 中的每一行，更新 DataGridView 中的值
+            For Each row As DataGridViewRow In rows
+                If row.Cells("上傳").Value IsNot Nothing AndAlso row.Cells("上傳").Value.ToString = "已上傳" Then
+                    Dim proc As String = row.Cells("站點").Value.ToString()
+                    Dim lot As String = row.Cells("批號").Value.ToString()
+                    Dim layer As String = row.Cells("層別").Value.ToString()
+                    '獲取原檔案名稱
+                    Dim fileQuery As String = "*" + proc + "*" + lot + "*" + layer
+                    Dim FilePath As String() = Directory.GetFiles(TempFolder, fileQuery + "*.csv")
+                    Dim FileName As String = ""
+                    If FilePath.Length > 0 Then
+                        FileName = FilePath(0).Split("\")(3)
+                    Else
+                        Continue For
+                    End If
+                    Dim UploadTime As DateTime = File.GetLastWriteTime(TempFolder + FileName)
+                    If DateTime.Now.AddHours(-12) > UploadTime Then
+                        File.Move(TempFolder + FileName, UploadFolder + FileName)
+                    End If
+                    Continue For
+                End If
+                Dim lot_dgv As String = row.Cells("批號").Value.ToString
+                If lots.Contains(lot_dgv) Then
+                    For Each dr As DataRow In new_dt.Rows
+                        Dim lot As String = dr("批號").ToString()
+                        If lot_dgv = lot Then
+                            DataUpdate(dr, row)
+                            Exit For
+                        End If
+                    Next
+                Else
+                    Dim isUpload As Boolean = DataUpload(row)
+
+                    If Not isUpload Then
+                        ' 比較其他欄位的值是否相同
+                        Dim dt_up As DataTable = SQL_Query("EXECUTE[H3_Systematic].[dbo].[ProductionQuery_nonWIP] @Proc ='" & row.Cells("站點").Value.ToString & "' ,@Lot = '" & row.Cells("批號").Value.ToString & "',@Layer = '" & row.Cells("層別").Value.ToString & "'")
+                        For Each dr_up As DataRow In dt_up.Rows
+                            DataUpdate(dr_up, row)
+                        Next
+                    Else
+                        Notice.Text = "上傳成功,批號: " & lot_dgv & ", 時間: " & DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
+                    End If
+                End If
+            Next
+        Catch ex As Exception
+            WriteLog(ex, LogFilePath, "DataGridViewRefresh")
+        End Try
+    End Sub
+
+    Private Sub DataUpdate(ByVal dr As DataRow, ByVal row As DataGridViewRow)
+        Try
+            For i = 0 To ReportUI_DataGridView.Columns("備註").Index - 1
+                Dim columnindex As Integer = row.Cells(i).ColumnIndex
+                Dim columnname As String = ReportUI_DataGridView.Columns(columnindex).Name
+                If columnname = "班別" Then Continue For
+                If columnindex <> ReportUI_DataGridView.Columns("批號").Index Then '判斷是否為批號欄位
+                    If TypeOf row.Cells(i).Value Is DBNull OrElse row.Cells(i).Value Is Nothing OrElse String.IsNullOrEmpty(row.Cells(i).Value.ToString()) Then '判斷datagridview欄位是否為空
+                        If Not (TypeOf dr(columnname) Is DBNull OrElse dr(columnname) Is Nothing OrElse String.IsNullOrEmpty(dr(columnname).ToString())) Then '判斷查詢的資料數值是否為空
+                            If dr(columnname).GetType Is GetType(DateTime) Then '判斷欄位資料型別是否為日期
+                                Dim value As DateTime
+                                If DateTime.TryParse(dr(columnname).ToString(), value) AndAlso value.Year < 2000 Then '判斷日期是否為0
+                                    row.Cells(i).Value = "" '欄位設定為空
+                                    If row.Cells(i).ColumnIndex = ReportUI_DataGridView.Columns("開始時間").Index Then row.Cells("班別").Value = "" '判斷"開始時間"若為空,"班別"也為空
+                                ElseIf row.Cells(i).ColumnIndex = ReportUI_DataGridView.Columns("開始時間").Index Then '判斷欄位是否為"開始時間"
+                                    row.Cells(i).Value = CType(dr(columnname), DateTime).ToString("yyyy-MM-dd HH:mm:ss") 'datagridview欄位值設定為特定日期格式
+                                    If CType(dr(columnname), DateTime).TimeOfDay >= TimeSpan.Parse("07:20:00") AndAlso CType(dr(columnname), DateTime).TimeOfDay < TimeSpan.Parse("19:20:00") Then row.Cells("班別").Value = "D" Else row.Cells("班別").Value = "N" '設定班別時間
+                                Else
+                                    row.Cells(i).Value = CType(dr(columnname), DateTime).ToString("yyyy-MM-dd HH:mm:ss") 'datagridview欄位值設定為特定日期格式
+                                End If
+                            Else
+                                row.Cells(i).Value = dr(columnname) '假如資料不是日期，datagridview欄位值設定
+                            End If
+                        End If
+                    End If
+                End If
+            Next
+            '設定自動代入欄位index，預設為"備註"欄下一個
+            Dim index As Integer = ReportUI_DataGridView.Columns("備註").Index + 1
+            If Cmd_Param <> "" Then
+                Dim ds As New DataSet
+                Dim dt As New DataTable
+                Dim cmd As String = Cmd_Param
+                '批號、料號、迭代、站點、層別替代
+                cmd = cmd.Replace("VarLot", row.Cells("批號").Value.ToString)
+                cmd = cmd.Replace("VarPart", row.Cells("料號").Value.ToString.Substring(0, 8))
+                cmd = cmd.Replace("VarRev", row.Cells("料號").Value.ToString.Substring(8, 2))
+                cmd = cmd.Replace("VarProc", row.Cells("站點").Value.ToString)
+                cmd = cmd.Replace("VarStation", row.Cells("站點").Value.ToString.Substring(0, 3) + row.Cells("站點").Value.ToString.Substring(4, 3))
+                cmd = cmd.Replace("VarLayer", row.Cells("層別").Value.ToString)
+
+                If Column_Query.Count > 1 Then
+                    ds = SQL_Query(cmd)
+                    For Each ta As DataTable In ds.Tables
+                        Try
+                            If ta.Rows.Count <> 0 Then '判斷查詢的資料數值是否為空
+                                If TypeOf row.Cells(index).Value Is DBNull OrElse row.Cells(index).Value Is Nothing OrElse String.IsNullOrEmpty(row.Cells(index).Value.ToString()) Then '判斷datagridview欄位是否為空
+                                    row.Cells(index).Value = ta(0)(0) '假如原欄位為空值,設定數值
+                                End If
+                            End If
+                        Catch ex As Exception
+                            WriteLog(ex, LogFilePath, "DataUpdate_" + row.DataGridView.Columns(index).Name)
+                        End Try
+                        index += 1
+                    Next
+                Else
+                    dt = SQL_Query(cmd)
+                    Try
+                        If dt.Rows.Count <> 0 Then '判斷查詢的資料數值是否為空
+                            If TypeOf row.Cells(index).Value Is DBNull OrElse row.Cells(index).Value Is Nothing OrElse String.IsNullOrEmpty(row.Cells(index).Value.ToString()) Then '判斷datagridview欄位是否為空
+                                row.Cells(index).Value = dt(0)(0) '假如原欄位為空值,設定數值
+                            End If
+                        End If
+                    Catch ex As Exception
+                        WriteLog(ex, LogFilePath, "DataUpdate_" + row.DataGridView.Columns(index).Name)
+                    End Try
+                    index += 1
+                End If
+
+
+            End If
+            If Cmd_Formula.Count > 0 Then
+                '從自動代入欄位最後一欄的下一個開始
+                For i = 0 To Cmd_Formula.Count - 1
+                    Try
+                        Dim cmd As String = Cmd_Formula(i)(0) '取得計算公式
+                        Dim columns As String() = Cmd_Formula(i)(1).Split(",") '取得須計算的欄位
+                        Dim notyet As Boolean = False
+                        Dim varIndex As Integer = 0
+                        For Each col In columns
+                            '假如計算欄位為空值則跳出,若不為空則替代變數
+                            If Not (TypeOf row.Cells(col).Value Is DBNull OrElse row.Cells(col).Value Is Nothing OrElse String.IsNullOrEmpty(row.Cells(col).Value.ToString())) Then
+                                varIndex += 1
+                                cmd = cmd.Replace("var" + varIndex.ToString, row.Cells(col).Value.ToString)
+                            Else
+                                notyet = True
+                                Exit For
+                            End If
+                        Next
+                        '假如計算欄位數值有缺漏則跳出
+                        If notyet Then
+                            Exit For
+                        End If
+
+                        Dim result As Double
+                        result = ReCoding(cmd)
+                        row.Cells(index + i).Value = result
+                    Catch ex As Exception
+                        WriteLog(ex, LogFilePath, "DataUpdate_" + row.DataGridView.Columns(index + i).Name)
+                    End Try
+                Next
+            End If
+        Catch ex As Exception
+            WriteLog(ex, LogFilePath, "DataUpdate")
+        End Try
+    End Sub
+
+
+
+
+    Private Function DataUpload(row As DataGridViewRow) As Boolean
+        Try
+            Dim lot As String = row.Cells("批號").Value.ToString()
+            Dim proc As String = row.Cells("站點").Value.ToString()
+            Dim layer As String = row.Cells("層別").Value.ToString()
+            '獲取原檔案名稱
+            Dim FileQuery As String = "*" + proc + "*" + lot + "*" + layer
+            Dim FilePath As String() = Directory.GetFiles(LogFolder, FileQuery + "*.csv")
+            Dim FileName As String
+            If FilePath.Length > 0 Then
+                FileName = FilePath(0).Split("\")(3)
+            Else
+                Return False
+            End If
+
+            Dim isFullData As Boolean = False
+            Dim now As DateTime = DateTime.Now
+            For i = ReportUI_DataGridView.Columns("備註").Index + 1 To ReportUI_DataGridView.Columns("btnModify").Index - 1 Step 1
+                If row.Cells(i).Value IsNot Nothing AndAlso row.Cells(i).Value.ToString() <> "" Then
+                    isFullData = True
+                Else
+                    isFullData = False
+                    Exit For
+                End If
+            Next
+            If isFullData AndAlso row.Cells("結束時間").Value.ToString <> "" Then
+                Dim remark As String = ""
+                If row.Cells("備註").Value <> Nothing Then remark = row.Cells("備註").Value.ToString
+                Dim LogUpload As String = "INSERT INTO [H3_Systematic].[dbo].[H3_ProductionLog] " &
+                                  " ([UploadTime],[SystemTime],[Class],[LastEndTime],[StartTime],[EndTime],[Partnum],[Lotnum],[Layer],[ProcName],[EQID],[IType],[Inputpcs],[Outputpcs],[WID],[User],[Remark])" &
+                                  " VALUES ('" & now.ToString("yyyy-MM-dd HH:mm:ss") & "','" & row.Cells("日期").Value.ToString & "','" & row.Cells("班別").Value.ToString & "','" & row.Cells("前站結束時間").Value.ToString & "','" & row.Cells("開始時間").Value.ToString & "','" & row.Cells("結束時間").Value.ToString & "','" & row.Cells("料號").Value.ToString & "','" & lot & "','" & layer & "','" & proc & "','" & row.Cells("機台").Value.ToString & "','" & row.Cells("產品類型").Value.ToString & "','" & row.Cells("入料片數").Value.ToString & "','" & row.Cells("出料片數").Value.ToString & "','" & row.Cells("工號").Value.ToString & "','" & row.Cells("操作員").Value.ToString & "','" & remark & "')"
+                SQL_Query(LogUpload)
+                For i = ReportUI_DataGridView.Columns("備註").Index + 1 To ReportUI_DataGridView.Columns("btnModify").Index - 1
+                    Dim ParaUpload As String = "INSERT INTO [H3_Systematic].[dbo].[H3_ProductionParameter] " &
+                                               " ([Lotnum],[ProcName],[ParameterName],[ParameterVaules],[SystemTime],[UploadTime])" &
+                                               " VALUES ('" & row.Cells("批號").Value.ToString & "','" & row.Cells("站點").Value.ToString & "','" & ReportUI_DataGridView.Columns(row.Cells(i).ColumnIndex).HeaderText & "','" & row.Cells(i).Value.ToString & "','" & row.Cells("日期").Value.ToString & "','" & now.ToString("yyyy-MM-dd HH:mm:ss") & "')"
+                    SQL_Query(ParaUpload)
+                Next
+                row.Cells("上傳").Value = "已上傳"
+                row.Cells("上傳").Style.BackColor = Color.Lime
+                File.Move(LogFolder & FileName, TempFolder & FileName)
+                Return True
+            Else
+                Return False
+            End If
+            Return False
+        Catch ex As Exception
+            WriteLog(ex, LogFilePath, "DataUpload")
+        End Try
+    End Function
+
+    Private Sub ToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles Query.Click
+        Dim check() As Process = Process.GetProcessesByName("ProductionReportHist")
+        If check.Length = 0 Then
+            Dim ProcessInfo As New ProcessStartInfo(HistPath)
+            Process.Start(ProcessInfo)
+        End If
+    End Sub
+
+    'Private Sub ReportUI_DataGridView_CellValidated(sender As Object, e As DataGridViewCellEventArgs) Handles ReportUI_DataGridView.CellValidated
+    '    If Not isRefresh Then
+    '        If Cmd_Formula.Count > 0 Then
+    '            Dim row As DataGridViewRow = ReportUI_DataGridView.Rows(e.RowIndex)
+    '            Dim tarcol As String = ""
+    '            Dim formulacol As String()
+    '            Dim cmd As String
+    '            Dim index As Integer = 0
+    '            For Each cols In Cmd_Formula
+    '                If cols(1).Contains(ReportUI_DataGridView.Columns(e.ColumnIndex).Name) Then
+    '                    formulacol = cols(1).Split(",")
+    '                    For Each col In formulacol
+    '                        If TypeOf row.Cells(col).Value Is DBNull OrElse row.Cells(col).Value Is Nothing OrElse String.IsNullOrEmpty(row.Cells(col).Value.ToString()) Then
+    '                            Exit Sub
+    '                        End If
+    '                    Next
+    '                    tarcol = Column_Formula(index)
+    '                    cmd = Cmd_Formula(index)(0)
+    '                    Exit For
+    '                    index += 1
+    '                Else
+    '                    Exit Sub
+    '                End If
+    '            Next
+
+    '            Dim varIndex As Integer = 0
+    '            For Each col In formulacol
+    '                varIndex += 1
+    '                cmd = cmd.Replace("var" + varIndex.ToString, row.Cells(col).Value.ToString)
+    '            Next
+
+    '            Dim result As Double
+    '            result = ReCoding(cmd)
+    '            row.Cells(tarcol).Value = result
+
+    '        End If
+    '        If e.RowIndex >= 0 AndAlso e.ColumnIndex >= 0 Then
+    '            Dim cell As DataGridViewCell = ReportUI_DataGridView.Rows(e.RowIndex).Cells(e.ColumnIndex)
+    '            If cell.Value <> Nothing Then
+    '                If cell.Value.ToString <> "" Then
+    '                    If cell.ColumnIndex <> ReportUI_DataGridView.Columns("備註").Index Then
+    '                        ' 設定資料格為唯讀
+    '                        cell.ReadOnly = True
+    '                        cell.Style.BackColor = SystemColors.ControlLight
+    '                        ExportDataGridViewRowToDataTable(ReportUI_DataGridView.Rows(e.RowIndex))
+    '                    Else
+    '                        ExportDataGridViewRowToDataTable(ReportUI_DataGridView.Rows(e.RowIndex))
+    '                    End If
+    '                End If
+    '            End If
+    '        End If
+    '    End If
+    'End Sub
+
+End Class

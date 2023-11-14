@@ -1,0 +1,24 @@
+==============================
+Error Time: 2023/05/05 10:08:37
+Error Location: TValue get_Item(TKey)
+Error Line: 0
+Error Code : 1002
+CPU Usage: 0
+Memory Usage: 17617473536
+Error Message: 指定的索引鍵不在字典中。
+System.Collections.Generic.KeyNotFoundException: 指定的索引鍵不在字典中。
+   於 System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+   於 ProductionReport.ReportUI.ProcName_SelectedIndexChanged(Object sender, EventArgs e) 於 D:\Software\ProductionReport\ProductionReport\ReportUI.vb: 行 36
+==============================
+Error Time: 2023/05/05 11:49:58
+Error Location: Void InsertInternal(Int32, System.Windows.Forms.DataGridViewRow)
+Error Line: 0
+Error Code : 1001
+CPU Usage: 0
+Memory Usage: 19596488704
+Error Message: 無法將資料列加入沒有資料行的 DataGridView 控制項。必須先加入資料行。
+System.InvalidOperationException: 無法將資料列加入沒有資料行的 DataGridView 控制項。必須先加入資料行。
+   於 System.Windows.Forms.DataGridViewRowCollection.InsertInternal(Int32 rowIndex, DataGridViewRow dataGridViewRow)
+   於 System.Windows.Forms.DataGridViewRowCollection.Insert(Int32 rowIndex, DataGridViewRow dataGridViewRow)
+   於 System.Windows.Forms.DataGridViewRowCollection.Insert(Int32 rowIndex, Object[] values)
+   於 ProductionReport.ReportUI.TimerRefresh_Tick(Object sender, EventArgs e) 於 D:\Software\ProductionReport\ProductionReport\ReportUI.vb: 行 196

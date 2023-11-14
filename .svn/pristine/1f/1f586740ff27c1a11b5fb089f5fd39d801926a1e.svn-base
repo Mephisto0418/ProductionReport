@@ -1,0 +1,98 @@
+==============================
+Error Time: 2023/05/10 15:25:14
+Error Location: Boolean ConditionalCompareObjectEqual(System.Object, System.Object, Boolean)
+Error Line: 0
+Error Code : 1005
+CPU Usage: 0
+Memory Usage: 18776973312
+Error Message: 類型 'DBNull' 和 'Nothing' 的運算子 '=' 未定義。
+System.InvalidCastException: 類型 'DBNull' 和 'Nothing' 的運算子 '=' 未定義。
+   於 Microsoft.VisualBasic.CompilerServices.Operators.ConditionalCompareObjectEqual(Object Left, Object Right, Boolean TextCompare)
+   於 ProductionReport.ReportUI.ExportDataGridViewToDataTable(DataGridView dataGridView) 於 D:\Software\ProductionReport\ProductionReport\ReportUI.vb: 行 498
+==============================
+Error Time: 2023/05/10 15:25:51
+Error Location: Boolean ConditionalCompareObjectEqual(System.Object, System.Object, Boolean)
+Error Line: 0
+Error Code : 1005
+CPU Usage: 0
+Memory Usage: 18764570624
+Error Message: 類型 'DBNull' 和 'Nothing' 的運算子 '=' 未定義。
+System.InvalidCastException: 類型 'DBNull' 和 'Nothing' 的運算子 '=' 未定義。
+   於 Microsoft.VisualBasic.CompilerServices.Operators.ConditionalCompareObjectEqual(Object Left, Object Right, Boolean TextCompare)
+   於 ProductionReport.ReportUI.ExportDataGridViewToDataTable(DataGridView dataGridView) 於 D:\Software\ProductionReport\ProductionReport\ReportUI.vb: 行 498
+==============================
+Error Time: 2023/05/10 17:46:41
+Error Location: System.Windows.Forms.DataGridViewCell get_Item(System.String)
+Error Line: 0
+Error Code : 1004
+CPU Usage: 0
+Memory Usage: 18901893120
+Error Message: 找不到名為 批號 的資料行。
+參數名稱: columnName
+System.ArgumentException: 找不到名為 批號 的資料行。
+參數名稱: columnName
+   於 System.Windows.Forms.DataGridViewCellCollection.get_Item(String columnName)
+   於 ProductionReport.ReportUI.DataGridViewRefresh(DataTable new_dt) 於 D:\Software\ProductionReport\ProductionReport\ReportUI.vb: 行 437
+==============================
+Error Time: 2023/05/10 17:52:18
+Error Location: System.Windows.Forms.DataGridViewCell get_Item(System.String)
+Error Line: 0
+Error Code : 1004
+CPU Usage: 0
+Memory Usage: 18788884480
+Error Message: 找不到名為 批號 的資料行。
+參數名稱: columnName
+System.ArgumentException: 找不到名為 批號 的資料行。
+參數名稱: columnName
+   於 System.Windows.Forms.DataGridViewCellCollection.get_Item(String columnName)
+   於 ProductionReport.ReportUI.DataGridViewRefresh(DataTable new_dt) 於 D:\Software\ProductionReport\ProductionReport\ReportUI.vb: 行 368
+==============================
+Error Time: 2023/05/10 18:47:17
+Error Location: Boolean DataUpload(System.Windows.Forms.DataGridViewRow)
+Error Line: 539
+Error Code : 1006
+CPU Usage: 0
+Memory Usage: 18765742080
+Error Message: 索引在陣列的界限之外。
+System.IndexOutOfRangeException: 索引在陣列的界限之外。
+   於 ProductionReport.ReportUI.DataUpload(DataGridViewRow row) 於 D:\Software\ProductionReport\ProductionReport\ReportUI.vb: 行 539
+==============================
+Error Time: 2023/05/10 18:53:27
+Error Location: System.Reflection.MemberInfo[] GetMembers(System.String ByRef, Boolean)
+Error Line: 0
+Error Code : 1004
+CPU Usage: 0
+Memory Usage: 18727587840
+Error Message: 在類型 'Date' 上找不到 Public 成員 'DataType'。
+System.MissingMemberException: 在類型 'Date' 上找不到 Public 成員 'DataType'。
+   於 Microsoft.VisualBasic.CompilerServices.Symbols.Container.GetMembers(String& MemberName, Boolean ReportErrors)
+   於 Microsoft.VisualBasic.CompilerServices.NewLateBinding.ObjectLateGet(Object Instance, Type Type, String MemberName, Object[] Arguments, String[] ArgumentNames, Type[] TypeArguments, Boolean[] CopyBack)
+   於 Microsoft.VisualBasic.CompilerServices.NewLateBinding.LateGet(Object Instance, Type Type, String MemberName, Object[] Arguments, String[] ArgumentNames, Type[] TypeArguments, Boolean[] CopyBack)
+   於 ProductionReport.ReportUI.DataUpdate(DataRow dr, DataGridViewRow row) 於 D:\Software\ProductionReport\ProductionReport\ReportUI.vb: 行 398
+   於 ProductionReport.ReportUI.DataGridViewRefresh(DataTable new_dt) 於 D:\Software\ProductionReport\ProductionReport\ReportUI.vb: 行 378
+==============================
+Error Time: 2023/05/10 19:07:23
+Error Location: System.Data.DataColumn get_Item(Int32)
+Error Line: 0
+Error Code : 1004
+CPU Usage: 0
+Memory Usage: 18712068096
+Error Message: 找不到資料行 13。
+System.IndexOutOfRangeException: 找不到資料行 13。
+   於 System.Data.DataColumnCollection.get_Item(Int32 index)
+   於 System.Data.DataRow.get_Item(Int32 columnIndex)
+   於 ProductionReport.ReportUI.DataUpdate(DataRow dr, DataGridViewRow row) 於 D:\Software\ProductionReport\ProductionReport\ReportUI.vb: 行 399
+   於 ProductionReport.ReportUI.DataGridViewRefresh(DataTable new_dt) 於 D:\Software\ProductionReport\ProductionReport\ReportUI.vb: 行 372
+==============================
+Error Time: 2023/05/10 19:08:03
+Error Location: System.Data.DataColumn get_Item(Int32)
+Error Line: 0
+Error Code : 1004
+CPU Usage: 0
+Memory Usage: 18719645696
+Error Message: 找不到資料行 13。
+System.IndexOutOfRangeException: 找不到資料行 13。
+   於 System.Data.DataColumnCollection.get_Item(Int32 index)
+   於 System.Data.DataRow.get_Item(Int32 columnIndex)
+   於 ProductionReport.ReportUI.DataUpdate(DataRow dr, DataGridViewRow row) 於 D:\Software\ProductionReport\ProductionReport\ReportUI.vb: 行 399
+   於 ProductionReport.ReportUI.DataGridViewRefresh(DataTable new_dt) 於 D:\Software\ProductionReport\ProductionReport\ReportUI.vb: 行 372

@@ -1,0 +1,12 @@
+==============================
+Error Time: 2023/07/18 18:40:41
+Error Location: TValue get_Item(TKey)
+Error Line: 0
+Error Area : BtnPara_Add_Click
+CPU Usage: 0
+Memory Usage: 21863919616
+Error Message: 指定的索引鍵不在字典中。
+System.Collections.Generic.KeyNotFoundException: 指定的索引鍵不在字典中。
+   於 System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+   於 ProductionReport_Setting.ProductionReport_Setting.BtnPara_Add_Click(Object sender, EventArgs e) 於 D:\Software\ProductionReport\ProductionReport_Setting\SettingUI.vb: 行 303
+

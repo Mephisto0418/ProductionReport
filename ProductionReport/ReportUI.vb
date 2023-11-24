@@ -35,6 +35,7 @@ Public Class ReportUI
     Dim MFmodule As String = asr.Item("MFmodule")
     '11/06新增參數
     Dim CID As New Dictionary(Of String, String)
+    Dim ST As New Thread(AddressOf StopTimer)
 
     '-----------------------------------DB參數----------------------------------------
     Dim DbVersion As String = "[Datamation_H3].[dbo].[H3_Leo_Program_Version]" '版本卡控DB
@@ -864,12 +865,15 @@ Public Class ReportUI
 
     Private Sub Btn_RefreshStop_Click(sender As Object, e As EventArgs) Handles Btn_RefreshStop.Click
         TimerRefresh.Stop()
-        Dim ST As New Thread(AddressOf StopTimer)
+        If ST.ThreadState = ThreadState.WaitSleepJoin OrElse ST.ThreadState = ThreadState.Running Then
+            ST.Abort()
+            ST = New Thread(AddressOf StopTimer)
+        End If
         ST.Start()
     End Sub
 
     Private Sub StopTimer()
-        Thread.Sleep(300000)
+        Thread.Sleep(30000)
         TimerRefresh.Start()
     End Sub
 

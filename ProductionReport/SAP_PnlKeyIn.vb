@@ -1,6 +1,7 @@
 ﻿Public Class SAP_PnlKeyIn
     Public Cell As DataGridViewCell
     Public tarCell As DataGridViewCell
+    Dim isClosed As Boolean = False
 
     Private Sub Btn_Confirm_Click(sender As Object, e As EventArgs) Handles Btn_Confirm.Click
         Try
@@ -14,25 +15,35 @@
                 End If
             Next
             tarCell.Value = pnl.Substring(0, pnl.Length - 1)
+            isClosed = True
             Me.Close()
         Catch ex As Exception
             WriteLog(ex, LogFilePath, "Btn_Confirm_Click")
+            isClosed = False
         End Try
     End Sub
 
     Private Sub dgv_PnlKeyIn_CellValueChanged(sender As Object, e As DataGridViewCellEventArgs) Handles dgv_PnlKeyIn.CellValueChanged
+        Dim cell As DataGridViewCell = dgv_PnlKeyIn.Rows(e.RowIndex).Cells(e.ColumnIndex)
         Try
             If e.RowIndex > 0 Then
-                If Not (IsNumeric(dgv_PnlKeyIn.Rows(e.RowIndex).Cells(e.ColumnIndex).Value.ToString)) OrElse dgv_PnlKeyIn.Rows(e.RowIndex).Cells(e.ColumnIndex).Value.ToString = "" Then
-                    dgv_PnlKeyIn.Rows(e.RowIndex).Cells(e.ColumnIndex).Value = ""
+                If ReportUI.AreaID = "93" AndAlso CInt(cell.Value.ToString) <= 0 AndAlso CInt(cell.Value.ToString) > CInt(SAP_Pnlqty) AndAlso (Not IsNumeric(cell.Value.ToString) And UCase(cell.Value.ToString) <> "X") Then
+                    cell.Value = ""
+                    MessageBox.Show("請輸入1~" + SAP_Pnlqty + "，或請輸入""X""")
+                ElseIf ReportUI.AreaID = "93" And UCase(cell.Value.ToString) = "X" Then
+                    cell.Value = "X"
+                ElseIf Not (IsNumeric(cell.Value.ToString)) OrElse cell.Value.ToString = "" Then
+                    cell.Value = ""
                     MessageBox.Show("請輸入數字")
-                ElseIf CInt(dgv_PnlKeyIn.Rows(e.RowIndex).Cells(e.ColumnIndex).Value.ToString) < 0 And CInt(dgv_PnlKeyIn.Rows(e.RowIndex).Cells(e.ColumnIndex).Value.ToString) > CInt(SAP_Pnlqty) Then
-                    dgv_PnlKeyIn.Rows(e.RowIndex).Cells(e.ColumnIndex).Value = ""
-                    MessageBox.Show("請輸入0~" + SAP_Pnlqty)
+                ElseIf CInt(cell.Value.ToString) <= 0 And CInt(cell.Value.ToString) > CInt(SAP_Pnlqty) Then
+                    cell.Value = ""
+                MessageBox.Show("請輸入1~" + SAP_Pnlqty)
                 End If
             End If
         Catch ex As Exception
             WriteLog(ex, LogFilePath, "dgv_PnlKeyIn_CellValueChanged")
         End Try
     End Sub
+
+
 End Class

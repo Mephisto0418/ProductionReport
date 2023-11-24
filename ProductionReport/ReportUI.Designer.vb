@@ -33,6 +33,7 @@ Partial Class ReportUI
         Me.Btn_First = New System.Windows.Forms.Button()
         Me.TxtLot = New System.Windows.Forms.TextBox()
         Me.Label1 = New System.Windows.Forms.Label()
+        Me.Btn_RefreshStop = New System.Windows.Forms.Button()
         Me.MenuBar.SuspendLayout()
         CType(Me.ReportUI_DataGridView, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
@@ -59,6 +60,7 @@ Partial Class ReportUI
             Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.ReportUI_DataGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.ColumnHeader
+        Me.ReportUI_DataGridView.ClipboardCopyMode = System.Windows.Forms.DataGridViewClipboardCopyMode.EnableWithoutHeaderText
         Me.ReportUI_DataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
         Me.ReportUI_DataGridView.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter
         Me.ReportUI_DataGridView.Location = New System.Drawing.Point(0, 56)
@@ -91,6 +93,7 @@ Partial Class ReportUI
         Me.Btn_TEST.TabIndex = 157
         Me.Btn_TEST.Text = "測試"
         Me.Btn_TEST.UseVisualStyleBackColor = True
+        Me.Btn_TEST.Visible = False
         '
         'Notice
         '
@@ -130,11 +133,22 @@ Partial Class ReportUI
         Me.Label1.TabIndex = 161
         Me.Label1.Text = "批號:"
         '
+        'Btn_RefreshStop
+        '
+        Me.Btn_RefreshStop.Font = New System.Drawing.Font("微軟正黑體", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.Btn_RefreshStop.Location = New System.Drawing.Point(1127, 12)
+        Me.Btn_RefreshStop.Name = "Btn_RefreshStop"
+        Me.Btn_RefreshStop.Size = New System.Drawing.Size(102, 42)
+        Me.Btn_RefreshStop.TabIndex = 162
+        Me.Btn_RefreshStop.Text = "暫停刷新" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "(Refresh Stop)" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10)
+        Me.Btn_RefreshStop.UseVisualStyleBackColor = True
+        '
         'ReportUI
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 12.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(1584, 599)
+        Me.Controls.Add(Me.Btn_RefreshStop)
         Me.Controls.Add(Me.Label1)
         Me.Controls.Add(Me.TxtLot)
         Me.Controls.Add(Me.Btn_First)
@@ -163,4 +177,5 @@ Partial Class ReportUI
     Friend WithEvents Btn_First As Button
     Friend WithEvents TxtLot As TextBox
     Friend WithEvents Label1 As Label
+    Friend WithEvents Btn_RefreshStop As Button
 End Class

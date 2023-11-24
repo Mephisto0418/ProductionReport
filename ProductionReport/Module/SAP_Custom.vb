@@ -23,6 +23,7 @@
                         SAP_Pnlqty = Cell.Value.ToString
                         SAP_PnlKeyIn.Show()
                         SAP_PnlKeyIn.Focus()
+                        SAP_PnlKeyIn.dgv_PnlKeyIn.Rows.Clear()
                         For i = 1 To CInt(Cell.Value)
                             SAP_PnlKeyIn.dgv_PnlKeyIn.Rows.Add(i.ToString, "")
                         Next

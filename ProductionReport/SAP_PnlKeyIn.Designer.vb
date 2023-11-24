@@ -83,7 +83,7 @@ Partial Class SAP_PnlKeyIn
         Me.Controls.Add(Me.Label1)
         Me.Controls.Add(Me.dgv_PnlKeyIn)
         Me.Controls.Add(Me.Btn_Confirm)
-        Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None
+        Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow
         Me.Name = "SAP_PnlKeyIn"
         Me.Text = "SAP_PnlKeyIn"
         Me.TopMost = True

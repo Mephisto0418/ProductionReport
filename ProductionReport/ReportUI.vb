@@ -12,7 +12,7 @@ Imports System.Data.SqlClient
 '20231030 Boris            建立Table & SP名稱的變數
 
 Public Class ReportUI
-    Dim Version As String = "2.0.23.11.06.1"
+    Dim Version As String = "2.0.23.11.24.1"
     Dim Program As String = "ProductionReport"
     Public Area As String = ""
     Public AreaID As String = ""
@@ -116,6 +116,7 @@ Public Class ReportUI
                 Cmd_Param = ""
                 Cmd_Formula.Clear()
                 Requirement.Clear()
+                CID.Clear()
 
                 '查詢客製化欄位設定
                 '20231016 新增查詢[EnglishName],[isRequire],[DefaultValues]
@@ -680,13 +681,12 @@ Public Class ReportUI
                     If row.Cells("操作員").Value IsNot Nothing AndAlso row.Cells("操作員").Value.ToString() <> "" Then
                         For i = ReportUI_DataGridView.Columns("備註").Index + 1 To ReportUI_DataGridView.Columns("btnModify").Index - 1 Step 1
                             If Convert.ToBoolean(Requirement(ReportUI_DataGridView.Columns(i).Name)(0)) Then
-                                If row.Cells(i).Value IsNot Nothing AndAlso row.Cells(i).Value.ToString() <> "" Then
-                                    isFullData = True
-                                Else
+                                If Not (row.Cells(i).Value IsNot Nothing AndAlso row.Cells(i).Value.ToString() <> "") Then
                                     isFullData = False
                                     Exit For
                                 End If
                             End If
+                            isFullData = True
                         Next
                     Else
                         isFullData = False
@@ -702,13 +702,12 @@ Public Class ReportUI
                         Next
                         For i = ReportUI_DataGridView.Columns("備註").Index + 1 To ReportUI_DataGridView.Columns("btnModify").Index - 1 Step 1
                             If Convert.ToBoolean(Requirement(ReportUI_DataGridView.Columns(i).Name)(0)) Then
-                                If row2.Cells(i).Value IsNot Nothing AndAlso row2.Cells(i).Value.ToString() <> "" Then
-                                    isFullData = True
-                                Else
+                                If Not (row2.Cells(i).Value IsNot Nothing AndAlso row2.Cells(i).Value.ToString() <> "") Then
                                     isFullData = False
                                     Exit For
                                 End If
                             End If
+                            isFullData = True
                         Next
                     End If
 
@@ -782,7 +781,7 @@ Public Class ReportUI
                         result = Math.Round(ReCoding(cmd), 4)
                         row.Cells(tarcol).Value = result
                         'ColumnFormula(row.Cells(tarcol))
-                        Exit For
+                        'Exit For
                     End If
 
                     index += 1
@@ -817,13 +816,17 @@ Public Class ReportUI
                 If e.ColumnIndex = ReportUI_DataGridView.Columns("btnModify").Index Then
                     ' 執行 ModifyButton_Click 事件
                     ModifyButton_Click(sender, e)
-                Else
-                    SAP_CheckPnl(ReportUI_DataGridView.Rows(e.RowIndex), e, AreaID)
                 End If
             End If
         Catch ex As Exception
             WriteLog(ex, LogFilePath, "ReportUI_DataGridView_CellClick")
         End Try
+    End Sub
+
+    Private Sub ReportUI_DataGridView_CellDoubleClick(sender As Object, e As DataGridViewCellEventArgs) Handles ReportUI_DataGridView.CellDoubleClick
+        If e.RowIndex > 0 And e.ColumnIndex > 0 Then
+            SAP_CheckPnl(ReportUI_DataGridView.Rows(e.RowIndex), e, AreaID)
+        End If
     End Sub
 
     Private Sub TxtLot_KeyUp(sender As Object, e As KeyEventArgs) Handles TxtLot.KeyUp
@@ -858,6 +861,57 @@ Public Class ReportUI
             TimerRefresh.Start()
         End Try
     End Sub
+
+    Private Sub Btn_RefreshStop_Click(sender As Object, e As EventArgs) Handles Btn_RefreshStop.Click
+        TimerRefresh.Stop()
+        Dim ST As New Thread(AddressOf StopTimer)
+        ST.Start()
+    End Sub
+
+    Private Sub StopTimer()
+        Thread.Sleep(300000)
+        TimerRefresh.Start()
+    End Sub
+
+    Private Sub ReportUI_DataGridView_KeyDown(sender As Object, e As KeyEventArgs) Handles ReportUI_DataGridView.KeyDown
+        If e.Control Then
+            Select Case e.KeyCode
+                Case Keys.C
+                    CopyCells()
+                    e.Handled = True
+                Case Keys.V
+                    PasteCells()
+                    e.Handled = True
+            End Select
+            'ElseIf e.KeyCode = Keys.Delete Then
+            '    ReportUI_DataGridView.CurrentCell.Value = ""
+            '    e.Handled = True
+        End If
+    End Sub
+
+    Private Sub CopyCells()
+        Clipboard.SetDataObject(ReportUI_DataGridView.GetClipboardContent)
+    End Sub
+
+    Private Sub PasteCells()
+        Dim s = Clipboard.GetText
+        Dim ci = ReportUI_DataGridView.CurrentCell.ColumnIndex
+        Dim ri = ReportUI_DataGridView.CurrentCell.RowIndex
+        Dim colCount = ReportUI_DataGridView.Columns.Count
+        Dim rowCount = ReportUI_DataGridView.Rows.Count
+
+        For Each r In s.Split({ControlChars.CrLf}, StringSplitOptions.None)
+            Dim Cell = ci
+            For Each c In r.Split({ControlChars.Tab}, StringSplitOptions.None)
+                If Cell >= colCount Then Exit For
+                ReportUI_DataGridView(Cell, ri).Value = c
+                Cell += 1
+            Next
+            ri += 1
+            If ri >= rowCount Then Exit For
+        Next
+    End Sub
+
 
 
     'Private Sub ReportUI_DataGridView_CellEndEdit(sender As Object, e As DataGridViewCellEventArgs) Handles ReportUI_DataGridView.CellEndEdit

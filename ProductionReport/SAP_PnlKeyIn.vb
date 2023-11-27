@@ -23,28 +23,43 @@
         End Try
     End Sub
 
-    Private Sub dgv_PnlKeyIn_CellValueChanged(sender As Object, e As DataGridViewCellEventArgs) Handles dgv_PnlKeyIn.CellValueChanged
+    'Private Sub dgv_PnlKeyIn_CellValueChanged(sender As Object, e As DataGridViewCellEventArgs) Handles dgv_PnlKeyIn.CellValueChanged
 
+    '    Try
+    '        If e.RowIndex >= 0 Then
+    '            Dim cell As DataGridViewCell = dgv_PnlKeyIn.Rows(e.RowIndex).Cells(e.ColumnIndex)
+    '            If ReportUI.AreaID = "93" AndAlso (IsNumeric(cell.Value.ToString) AndAlso (CInt(cell.Value.ToString) < 0 OrElse CInt(cell.Value.ToString) > CInt(SAP_Pnlqty))) OrElse (Not IsNumeric(cell.Value.ToString) And UCase(cell.Value.ToString) <> "X") Then
+    '                cell.Value = ""
+    '                MessageBox.Show("請輸入1~" + SAP_Pnlqty + "，或請輸入""X""")
+    '            ElseIf ReportUI.AreaID = "93" And UCase(cell.Value.ToString) = "X" Then
+    '                cell.Value = "X"
+    '            End If
+    '        End If
+    '    Catch ex As Exception
+    '        WriteLog(ex, LogFilePath, "dgv_PnlKeyIn_CellValueChanged")
+    '    End Try
+    'End Sub
+
+    Private Sub dgv_PnlKeyIn_CellEndEdit(sender As Object, e As DataGridViewCellEventArgs) Handles dgv_PnlKeyIn.CellEndEdit
         Try
-            If e.RowIndex > 0 Then
+            If e.RowIndex >= 0 Then
                 Dim cell As DataGridViewCell = dgv_PnlKeyIn.Rows(e.RowIndex).Cells(e.ColumnIndex)
-                If ReportUI.AreaID = "93" AndAlso CInt(Cell.Value.ToString) <= 0 AndAlso CInt(Cell.Value.ToString) > CInt(SAP_Pnlqty) AndAlso (Not IsNumeric(Cell.Value.ToString) And UCase(Cell.Value.ToString) <> "X") Then
-                    Cell.Value = ""
-                    MessageBox.Show("請輸入1~" + SAP_Pnlqty + "，或請輸入""X""")
-                ElseIf ReportUI.AreaID = "93" And UCase(Cell.Value.ToString) = "X" Then
-                    Cell.Value = "X"
-                ElseIf Not (IsNumeric(Cell.Value.ToString)) OrElse Cell.Value.ToString = "" Then
-                    Cell.Value = ""
-                    MessageBox.Show("請輸入數字")
-                ElseIf CInt(Cell.Value.ToString) <= 0 And CInt(Cell.Value.ToString) > CInt(SAP_Pnlqty) Then
-                    Cell.Value = ""
-                    MessageBox.Show("請輸入1~" + SAP_Pnlqty)
+                If ReportUI.AreaID = "93" Then
+                    If (IsNumeric(cell.Value.ToString) AndAlso (CInt(cell.Value.ToString) <= 0 OrElse CInt(cell.Value.ToString) > CInt(SAP_Pnlqty))) OrElse (Not IsNumeric(cell.Value.ToString) And UCase(cell.Value.ToString) <> "X") Then
+                        cell.Value = ""
+                        MessageBox.Show("請輸入1~" + SAP_Pnlqty + "，或請輸入""X""")
+                    ElseIf UCase(cell.Value.ToString) = "X" Then
+                        cell.Value = "X"
+                    End If
+                Else
+                    If (IsNumeric(cell.Value.ToString) AndAlso (CInt(cell.Value.ToString) <= 0 OrElse CInt(cell.Value.ToString) > CInt(SAP_Pnlqty))) OrElse Not IsNumeric(cell.Value.ToString) Then
+                        cell.Value = ""
+                        MessageBox.Show("請輸入1~" + SAP_Pnlqty)
+                    End If
                 End If
             End If
         Catch ex As Exception
-            WriteLog(ex, LogFilePath, "dgv_PnlKeyIn_CellValueChanged")
+            WriteLog(ex, LogFilePath, "dgv_PnlKeyIn_CellEndEdit")
         End Try
     End Sub
-
-
 End Class

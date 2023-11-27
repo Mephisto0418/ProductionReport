@@ -873,6 +873,7 @@ Public Class ReportUI
     End Sub
 
     Private Sub StopTimer()
+
         Thread.Sleep(30000)
         TimerRefresh.Start()
     End Sub

@@ -16,6 +16,7 @@ Public Class ProductionReport_Setting
     Dim Program As String = "ProductionReport_Setting"
     Dim isException As Boolean = False
     Dim ProcPkey As String = ""
+    Dim ProcPassword As New Dictionary(Of String, String)
     Dim ParaPkey As String = ""
     Dim ParaSort As Integer = 0
     Dim QID As String
@@ -27,6 +28,7 @@ Public Class ProductionReport_Setting
     Dim isError As Boolean = False
     Dim ParaColumn As String
     Dim F_SaveType As String
+
     '-----------------------------------DB參數----------------------------------------
     Dim DbProc As String = "[H3_Systematic].[dbo].[H3_Proc]" '報表設定Config DB
     Dim DbProcParameter As String = "[H3_Systematic].[dbo].[H3_Production_ProcParameter]" '欄位設定Config DB
@@ -96,11 +98,19 @@ Public Class ProductionReport_Setting
             DgvProc.Columns.Clear()
             '查詢目前站點資料
 
-            Dim cmd As String = "SELECT [Pkey],[Module] AS [模組] ,[Section] AS [課別] ,[Area] AS [區域名稱] ,[ProcName] AS [站點]  ,'****' AS [密碼] ,ISNULL([Location],'') AS [Location] ,ISNULL([MachineNo],'') AS [機台愉進編號] ,[Machine] AS [機台愉進名稱] 
+            Dim cmd As String = "SELECT [Pkey],[Module] AS [模組] ,[Section] AS [課別] ,[Area] AS [區域名稱] ,[ProcName] AS [站點]  ,[Password] AS [密碼] ,ISNULL([Location],'') AS [Location] ,ISNULL([MachineNo],'') AS [機台愉進編號] ,[Machine] AS [機台愉進名稱] 
                                                       FROM " & DbProc & " WITH(NOLOCK) 
                                                       ORDER BY [Pkey] DESC"
+            'Dim cmd As String = "SELECT [Pkey],[Module] AS [模組] ,[Section] AS [課別] ,[Area] AS [區域名稱] ,[ProcName] AS [站點]  ,'****' AS [密碼] ,ISNULL([Location],'') AS [Location] ,ISNULL([MachineNo],'') AS [機台愉進編號] ,[Machine] AS [機台愉進名稱] 
+            '                                          FROM " & DbProc & " WITH(NOLOCK) 
+            '                                          ORDER BY [Pkey] DESC"
             Dim ProcData As DataTable = SQL_Query(SQL_Conn_MQL03, cmd)
+            ProcPassword.Clear()
+            For Each row As DataRow In ProcData.Rows
+                ProcPassword.Add(row("區域名稱").ToString, row("密碼").ToString)
+            Next
             DgvProc.DataSource = ProcData
+            'DgvProc.Columns("密碼").Visible = False
             '將Pkey欄位轉成Button
 
             Proc_PkeyToButton()
@@ -134,7 +144,7 @@ Public Class ProductionReport_Setting
     Private Sub TxtProc_ProcName_KeyUp(sender As Object, e As KeyEventArgs) Handles TxtProc_ProcName.KeyUp
         Try
             If e.KeyData = Keys.Enter Then
-                Dim cmd As String = "SELECT DISTINCT [MachinePosition] FROM " & DbMachine & " WHERE [EnId] = 29 AND [GTID] IN (SELECT [data] FROM " & FxSpilt & "('" & TxtProc_ProcName.Text & "',','))"
+                Dim cmd As String = "SELECT DISTINCT ISNULL([MachinePosition],'') AS [MachinePosition] FROM " & DbMachine & " WHERE [EnId] = 29 AND [GTID] IN (SELECT ISNULL([Value],'') AS [Value] FROM " & FxSpilt & "('" & TxtProc_ProcName.Text & "',','))"
                 Dim dt As DataTable = SQL_Query(SQL_Conn_MQL03, cmd)
 
                 CboProc_Location.Items.Clear()
@@ -284,6 +294,12 @@ Public Class ProductionReport_Setting
     Private Sub DgvProc_CellContentClick(sender As Object, e As DataGridViewCellEventArgs) Handles DgvProc.CellContentClick
         Try
             If e.ColumnIndex = DgvProc.Columns("Pkey").Index AndAlso e.RowIndex >= 0 Then
+                Dim pw As String = InputBox("請輸入密碼：", "輸入密碼", "")
+                If pw <> ProcPassword(DgvProc.Rows(e.RowIndex).Cells("區域名稱").Value.ToString) Then
+                    MessageBox.Show("密碼輸入錯誤")
+                    Return
+                End If
+
                 '現有資料填入欄位
                 TxtProc_Module.Text = DgvProc.Rows(e.RowIndex).Cells("模組").Value.ToString
                 TxtProc_Section.Text = DgvProc.Rows(e.RowIndex).Cells("課別").Value.ToString

@@ -1145,7 +1145,6 @@ Partial Class ProductionReport_Setting
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow
         Me.Name = "ProductionReport_Setting"
         Me.Text = "ProductionReport_Setting"
-        Me.TopMost = True
         Me.TabMain.ResumeLayout(False)
         Me.TabProc.ResumeLayout(False)
         Me.TabProc.PerformLayout()

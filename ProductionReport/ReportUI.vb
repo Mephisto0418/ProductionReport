@@ -526,12 +526,10 @@ Public Class ReportUI
 
                             '確認面次
                             Dim face As String = ""
-                            If ReportUI_DataGridView.Rows(cell.RowIndex).Cells("面次").Value.ToString = "PF" Then
-                                face = "1"
-                            ElseIf ReportUI_DataGridView.Rows(cell.RowIndex).Cells("面次").Value.ToString = "PB" Then
+                            If ReportUI_DataGridView.Rows(cell.RowIndex).Cells("面次").Value.ToString = "PB" Then
                                 face = "2"
                             Else
-                                face = "0"
+                                face = "1"
                             End If
                             '20231012 修改可覆寫資料
                             Dim cmd As String = " UPDATE " & DbLogParameter & "

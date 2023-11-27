@@ -24,20 +24,21 @@
     End Sub
 
     Private Sub dgv_PnlKeyIn_CellValueChanged(sender As Object, e As DataGridViewCellEventArgs) Handles dgv_PnlKeyIn.CellValueChanged
-        Dim cell As DataGridViewCell = dgv_PnlKeyIn.Rows(e.RowIndex).Cells(e.ColumnIndex)
+
         Try
             If e.RowIndex > 0 Then
-                If ReportUI.AreaID = "93" AndAlso CInt(cell.Value.ToString) <= 0 AndAlso CInt(cell.Value.ToString) > CInt(SAP_Pnlqty) AndAlso (Not IsNumeric(cell.Value.ToString) And UCase(cell.Value.ToString) <> "X") Then
-                    cell.Value = ""
+                Dim cell As DataGridViewCell = dgv_PnlKeyIn.Rows(e.RowIndex).Cells(e.ColumnIndex)
+                If ReportUI.AreaID = "93" AndAlso CInt(Cell.Value.ToString) <= 0 AndAlso CInt(Cell.Value.ToString) > CInt(SAP_Pnlqty) AndAlso (Not IsNumeric(Cell.Value.ToString) And UCase(Cell.Value.ToString) <> "X") Then
+                    Cell.Value = ""
                     MessageBox.Show("請輸入1~" + SAP_Pnlqty + "，或請輸入""X""")
-                ElseIf ReportUI.AreaID = "93" And UCase(cell.Value.ToString) = "X" Then
-                    cell.Value = "X"
-                ElseIf Not (IsNumeric(cell.Value.ToString)) OrElse cell.Value.ToString = "" Then
-                    cell.Value = ""
+                ElseIf ReportUI.AreaID = "93" And UCase(Cell.Value.ToString) = "X" Then
+                    Cell.Value = "X"
+                ElseIf Not (IsNumeric(Cell.Value.ToString)) OrElse Cell.Value.ToString = "" Then
+                    Cell.Value = ""
                     MessageBox.Show("請輸入數字")
-                ElseIf CInt(cell.Value.ToString) <= 0 And CInt(cell.Value.ToString) > CInt(SAP_Pnlqty) Then
-                    cell.Value = ""
-                MessageBox.Show("請輸入1~" + SAP_Pnlqty)
+                ElseIf CInt(Cell.Value.ToString) <= 0 And CInt(Cell.Value.ToString) > CInt(SAP_Pnlqty) Then
+                    Cell.Value = ""
+                    MessageBox.Show("請輸入1~" + SAP_Pnlqty)
                 End If
             End If
         Catch ex As Exception

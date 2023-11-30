@@ -35,7 +35,7 @@ Public Class ReportUI
     Dim MFmodule As String = asr.Item("MFmodule")
     '11/06新增參數
     Dim CID As New Dictionary(Of String, String)
-    Dim ST As New Thread(AddressOf StopTimer)
+    'Dim ST As New Thread(AddressOf StopTimer)
 
     '-----------------------------------DB參數----------------------------------------
     Dim DbVersion As String = "[Datamation_H3].[dbo].[H3_Leo_Program_Version]" '版本卡控DB
@@ -414,6 +414,7 @@ Public Class ReportUI
             'isRefresh = False
             CheckColumn()
             ReportUI_DataGridView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.ColumnHeader
+            ReportUI_DataGridView.Refresh()
             ReportUI_DataGridView.ResumeLayout()
             ReportUI_DataGridView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None
             TimerRefresh.Start()
@@ -862,19 +863,21 @@ Public Class ReportUI
     End Sub
 
     Private Sub Btn_RefreshStop_Click(sender As Object, e As EventArgs) Handles Btn_RefreshStop.Click
-        TimerRefresh.Stop()
-        If ST.ThreadState = ThreadState.WaitSleepJoin OrElse ST.ThreadState = ThreadState.Running Then
-            ST.Abort()
-            ST = New Thread(AddressOf StopTimer)
-        End If
-        ST.Start()
+        TimerRefresh.Enabled = False
+        TimerRefresh.Enabled = True
+        'If ST.ThreadState = ThreadState.WaitSleepJoin OrElse ST.ThreadState = ThreadState.Running OrElse ST.ThreadState = ThreadState.Stopped Then
+        '    ST.Abort()
+        '    ST = New Thread(AddressOf StopTimer)
+        'End If
+        'ST.Start()
     End Sub
 
-    Private Sub StopTimer()
+    'Private Sub StopTimer()
 
-        Thread.Sleep(30000)
-        TimerRefresh.Start()
-    End Sub
+    '    Thread.Sleep(30000)
+    '    TimerRefresh.Start()
+
+    'End Sub
 
     Private Sub ReportUI_DataGridView_KeyDown(sender As Object, e As KeyEventArgs) Handles ReportUI_DataGridView.KeyDown
         If e.Control Then

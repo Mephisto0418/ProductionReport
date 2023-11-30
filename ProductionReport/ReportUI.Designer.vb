@@ -87,7 +87,7 @@ Partial Class ReportUI
         '
         'Btn_TEST
         '
-        Me.Btn_TEST.Location = New System.Drawing.Point(1235, 31)
+        Me.Btn_TEST.Location = New System.Drawing.Point(1308, 31)
         Me.Btn_TEST.Name = "Btn_TEST"
         Me.Btn_TEST.Size = New System.Drawing.Size(75, 23)
         Me.Btn_TEST.TabIndex = 157
@@ -136,7 +136,7 @@ Partial Class ReportUI
         'Btn_RefreshStop
         '
         Me.Btn_RefreshStop.Font = New System.Drawing.Font("微軟正黑體", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
-        Me.Btn_RefreshStop.Location = New System.Drawing.Point(1127, 12)
+        Me.Btn_RefreshStop.Location = New System.Drawing.Point(1200, 12)
         Me.Btn_RefreshStop.Name = "Btn_RefreshStop"
         Me.Btn_RefreshStop.Size = New System.Drawing.Size(102, 42)
         Me.Btn_RefreshStop.TabIndex = 162

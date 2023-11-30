@@ -45,16 +45,16 @@
             If e.RowIndex >= 0 Then
                 Dim cell As DataGridViewCell = dgv_PnlKeyIn.Rows(e.RowIndex).Cells(e.ColumnIndex)
                 If ReportUI.AreaID = "93" Then
-                    If (IsNumeric(cell.Value.ToString) AndAlso (CInt(cell.Value.ToString) <= 0 OrElse CInt(cell.Value.ToString) > CInt(SAP_Pnlqty))) OrElse (Not IsNumeric(cell.Value.ToString) And UCase(cell.Value.ToString) <> "X") Then
+                    If IsNumeric(cell.Value.ToString) AndAlso (CInt(cell.Value.ToString) <= 0 OrElse CInt(cell.Value.ToString) > 48 OrElse (Not IsNumeric(cell.Value.ToString) And UCase(cell.Value.ToString) <> "X")) Then
                         cell.Value = ""
-                        MessageBox.Show("請輸入1~" + SAP_Pnlqty + "，或請輸入""X""")
+                        MessageBox.Show("請輸入1~48，或請輸入""X""")
                     ElseIf UCase(cell.Value.ToString) = "X" Then
                         cell.Value = "X"
                     End If
                 Else
-                    If (IsNumeric(cell.Value.ToString) AndAlso (CInt(cell.Value.ToString) <= 0 OrElse CInt(cell.Value.ToString) > CInt(SAP_Pnlqty))) OrElse Not IsNumeric(cell.Value.ToString) Then
+                    If IsNumeric(cell.Value.ToString) AndAlso (CInt(cell.Value.ToString) <= 0 OrElse CInt(cell.Value.ToString) > 48 OrElse Not IsNumeric(cell.Value.ToString)) Then
                         cell.Value = ""
-                        MessageBox.Show("請輸入1~" + SAP_Pnlqty)
+                        MessageBox.Show("請輸入1~48")
                     End If
                 End If
             End If

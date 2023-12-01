@@ -26,7 +26,7 @@ Module DataGridViewExport
     End Sub
     Sub ExportDataGridViewToDataTable(dataGridView As DataGridView)
         Try
-            Dim Procs As String() = ReportUI.ProcInfo(ReportUI.AreaName.SelectedItem.ToString)(1).Split(",")
+            Dim Procs As String() = ReportUI.ProcInfo(ReportUI.cboAreaName.SelectedItem.ToString)(1).Split(",")
             Dim index As Integer = 0
             For Each Proc In Procs
                 '刪除原檔案

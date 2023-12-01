@@ -27,7 +27,7 @@ Public Class ReportUI
     Dim Column_Formula As New List(Of String) '運算欄位
     Dim Column_Formula_All As String '運算欄位
     Dim Column_CCF As String() = {"Trace Width(TOP)", "Trace Width(BOTTOM)", "Trace Space(TOP)", "Trace Space(BOTTOM)", "CuPad(TOP)", "CuPad(BOTTOM)"} '內層線路特殊欄位
-    Dim Machine As String()
+    Dim Machine As New Dictionary(Of String, String)
     Dim Cmd_Param As String = ""
     Dim Cmd_Formula As New List(Of String())
     Dim HistPath As String = "ProductionReportHist\ProductionReportHist.exe"
@@ -36,6 +36,8 @@ Public Class ReportUI
     '11/06新增參數
     Dim CID As New Dictionary(Of String, String)
     'Dim ST As New Thread(AddressOf StopTimer)
+    '12/01 新增參數
+    Dim MachineState As New Dictionary(Of String, String)
 
     '-----------------------------------DB參數----------------------------------------
     Dim DbVersion As String = "[Datamation_H3].[dbo].[H3_Leo_Program_Version]" '版本卡控DB
@@ -51,6 +53,9 @@ Public Class ReportUI
     Dim DbLogParameter As String = "[H3_Systematic].[dbo].[H3_ProductionParameter]" '客製化欄位資料紀錄 DB
     'Dim DbLog As String = "[H3_Systematic].[dbo].[H3_ProductionLog_NEW]" '固定欄位資料紀錄 DB
     'Dim DbLogParameter As String = "[H3_Systematic].[dbo].[H3_ProductionParameter_NEW]" '客製化欄位資料紀錄 DB
+    Dim DbMachine As String = "[UTCHFACMRPT_REAL].[acme].[dbo].[PDL_Machine]" '愉進機台資料表
+    Dim DbRemark As String = "[H3_Systematic].[dbo].[ProductionReport_Remark]"
+    Dim DbRemark_Type As String = "[H3_Systematic].[dbo].[ProductionReport_Remark_Type]"
 
     Dim DbWIP As String = "[utchfacmrpt].[report].[dbo].[view_WIP]" '愉進WIP View表 ， 請注意各廠WIP表的欄位名稱是否一致，如果不同記得修改
 
@@ -71,7 +76,7 @@ Public Class ReportUI
         '暫停刷新資料直到選擇站點
         TimerRefresh.Stop()
         '站點名稱搜尋
-        AreaName.Items.Clear()
+        cboAreaName.Items.Clear()
 
         Using dt As DataTable = SQL_Query("SELECT  [OnlineVersion],ISNULL([TestVersion],0) AS [TestVersion] FROM " & DbVersion & " WHERE [Program] = '" & Program & "'")
             If Not (CInt(Version.Replace(".", "")) > CInt(dt(0)(0).ToString.Replace(".", "")) OrElse CInt(Version.Replace(".", "")) = CInt(dt(0)(1).ToString.Replace(".", ""))) Then
@@ -83,7 +88,7 @@ Public Class ReportUI
 
         Using dt As DataTable = SQL_Query("SELECT DISTINCT [Area],[Password],[ProcName],ISNULL([Location],'') AS [Location],[Pkey] FROM " & DbProc & " WITH (NOLOCK) WHERE [Module] = " & MFmodule & "　ORDER BY [Area]") '搜尋資料庫內的所有站點和密碼
             For Each row As DataRow In dt.Rows
-                AreaName.Items.Add(row("Area")) '在站點選項添加對應項目
+                cboAreaName.Items.Add(row("Area")) '在站點選項添加對應項目
                 Dim procinfo As String() = {row("Password"), row("ProcName"), row("Location"), row("Pkey")}
                 Me.ProcInfo.Add(row("Area"), procinfo) '新增與站點對應密碼
             Next
@@ -94,14 +99,14 @@ Public Class ReportUI
         Dim pi As PropertyInfo = type.GetProperty("DoubleBuffered", System.Reflection.BindingFlags.Instance Or System.Reflection.BindingFlags.NonPublic)
         pi.SetValue(ReportUI_DataGridView, True, Nothing)
     End Sub
-    Private Sub AreaName_SelectedIndexChanged(sender As Object, e As EventArgs) Handles AreaName.SelectedIndexChanged
+    Private Sub AreaName_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cboAreaName.SelectedIndexChanged
         Try
             '清空資料
-            If AreaName.SelectedItem <> Nothing AndAlso Area = "" Or Area <> AreaName.SelectedItem Then
+            If cboAreaName.SelectedItem <> Nothing AndAlso Area = "" Or Area <> cboAreaName.SelectedItem Then
                 Dim pw As String = InputBox("請輸入密碼：", "輸入密碼", "")
-                If pw <> ProcInfo(AreaName.SelectedItem.ToString)(0) Then
+                If pw <> ProcInfo(cboAreaName.SelectedItem.ToString)(0) Then
                     MessageBox.Show("密碼輸入錯誤")
-                    AreaName.SelectedItem = Area
+                    cboAreaName.SelectedItem = Area
                     Return
                 End If
                 'isRefresh = True
@@ -118,6 +123,9 @@ Public Class ReportUI
                 Cmd_Formula.Clear()
                 Requirement.Clear()
                 CID.Clear()
+
+                Area = cboAreaName.SelectedItem.ToString '報表名稱變數
+                AreaID = ProcInfo(cboAreaName.SelectedItem.ToString)(3) '報表ID變數
 
                 '查詢客製化欄位設定
                 '20231016 新增查詢[EnglishName],[isRequire],[DefaultValues]
@@ -136,7 +144,7 @@ Public Class ReportUI
                                                      FROM " & DbProcParameter & " AS pa
                                                      LEFT JOIN " & DbProc & " AS pr WITH (NOLOCK) ON pr.[Pkey] = pa.[AreaID]
                                                      LEFT JOIN " & DbProcParameterRule & " AS r ON pa.[QID] = r.[QID]
-                                                     WHERE pr.[Area] = '" & AreaName.SelectedItem.ToString & "'
+                                                     WHERE pr.[Area] = '" & Area & "'
                                                      ORDER BY [Sort]"
                 Dim dtProc As DataTable = SQL_Query(cmdProc)
 
@@ -167,22 +175,6 @@ Public Class ReportUI
                     If dgvCol.Name = "操作員" Then dgvCol.Width = 60
                     If dgvCol.Name = "面次" Then dgvCol.Width = 60
                 Next
-
-                '取得設定篩選機台
-                If dtProc.Rows.Count = 0 Then
-                    Dim cmdMachine As String = "SELECT [Machine] 
-                                     FROM " & DbProc & " WITH (NOLOCK)
-                                     WHERE [Area] = '" & AreaName.SelectedItem.ToString & "'"
-                    Dim dtMachine As DataTable = SQL_Query(cmdMachine)
-                    Dim newMachine As String() = dtMachine(0)("Machine").ToString.Split(",")
-                    ReDim Machine(newMachine.Length - 1)
-                    Machine = newMachine
-                Else
-                    Dim newMachine As String() = dtProc(0)("Machine").ToString.Split(",")
-                    ReDim Machine(newMachine.Length - 1)
-                    Machine = newMachine
-                End If
-
 
                 '將手動和自動帶入參數分開儲存、建立
                 For Each row As DataRow In dtProc.Rows
@@ -242,8 +234,53 @@ Public Class ReportUI
                 '    End If
                 'Next
 
-                Area = AreaName.SelectedItem '報表名稱變數
-                AreaID = ProcInfo(AreaName.SelectedItem.ToString)(3) '報表ID變數
+                '批間作業行為紀錄種類添加
+                Dim cmdRemarkType As String = "SELECT [Type], [TypeName], [Category] FROM " & DbRemark_Type & " WITH (NOLOCK) WHERE [Enable] = 1"
+                Using dtRemarkType As DataTable = SQL_Query(cmdRemarkType)
+                    For Each row As DataRow In dtRemarkType.Rows
+                        If row("Category").ToString = "1" Then
+                            cboType.Items.Add(row("Type").ToString) '加入分類下拉選單
+                        ElseIf row("Category").ToString = "2" Then
+                            MachineState.Add(row("Type").ToString, row("TypeName").ToString)
+                        End If
+                    Next
+                    cboType.SelectedIndex = 0
+                End Using
+
+                '取得設定機台
+                'If dtProc.Rows.Count = 0 Then
+                '    Dim cmdMachine As String = "SELECT [Machine] 
+                '                     FROM " & DbProc & " WITH (NOLOCK)
+                '                     WHERE [Area] = '" & cboAreaName.SelectedItem.ToString & "'"
+                '    Dim dtMachine As DataTable = SQL_Query(cmdMachine)
+                '    Dim newMachine As String() = dtMachine(0)("Machine").ToString.Split(",")
+                '    ReDim Machine(newMachine.Length - 1)
+                '    Machine = newMachine
+                'Else
+                '    Dim newMachine As String() = dtProc(0)("Machine").ToString.Split(",")
+                '    ReDim Machine(newMachine.Length - 1)
+                '    Machine = newMachine
+                'End If
+                Dim cmdMachine As String = "SELECT ISNULL(m.[MachineName],'') AS [MachineName], ISNULL(m.[MachineNo],'') AS [MachineNo] 
+                                                                          FROM " & DbMachine & " AS m WITH(NOLOCK)
+                                                                          INNER JOIN " & DbProc & " AS p WITH(NOLOCK) 
+                                                                          ON p.[ProcName] LIKE ('%' + ISNULL(m.[GTID],'') + '%') AND (ISNULL(p.[MachineNo],'') LIKE ('%' + ISNULL(m.[MachineNo],'') + '%') OR (ISNULL(p.[MachineNo],'') = '')) 
+                                                                          OR (p.[ProcName] NOT LIKE ('%' + ISNULL(m.[GTID],'') + '%') AND (ISNULL(p.[MachineNo],'') LIKE ('%' + ISNULL(m.[MachineNo],'') + '%')))
+                                                                          WHERE m.[EnId] = 29 AND p.[Pkey] = " & AreaID & " AND ISNULL(m.[AssWay],'') NOT LIKE '%移%' AND ISNULL(m.[GTID],'') <> ''"
+                Using dtMachine As DataTable = SQL_Query(cmdMachine)
+
+                    For Each row As DataRow In dtMachine.Rows
+                        'Machine.Add(row("MachineNo").ToString, row("MachineName").ToString) '建立機台名稱編號對照
+                        'cboMachine.Items.Add(row("MachineNo").ToString) '加入機台下拉選單
+                        Machine.Add(row("MachineName").ToString, row("MachineNo").ToString) '建立機台名稱編號對照
+                        cboMachine.Items.Add(row("MachineName").ToString) '加入機台下拉選單
+                    Next
+                    cboMachine.SelectedIndex = 0
+                End Using
+
+
+
+
             Else
                 Return
             End If
@@ -263,28 +300,28 @@ Public Class ReportUI
             'isRefresh = True
             TimerRefresh.Stop()
             'Dim proc As String() = ProcInfo(AreaName.SelectedItem.ToString)(1).Split(",")
-            Dim StrMachine As String = ""
-            For Each mac In Machine
-                StrMachine += mac + ","
-            Next
-            StrMachine = StrMachine.Substring(0, StrMachine.Length - 1)
+            'Dim StrMachine As String = ""
+            'For Each mac In Machine
+            '    StrMachine += mac + ","
+            'Next
+            'StrMachine = StrMachine.Substring(0, StrMachine.Length - 1)
             Dim Parameters As New List(Of String())
             'For i = 0 To proc.Length - 1
             '    Try
-            '        'Dim cmdproc As String = "SET ARITHABORT ON EXECUTE [H3_Systematic].[dbo].[ProductionQuery_Insert] @ProcName = '" & proc(i).Substring(0, 3) & "%" + proc(i).Substring(3, 3) & "%', @Location = '" & ProcInfo(AreaName.SelectedItem.ToString)(2) & "%', @AreaID = " & AreaID & ", @Machine = '" & StrMachine & "'"
-            '        'SQL_Query(cmdproc)
-            '        Parameters.Clear()
-            '        Parameters.Add({"@ProcName", proc(i).Substring(0, 3) & "%" + proc(i).Substring(3, 3) & "%"})
-            '        Parameters.Add({"@Location", ProcInfo(AreaName.SelectedItem.ToString)(2) & "%"})
-            '        Parameters.Add({"@AreaID", AreaID})
-            '        Parameters.Add({"@Machine", StrMachine})
-            '        SQL_StoredProcedure(SpFixedColumn, Parameters)
-            '    Catch ex As SqlException
-            '    End Try
-            'Next
+            '        'Dim cmdproc As String = "Set ARITHABORT On EXECUTE [H3_Systematic].[dbo].[ProductionQuery_Insert] @ProcName = '" & proc(i).Substring(0, 3) & "%" + proc(i).Substring(3, 3) & "%', @Location = '" & ProcInfo(AreaName.SelectedItem.ToString)(2) & "%', @AreaID = " & AreaID & ", @Machine = '" & StrMachine & "'"
+                    '        'SQL_Query(cmdproc)
+                    '        Parameters.Clear()
+                    '        Parameters.Add({"@ProcName", proc(i).Substring(0, 3) & "%" + proc(i).Substring(3, 3) & "%"})
+                    '        Parameters.Add({"@Location", ProcInfo(AreaName.SelectedItem.ToString)(2) & "%"})
+                    '        Parameters.Add({"@AreaID", AreaID})
+                    '        Parameters.Add({"@Machine", StrMachine})
+                    '        SQL_StoredProcedure(SpFixedColumn, Parameters)
+                    '    Catch ex As SqlException
+                    '    End Try
+                    'Next
 
-            'Dim cmdcol As String = "EXECUTE [H3_Systematic].[dbo].[ProductionQuery_Columns_Insert] @AreaID = '" & AreaID & "'"
-            Parameters.Clear()
+                    'Dim cmdcol As String = "EXECUTE [H3_Systematic].[dbo].[ProductionQuery_Columns_Insert] @AreaID = '" & AreaID & "'"
+                    Parameters.Clear()
             Parameters.Add({"@AreaID", AreaID})
 
             Try
@@ -418,6 +455,9 @@ Public Class ReportUI
             ReportUI_DataGridView.ResumeLayout()
             ReportUI_DataGridView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None
             TimerRefresh.Start()
+            QueryMachineState()
+            dtpStartTime.Text = Format(Now.AddHours(-1), "yyyy/MM/dd HH:mm:ss")
+            dtpEndTime.Text = Format(Now, "yyyy/MM/dd HH:mm:ss")
         Catch ex As Exception
             WriteLog(ex, LogFilePath, "TimerRefresh")
             'isRefresh = False
@@ -824,9 +864,13 @@ Public Class ReportUI
     End Sub
 
     Private Sub ReportUI_DataGridView_CellDoubleClick(sender As Object, e As DataGridViewCellEventArgs) Handles ReportUI_DataGridView.CellDoubleClick
-        If e.RowIndex > 0 And e.ColumnIndex > 0 Then
-            SAP_CheckPnl(ReportUI_DataGridView.Rows(e.RowIndex), e, AreaID)
-        End If
+        Try
+            If e.RowIndex > 0 And e.ColumnIndex > 0 Then
+                SAP_CheckPnl(ReportUI_DataGridView.Rows(e.RowIndex), e, AreaID)
+            End If
+        Catch ex As Exception
+            WriteLog(ex, LogFilePath, "ReportUI_DataGridView_CellDoubleClick")
+        End Try
     End Sub
 
     Private Sub TxtLot_KeyUp(sender As Object, e As KeyEventArgs) Handles TxtLot.KeyUp
@@ -863,13 +907,18 @@ Public Class ReportUI
     End Sub
 
     Private Sub Btn_RefreshStop_Click(sender As Object, e As EventArgs) Handles Btn_RefreshStop.Click
-        TimerRefresh.Enabled = False
-        TimerRefresh.Enabled = True
-        'If ST.ThreadState = ThreadState.WaitSleepJoin OrElse ST.ThreadState = ThreadState.Running OrElse ST.ThreadState = ThreadState.Stopped Then
-        '    ST.Abort()
-        '    ST = New Thread(AddressOf StopTimer)
-        'End If
-        'ST.Start()
+        Try
+            TimerRefresh.Enabled = False
+            TimerRefresh.Enabled = True
+            'If ST.ThreadState = ThreadState.WaitSleepJoin OrElse ST.ThreadState = ThreadState.Running OrElse ST.ThreadState = ThreadState.Stopped Then
+            '    ST.Abort()
+            '    ST = New Thread(AddressOf StopTimer)
+            'End If
+            'ST.Start()
+
+        Catch ex As Exception
+            WriteLog(ex, LogFilePath, "Btn_RefreshStop_Click")
+        End Try
     End Sub
 
     'Private Sub StopTimer()
@@ -880,19 +929,24 @@ Public Class ReportUI
     'End Sub
 
     Private Sub ReportUI_DataGridView_KeyDown(sender As Object, e As KeyEventArgs) Handles ReportUI_DataGridView.KeyDown
-        If e.Control Then
-            Select Case e.KeyCode
-                Case Keys.C
-                    CopyCells()
-                    e.Handled = True
-                Case Keys.V
-                    PasteCells()
-                    e.Handled = True
-            End Select
-            'ElseIf e.KeyCode = Keys.Delete Then
-            '    ReportUI_DataGridView.CurrentCell.Value = ""
-            '    e.Handled = True
-        End If
+        Try
+            If e.Control Then
+                Select Case e.KeyCode
+                    Case Keys.C
+                        CopyCells()
+                        e.Handled = True
+                    Case Keys.V
+                        PasteCells()
+                        e.Handled = True
+                End Select
+                'ElseIf e.KeyCode = Keys.Delete Then
+                '    ReportUI_DataGridView.CurrentCell.Value = ""
+                '    e.Handled = True
+            End If
+        Catch ex As Exception
+            WriteLog(ex, LogFilePath, "ReportUI_DataGridView_KeyDown")
+        End Try
+
     End Sub
 
     Private Sub CopyCells()
@@ -918,7 +972,69 @@ Public Class ReportUI
         Next
     End Sub
 
+    Private Sub cboMachine_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cboMachine.SelectedIndexChanged
+        Try
+            QueryMachineState()
+        Catch ex As Exception
+            WriteLog(ex, LogFilePath, "cboMachine_SelectedIndexChanged")
+        End Try
+    End Sub
 
+    Private Sub cboMachine_DropDown(sender As Object, e As EventArgs) Handles cboMachine.DropDown
+        For Each item In cboMachine.Items
+            Dim tmpLabel As New Label
+            tmpLabel.Text = cboMachine.GetItemText(item)
+            tmpLabel.Font = cboMachine.Font
+            If tmpLabel.PreferredSize.Width > cboMachine.DropDownWidth Then cboMachine.DropDownWidth = tmpLabel.PreferredSize.Width
+        Next
+    End Sub
+
+
+    Private Sub QueryMachineState()
+        Try
+            If cboMachine.SelectedItem <> "" Then
+                Dim cmd As String = "SELECT TOP 1 [Machinestatus] FROM " & DbMachine & " WITH (NOLOCK) WHERE [MachineNo] = '" & Machine(cboMachine.SelectedItem) & "'"
+                Using dt As DataTable = SQL_Query(cmd)
+                    If dt.Rows.Count > 0 Then
+                        If MachineState.ContainsKey(dt(0)("Machinestatus").ToString) Then
+                            txtMachineState.Text = MachineState(dt(0)("Machinestatus").ToString)
+                        Else
+                            txtMachineState.Text = dt(0)("Machinestatus").ToString
+                        End If
+                    End If
+                End Using
+            End If
+        Catch ex As Exception
+            WriteLog(ex, LogFilePath, "QueryMachineState")
+        End Try
+    End Sub
+
+    Private Sub btnRemarkUpload_Click(sender As Object, e As EventArgs) Handles btnRemarkUpload.Click
+        Try
+            If cboMachine.Text <> "" AndAlso cboType.Text <> "" Then
+                Dim msg As String
+                Dim title As String
+                Dim style As MsgBoxStyle
+                Dim response As MsgBoxResult
+                msg = "請確認內容是否正確?"
+                style = MsgBoxStyle.DefaultButton2 Or MsgBoxStyle.Question Or MsgBoxStyle.YesNo
+                title = "內容確認"
+                response = MsgBox(msg, style, title)
+                If response = MsgBoxResult.Yes Then
+                    Dim cmd As String = "INSERT INTO " & DbRemark & "
+                                                              ([AreaID],[MachineNo],[StartTime],[EndTime],[Type],[Remark],[MachineState])
+                                                              VALUES('" & AreaID & "','" & cboMachine.Text & "','" & dtpStartTime.Text & "','" & dtpEndTime.Text & "','" & cboType.Text & "','" & txtContent.Text & "','" & txtMachineState.Text & "')"
+                    SQL_Query(cmd)
+                    MessageBox.Show("上傳完成")
+                    txtContent.Text = ""
+                Else
+                    Return
+                End If
+            End If
+        Catch ex As Exception
+            WriteLog(ex, LogFilePath, "btnRemarkUpload_Click")
+        End Try
+    End Sub
 
     'Private Sub ReportUI_DataGridView_CellEndEdit(sender As Object, e As DataGridViewCellEventArgs) Handles ReportUI_DataGridView.CellEndEdit
     '    Try

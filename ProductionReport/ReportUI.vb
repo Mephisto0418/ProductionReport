@@ -12,7 +12,7 @@ Imports System.Data.SqlClient
 '20231030 Boris            建立Table & SP名稱的變數
 
 Public Class ReportUI
-    Dim Version As String = "2.0.23.11.27.1"
+    Dim Version As String = "2.0.23.12.01.1"
     Dim Program As String = "ProductionReport"
     Public Area As String = ""
     Public AreaID As String = ""
@@ -239,7 +239,7 @@ Public Class ReportUI
                 Using dtRemarkType As DataTable = SQL_Query(cmdRemarkType)
                     For Each row As DataRow In dtRemarkType.Rows
                         If row("Category").ToString = "1" Then
-                            cboType.Items.Add(row("Type").ToString) '加入分類下拉選單
+                            cboType.Items.Add(row("TypeName").ToString) '加入分類下拉選單
                         ElseIf row("Category").ToString = "2" Then
                             MachineState.Add(row("Type").ToString, row("TypeName").ToString)
                         End If
@@ -1023,10 +1023,10 @@ Public Class ReportUI
                 If response = MsgBoxResult.Yes Then
                     Dim cmd As String = "INSERT INTO " & DbRemark & "
                                                               ([AreaID],[MachineNo],[StartTime],[EndTime],[Type],[Remark],[MachineState])
-                                                              VALUES('" & AreaID & "','" & cboMachine.Text & "','" & dtpStartTime.Text & "','" & dtpEndTime.Text & "','" & cboType.Text & "','" & txtContent.Text & "','" & txtMachineState.Text & "')"
+                                                              VALUES('" & AreaID & "','" & cboMachine.Text & "','" & dtpStartTime.Text & "','" & dtpEndTime.Text & "','" & cboType.Text & "','" & txtRemark.Text & "','" & txtMachineState.Text & "')"
                     SQL_Query(cmd)
                     MessageBox.Show("上傳完成")
-                    txtContent.Text = ""
+                    txtRemark.Text = ""
                 Else
                     Return
                 End If

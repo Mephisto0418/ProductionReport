@@ -180,6 +180,7 @@ Partial Class ReportUI
         '
         'cboMachine
         '
+        Me.cboMachine.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.cboMachine.FlatStyle = System.Windows.Forms.FlatStyle.System
         Me.cboMachine.Font = New System.Drawing.Font("微軟正黑體", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
         Me.cboMachine.FormattingEnabled = True

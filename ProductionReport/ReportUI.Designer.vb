@@ -180,7 +180,6 @@ Partial Class ReportUI
         '
         'cboMachine
         '
-        Me.cboMachine.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.cboMachine.FlatStyle = System.Windows.Forms.FlatStyle.System
         Me.cboMachine.Font = New System.Drawing.Font("微軟正黑體", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
         Me.cboMachine.FormattingEnabled = True
@@ -316,11 +315,11 @@ Partial Class ReportUI
         '
         Me.txtMachineState.BackColor = System.Drawing.Color.Gold
         Me.txtMachineState.BorderStyle = System.Windows.Forms.BorderStyle.None
-        Me.txtMachineState.Font = New System.Drawing.Font("微軟正黑體", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.txtMachineState.Font = New System.Drawing.Font("微軟正黑體", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
         Me.txtMachineState.Location = New System.Drawing.Point(546, 50)
         Me.txtMachineState.Name = "txtMachineState"
         Me.txtMachineState.ReadOnly = True
-        Me.txtMachineState.Size = New System.Drawing.Size(108, 18)
+        Me.txtMachineState.Size = New System.Drawing.Size(152, 18)
         Me.txtMachineState.TabIndex = 175
         Me.txtMachineState.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
         '

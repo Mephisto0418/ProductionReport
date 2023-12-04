@@ -38,7 +38,6 @@ Public Class ReportUI
     'Dim ST As New Thread(AddressOf StopTimer)
     '12/01 新增參數
     Dim MachineState As New Dictionary(Of String, String)
-
     '-----------------------------------DB參數----------------------------------------
     Dim DbVersion As String = "[Datamation_H3].[dbo].[H3_Leo_Program_Version]" '版本卡控DB
     Dim DbProc As String = "[H3_Systematic].[dbo].[H3_Proc]" '報表設定Config DB
@@ -98,6 +97,10 @@ Public Class ReportUI
         Dim type As Type = ReportUI_DataGridView.GetType()
         Dim pi As PropertyInfo = type.GetProperty("DoubleBuffered", System.Reflection.BindingFlags.Instance Or System.Reflection.BindingFlags.NonPublic)
         pi.SetValue(ReportUI_DataGridView, True, Nothing)
+
+        If Not {"0", "4"}.Contains(MFmodule) Then
+            grpRemark.Visible = False
+        End If
     End Sub
     Private Sub AreaName_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cboAreaName.SelectedIndexChanged
         Try
@@ -123,6 +126,9 @@ Public Class ReportUI
                 Cmd_Formula.Clear()
                 Requirement.Clear()
                 CID.Clear()
+                MachineState.Clear()
+                Machine.Clear()
+                txtRemark.Text = ""
 
                 Area = cboAreaName.SelectedItem.ToString '報表名稱變數
                 AreaID = ProcInfo(cboAreaName.SelectedItem.ToString)(3) '報表ID變數
@@ -160,12 +166,12 @@ Public Class ReportUI
                         dgvCol.ReadOnly = True
                         dgvCol.DefaultCellStyle.BackColor = SystemColors.ControlLight
                     End If
-                    dgvCol.SortMode = DataGridViewColumnSortMode.NotSortable '變更欄位不可排序
+                    'dgvCol.SortMode = DataGridViewColumnSortMode.NotSortable '變更欄位不可排序
                     If dgvCol.Name = "班別" Then dgvCol.Width = 50
                     If dgvCol.Name = "前站結束時間" OrElse dgvCol.Name = "開始時間" OrElse dgvCol.Name = "結束時間" OrElse dgvCol.Name = "機台" Then dgvCol.Width = 110
                     If dgvCol.Name = "日期" Then
                         dgvCol.Width = 110
-                        dgvCol.SortMode = DataGridViewColumnSortMode.Automatic
+                        'dgvCol.SortMode = DataGridViewColumnSortMode.Automatic
                     End If
                     If dgvCol.Name = "批號" Then dgvCol.Width = 100
                     If dgvCol.Name = "料號" Then dgvCol.Width = 80
@@ -237,6 +243,7 @@ Public Class ReportUI
                 '批間作業行為紀錄種類添加
                 Dim cmdRemarkType As String = "SELECT [Type], [TypeName], [Category] FROM " & DbRemark_Type & " WITH (NOLOCK) WHERE [Enable] = 1"
                 Using dtRemarkType As DataTable = SQL_Query(cmdRemarkType)
+                    cboType.Items.Clear()
                     For Each row As DataRow In dtRemarkType.Rows
                         If row("Category").ToString = "1" Then
                             cboType.Items.Add(row("TypeName").ToString) '加入分類下拉選單
@@ -244,7 +251,9 @@ Public Class ReportUI
                             MachineState.Add(row("Type").ToString, row("TypeName").ToString)
                         End If
                     Next
-                    cboType.SelectedIndex = 0
+                    If cboType.Items.Count > 0 Then
+                        cboType.SelectedIndex = 0
+                    End If
                 End Using
 
                 '取得設定機台
@@ -268,14 +277,16 @@ Public Class ReportUI
                                                                           OR (p.[ProcName] NOT LIKE ('%' + ISNULL(m.[GTID],'') + '%') AND (ISNULL(p.[MachineNo],'') LIKE ('%' + ISNULL(m.[MachineNo],'') + '%')))
                                                                           WHERE m.[EnId] = 29 AND p.[Pkey] = " & AreaID & " AND ISNULL(m.[AssWay],'') NOT LIKE '%移%' AND ISNULL(m.[GTID],'') <> ''"
                 Using dtMachine As DataTable = SQL_Query(cmdMachine)
-
+                    cboMachine.Items.Clear()
                     For Each row As DataRow In dtMachine.Rows
                         'Machine.Add(row("MachineNo").ToString, row("MachineName").ToString) '建立機台名稱編號對照
                         'cboMachine.Items.Add(row("MachineNo").ToString) '加入機台下拉選單
                         Machine.Add(row("MachineName").ToString, row("MachineNo").ToString) '建立機台名稱編號對照
                         cboMachine.Items.Add(row("MachineName").ToString) '加入機台下拉選單
                     Next
-                    cboMachine.SelectedIndex = 0
+                    If cboMachine.Items.Count > 0 Then
+                        cboMachine.SelectedIndex = 0
+                    End If
                 End Using
 
 
@@ -980,7 +991,7 @@ Public Class ReportUI
         End Try
     End Sub
 
-    Private Sub cboMachine_DropDown(sender As Object, e As EventArgs) Handles cboMachine.DropDown
+    Private Sub Combox_DropDown(sender As Object, e As EventArgs) Handles cboMachine.DropDown, cboAreaName.DropDown
         For Each item In cboMachine.Items
             Dim tmpLabel As New Label
             tmpLabel.Text = cboMachine.GetItemText(item)
@@ -993,11 +1004,11 @@ Public Class ReportUI
     Private Sub QueryMachineState()
         Try
             If cboMachine.SelectedItem <> "" Then
-                Dim cmd As String = "SELECT TOP 1 [Machinestatus] FROM " & DbMachine & " WITH (NOLOCK) WHERE [MachineNo] = '" & Machine(cboMachine.SelectedItem) & "'"
+                Dim cmd As String = "SELECT TOP 1 [Machinestatus] FROM " & DbMachine & " WITH (NOLOCK) WHERE [MachineNo] = '" & Machine(cboMachine.Text) & "'"
                 Using dt As DataTable = SQL_Query(cmd)
                     If dt.Rows.Count > 0 Then
                         If MachineState.ContainsKey(dt(0)("Machinestatus").ToString) Then
-                            txtMachineState.Text = MachineState(dt(0)("Machinestatus").ToString)
+                            txtMachineState.Text = dt(0)("Machinestatus").ToString & "_" & MachineState(dt(0)("Machinestatus").ToString)
                         Else
                             txtMachineState.Text = dt(0)("Machinestatus").ToString
                         End If
@@ -1023,17 +1034,23 @@ Public Class ReportUI
                 If response = MsgBoxResult.Yes Then
                     Dim cmd As String = "INSERT INTO " & DbRemark & "
                                                               ([AreaID],[MachineNo],[StartTime],[EndTime],[Type],[Remark],[MachineState])
-                                                              VALUES('" & AreaID & "','" & cboMachine.Text & "','" & dtpStartTime.Text & "','" & dtpEndTime.Text & "','" & cboType.Text & "','" & txtRemark.Text & "','" & txtMachineState.Text & "')"
+                                                              VALUES('" & AreaID & "','" & Machine(cboMachine.Text) & "','" & dtpStartTime.Text & "','" & dtpEndTime.Text & "','" & cboType.Text & "','" & txtRemark.Text & "','" & txtMachineState.Text & "')"
                     SQL_Query(cmd)
                     MessageBox.Show("上傳完成")
                     txtRemark.Text = ""
                 Else
                     Return
                 End If
+            Else
+                MessageBox.Show("請確認機台&備註分類已選擇完成")
             End If
         Catch ex As Exception
             WriteLog(ex, LogFilePath, "btnRemarkUpload_Click")
         End Try
+    End Sub
+
+    Private Sub cboMachine_TextChanged(sender As Object, e As EventArgs) Handles cboMachine.TextChanged
+
     End Sub
 
     'Private Sub ReportUI_DataGridView_CellEndEdit(sender As Object, e As DataGridViewCellEventArgs) Handles ReportUI_DataGridView.CellEndEdit

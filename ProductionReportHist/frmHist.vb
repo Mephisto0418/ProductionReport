@@ -2,6 +2,21 @@
 
 Public Class frmHist
     Private intQueryMode As Integer = 1
+    '1204 新增參數
+    Dim DbProcParameter As String = "[H3_Systematic].[dbo].[H3_Production_ProcParameter]" '欄位設定Config DB
+    Dim DbProcParameterRule As String = "[H3_Systematic].[dbo].[H3_Production_ProcParameter_Rule]" '欄位帶入設定Config DB
+    Dim DbLog As String = "[H3_Systematic].[dbo].[H3_ProductionLog]" '固定欄位資料紀錄 DB
+    Dim DbLogParameter As String = "[H3_Systematic].[dbo].[H3_ProductionParameter]" '客製化欄位資料紀錄 DB
+    Dim DbMachine As String = "[UTCHFACMRPT_REAL].[acme].[dbo].[PDL_Machine]" '愉進機台資料表
+    Dim DbRemark As String = "[H3_Systematic].[dbo].[ProductionReport_Remark]"
+    Dim DbRemark_Type As String = "[H3_Systematic].[dbo].[ProductionReport_Remark_Type]"
+
+    Dim DbVersion As String = "[Datamation_H3].[dbo].[H3_Leo_Program_Version]" '版本卡控DB
+    Dim DbProc As String = "[H3_Systematic].[dbo].[H3_Proc]" '報表設定Config DB
+    Dim DbHist As String = "[UTCHFACMRPT_REAL].[report].[dbo].[view_Hist]"
+    Dim DbPartInfo As String = "[UTCHFACMRPT_REAL].[acme].[dbo].[PartInfo_ACME]"
+
+
     Private Sub frmHist_Load(sender As Object, e As EventArgs) Handles Me.Load
         dtpStartDateTime.MaxDate = Now
         dtpEndDateTime.MaxDate = Now
@@ -14,7 +29,7 @@ Public Class frmHist
 
         dgvResult.ReadOnly = True
         Dim strQuerySection As String = "SELECT DISTINCT [Section]
-                                         FROM [H3_Systematic].[dbo].[H3_Proc]"
+                                         FROM " & DbProc & " WITH(NOLOCK)"
 
         Dim dtStation As New DataTable
         dtStation = SQL_Select(strQuerySection, sqlconnMQL03)
@@ -96,7 +111,7 @@ Public Class frmHist
 
         If clbSection.CheckedItems.Count > 0 Then
             Dim strQueryStation As String = "SELECT DISTINCT [ProcName]
-                                             FROM [H3_Systematic].[dbo].[H3_Proc] WITH(NOLOCK)
+                                             FROM " & DbProc & " WITH(NOLOCK)
                                              WHERE [Section] IN ("
 
             For i As Integer = 1 To clbSection.Items.Count - 1
@@ -143,8 +158,8 @@ Public Class frmHist
     Private Sub txtLotNo_KeyUp(sender As Object, e As KeyEventArgs) Handles txtLotNo.KeyUp
         If e.KeyData = Keys.Enter Then
             If txtLotNo.Text.Trim() <> "" Then
-                Dim strQueryPartNum As String = "Select TOP 1 RTRIM([PartNum]) + RTRIM([Revision]) 
-                                             from utchfacmrpt.report.dbo.view_Hist where lotnum = @LotNum"
+                Dim strQueryPartNum As String = "SELECT TOP 1 RTRIM([partnum]) + RTRIM([revision]) 
+                                             FROM  " & DbHist & "  WHERE [lotnum] = @LotNum"
                 Dim dtPartNum As New DataTable
                 Dim sqldaQueryPartNum As New SqlDataAdapter
                 sqldaQueryPartNum.SelectCommand = sqlconnMQL03.CreateCommand
@@ -161,10 +176,10 @@ Public Class frmHist
 
                 Dim strPartNum As String = dtPartNum.Rows(0).Item(0).ToString().Trim()
 
-                Dim strQueryLayerName As String = "SELECT CASE WHEN [PressCount] = 0 THEN 'Core' ELSE 'BU' + CONVERT(nvarchar,[PressCount]) END AS B你媽
-                                               FROM [utchfacmrpt].[acme].[dbo].[PartInfo_ACME]
+                Dim strQueryLayerName As String = "SELECT CASE WHEN [PressCount] = 0 THEN 'Core' ELSE 'BU' + CONVERT(nvarchar,[PressCount]) END AS [BU]
+                                               FROM " & DbPartInfo & "
                                                WHERE RTRIM([PartNum]) + RTRIM([Revision]) = '" & strPartNum & "'
-                                               ORDER BY [B你媽]"
+                                               ORDER BY [BU]"
                 Dim dtLayer As New DataTable
                 dtLayer = SQL_Select(strQueryLayerName, sqlconnMQL03)
 
@@ -248,7 +263,7 @@ Public Class frmHist
             Dim sqlrdQueryByLot As SqlDataReader = sqlcmdQueryByLot.ExecuteReader()
 
             dtShow.Load(sqlrdQueryByLot)
-            dtShow.Columns.Remove("B你媽")
+            dtShow.Columns.Remove("BU")
             dtShow.Columns.Remove("PID")
             dgvResult.DataSource = dtShow
 
@@ -273,7 +288,7 @@ Public Class frmHist
             Dim sqlrdQueryByTime As SqlDataReader = sqlcmdQueryByTime.ExecuteReader()
 
             dtShow.Load(sqlrdQueryByTime)
-            dtShow.Columns.Remove("B你媽")
+            dtShow.Columns.Remove("BU")
             dtShow.Columns.Remove("PID")
             dgvResult.DataSource = dtShow
         End If

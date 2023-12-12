@@ -23,7 +23,7 @@ Public Class ReportUI
     Dim isRefresh As Boolean = False '判定是否為是Timer刷新
     Dim Column_All As New List(Of String) '浮動欄位
     Dim Column As New List(Of String) '手動輸入欄位
-    Dim Column_Query As New List(Of String) '自動帶入欄位
+    Public Column_Query As New List(Of String) '自動帶入欄位
     Dim Column_Formula As New List(Of String) '運算欄位
     Dim Column_Formula_All As String '運算欄位
     Dim Column_CCF As String() = {"Trace Width(TOP)", "Trace Width(BOTTOM)", "Trace Space(TOP)", "Trace Space(BOTTOM)", "CuPad(TOP)", "CuPad(BOTTOM)"} '內層線路特殊欄位
@@ -38,6 +38,8 @@ Public Class ReportUI
     'Dim ST As New Thread(AddressOf StopTimer)
     '12/01 新增參數
     Dim MachineState As New Dictionary(Of String, String)
+    '12/08 新增
+    Public ChangeValueIgnore As Boolean = False
     '-----------------------------------DB參數----------------------------------------
     Dim DbVersion As String = "[Datamation_H3].[dbo].[H3_Leo_Program_Version]" '版本卡控DB
     Dim DbProc As String = "[H3_Systematic].[dbo].[H3_Proc]" '報表設定Config DB
@@ -101,13 +103,19 @@ Public Class ReportUI
         If Not {"0", "4"}.Contains(MFmodule) Then
             grpRemark.Visible = False
         End If
+
+        TimeSetting()
+
     End Sub
     Private Sub AreaName_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cboAreaName.SelectedIndexChanged
         Try
             '清空資料
             If cboAreaName.SelectedItem <> Nothing AndAlso Area = "" Or Area <> cboAreaName.SelectedItem Then
-                Dim pw As String = InputBox("請輸入密碼：", "輸入密碼", "")
-                If pw <> ProcInfo(cboAreaName.SelectedItem.ToString)(0) Then
+                Dim pw As String = InputBox("請輸入密碼：", "輸入密碼", " ")
+                If pw = "" Then
+                    cboAreaName.SelectedIndex = -1
+                    Return
+                ElseIf pw <> ProcInfo(cboAreaName.SelectedItem.ToString)(0) Then
                     MessageBox.Show("密碼輸入錯誤")
                     cboAreaName.SelectedItem = Area
                     Return
@@ -155,7 +163,7 @@ Public Class ReportUI
                 Dim dtProc As DataTable = SQL_Query(cmdProc)
 
                 '設定初始欄位
-                Dim ColsOrigin() As String = {"日期; SystemTime", "班別; Class", "前站結束時間; Previous CheckOut", "開始時間; (CheckIn)", "結束時間; CheckOut", "料號; PartNo.", "批號; LotNo.", "層別; LayerName", "站點; ProcName", "機台; Machine", "面次; PF/PB", "產品類型; IType", "入料片數; Qnty_In", "出料片數; Qnty_Out", "過帳工號; WID", "過帳人員; User", "操作員; OP", "備註; Remark"}
+                Dim ColsOrigin() As String = {"日期; SystemTime", "班別; Class", "前站結束時間; Previous CheckOut", "開始時間; CheckIn", "結束時間; CheckOut", "料號; PartNo.", "批號; LotNo.", "層別; LayerName", "站點; ProcName", "機台; Machine", "面次; PF/PB", "產品類型; IType", "入料片數; Qnty_In", "出料片數; Qnty_Out", "過帳工號; WID", "過帳人員; User", "操作員; OP", "備註; Remark"}
                 '生成模組通用欄位
                 For Each cols As String In ColsOrigin
                     Dim col As String() = cols.Split(";")
@@ -296,7 +304,7 @@ Public Class ReportUI
                 Return
             End If
             ReportUI_DataGridView.Columns(10).Frozen = True '凍結欄位
-            SAP_CheckID(AreaID)
+            'SAP_CheckID(AreaID)
 
             TimerRefresh.Start()
             TimerRefresh_Tick(sender, e)
@@ -320,19 +328,19 @@ Public Class ReportUI
             'For i = 0 To proc.Length - 1
             '    Try
             '        'Dim cmdproc As String = "Set ARITHABORT On EXECUTE [H3_Systematic].[dbo].[ProductionQuery_Insert] @ProcName = '" & proc(i).Substring(0, 3) & "%" + proc(i).Substring(3, 3) & "%', @Location = '" & ProcInfo(AreaName.SelectedItem.ToString)(2) & "%', @AreaID = " & AreaID & ", @Machine = '" & StrMachine & "'"
-                    '        'SQL_Query(cmdproc)
-                    '        Parameters.Clear()
-                    '        Parameters.Add({"@ProcName", proc(i).Substring(0, 3) & "%" + proc(i).Substring(3, 3) & "%"})
-                    '        Parameters.Add({"@Location", ProcInfo(AreaName.SelectedItem.ToString)(2) & "%"})
-                    '        Parameters.Add({"@AreaID", AreaID})
-                    '        Parameters.Add({"@Machine", StrMachine})
-                    '        SQL_StoredProcedure(SpFixedColumn, Parameters)
-                    '    Catch ex As SqlException
-                    '    End Try
-                    'Next
+            '        'SQL_Query(cmdproc)
+            '        Parameters.Clear()
+            '        Parameters.Add({"@ProcName", proc(i).Substring(0, 3) & "%" + proc(i).Substring(3, 3) & "%"})
+            '        Parameters.Add({"@Location", ProcInfo(AreaName.SelectedItem.ToString)(2) & "%"})
+            '        Parameters.Add({"@AreaID", AreaID})
+            '        Parameters.Add({"@Machine", StrMachine})
+            '        SQL_StoredProcedure(SpFixedColumn, Parameters)
+            '    Catch ex As SqlException
+            '    End Try
+            'Next
 
-                    'Dim cmdcol As String = "EXECUTE [H3_Systematic].[dbo].[ProductionQuery_Columns_Insert] @AreaID = '" & AreaID & "'"
-                    Parameters.Clear()
+            'Dim cmdcol As String = "EXECUTE [H3_Systematic].[dbo].[ProductionQuery_Columns_Insert] @AreaID = '" & AreaID & "'"
+            Parameters.Clear()
             Parameters.Add({"@AreaID", AreaID})
 
             Try
@@ -364,7 +372,7 @@ Public Class ReportUI
                 Dim RIndex As Integer
                 Dim is_duplicate As Boolean = False
                 For Each dr As DataGridViewRow In ReportUI_DataGridView.Rows
-                    If new_dr("批號") = dr.Cells("批號").Value.ToString AndAlso new_dr("站點") = dr.Cells("站點").Value.ToString AndAlso new_dr("層別") = dr.Cells("層別").Value.ToString AndAlso new_dr("面次") = dr.Cells("面次").Value.ToString Then
+                    If new_dr("LogID") = dr.Cells("LogID").Value.ToString Then
                         is_duplicate = True
                         RIndex = dr.Index
                         Exit For
@@ -378,8 +386,8 @@ Public Class ReportUI
                     If CType(new_dr("日期"), DateTime) > DateTime.Parse("2000-01-01 00:00:00") Then MoveInTime = CType(new_dr("日期"), DateTime).ToString("yyyy-MM-dd HH:mm:ss")
                     If CType(new_dr("前站結束時間"), DateTime) > DateTime.Parse("1900-01-03 00:00:00") Then
                         LastEndTime = CType(new_dr("前站結束時間"), DateTime).ToString("yyyy-MM-dd HH:mm:ss")
-                    ElseIf CType(new_dr("前站結束時間"), DateTime) > DateTime.Parse("1900-01-01 23:00:00") Then
-                        LastEndTime = "首件"
+                        'ElseIf CType(new_dr("前站結束時間"), DateTime) > DateTime.Parse("1900-01-01 23:00:00") Then
+                        '    LastEndTime = "首件"
                     End If
                     If CType(new_dr("開始時間"), DateTime) > DateTime.Parse("2000-01-01 00:00:00") Then
                         CheckInTime = CType(new_dr("開始時間"), DateTime).ToString("yyyy-MM-dd HH:mm:ss")
@@ -398,7 +406,6 @@ Public Class ReportUI
                         para.Add(CType(new_dr("完成時間"), DateTime).ToString("yyyy-MM-dd HH:mm:ss"))
                     End If
                     para.Add(new_dr("LogID"))
-
                     ReportUI_DataGridView.Rows.Insert(0, para.ToArray)
                     If new_dr("面次").ToString = "PB" Then
                         ReportUI_DataGridView.Rows(0).Cells("操作員").ReadOnly = True
@@ -408,19 +415,20 @@ Public Class ReportUI
                     '    ReportUI_DataGridView.Rows(0).Cells("操作員").ReadOnly = True
                     '    ReportUI_DataGridView.Rows(0).Cells("操作員").Style.BackColor = SystemColors.ControlLight
                     'End If
+
                     If new_dr("已上傳").ToString = "True" Then
-                        ReportUI_DataGridView.Rows(0).Cells("完成").Style.BackColor = Color.Lime
-                    End If
-                Else
-                    Dim MoveInTime As String = ""
+                            ReportUI_DataGridView.Rows(0).Cells("完成").Style.BackColor = Color.Lime
+                        End If
+                    Else
+                        Dim MoveInTime As String = ""
                     Dim LastEndTime As String = ""
                     Dim CheckInTime As String = ""
                     Dim CheckOutTime As String = ""
                     If CType(new_dr("日期"), DateTime) > DateTime.Parse("2000-01-01 00:00:00") Then MoveInTime = CType(new_dr("日期"), DateTime).ToString("yyyy-MM-dd HH:mm:ss")
                     If CType(new_dr("前站結束時間"), DateTime) > DateTime.Parse("1900-01-03 00:00:00") Then
                         LastEndTime = CType(new_dr("前站結束時間"), DateTime).ToString("yyyy-MM-dd HH:mm:ss")
-                    ElseIf CType(new_dr("前站結束時間"), DateTime) > DateTime.Parse("1900-01-01 23:00:00") Then
-                        LastEndTime = "首件"
+                        'ElseIf CType(new_dr("前站結束時間"), DateTime) > DateTime.Parse("1900-01-01 23:00:00") Then
+                        '    LastEndTime = "首件"
                     End If
                     If CType(new_dr("開始時間"), DateTime) > DateTime.Parse("2000-01-01 00:00:00") Then
                         CheckInTime = CType(new_dr("開始時間"), DateTime).ToString("yyyy-MM-dd HH:mm:ss")
@@ -450,6 +458,7 @@ Public Class ReportUI
                     '    ReportUI_DataGridView.Rows(RIndex).Cells("操作員").ReadOnly = True
                     '    ReportUI_DataGridView.Rows(RIndex).Cells("操作員").Style.BackColor = SystemColors.ControlLight
                     'End If
+
                     If new_dr("已上傳").ToString = "True" Then
                         ReportUI_DataGridView.Rows(RIndex).Cells("完成").Style.BackColor = Color.Lime
                     End If
@@ -467,8 +476,8 @@ Public Class ReportUI
             ReportUI_DataGridView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None
             TimerRefresh.Start()
             QueryMachineState()
-            dtpStartTime.Text = Format(Now.AddHours(-1), "yyyy/MM/dd HH:mm:ss")
-            dtpEndTime.Text = Format(Now, "yyyy/MM/dd HH:mm:ss")
+            TimeSetting()
+
         Catch ex As Exception
             WriteLog(ex, LogFilePath, "TimerRefresh")
             'isRefresh = False
@@ -523,86 +532,111 @@ Public Class ReportUI
     '20231017 Boris 取消ReadOnly
     Private Sub ReportUI_DataGridView_CellValueChanged(sender As Object, e As DataGridViewCellEventArgs) Handles ReportUI_DataGridView.CellValueChanged
         Try
-            Dim row As DataGridViewRow = ReportUI_DataGridView.Rows(e.RowIndex)
-            If row.Cells("完成").Value IsNot Nothing AndAlso row.Cells("完成").Value <> "" Then
-                Exit Sub
-            End If
-            If row.Cells("站點").Value IsNot Nothing AndAlso row.Cells("站點").Value.ToString() <> "" AndAlso row.Cells("批號").Value IsNot Nothing AndAlso row.Cells("批號").Value.ToString() <> "" AndAlso row.Cells("層別").Value IsNot Nothing AndAlso row.Cells("層別").Value.ToString() <> "" AndAlso row.Cells("料號").Value IsNot Nothing AndAlso row.Cells("料號").Value.ToString() <> "" Then
-                Dim part As String = row.Cells("料號").Value.ToString
-                Dim proc As String = row.Cells("站點").Value.ToString
-                Dim lot As String = row.Cells("批號").Value.ToString
-                Dim layer As String = row.Cells("層別").Value.ToString
-
+            If Not ChangeValueIgnore Then
+                Dim row As DataGridViewRow = ReportUI_DataGridView.Rows(e.RowIndex)
                 Dim ParaName As String = ReportUI_DataGridView.Columns(e.ColumnIndex).Name
-
-                If ParaName = "站點" OrElse ParaName = "料號" OrElse ParaName = "批號" OrElse ParaName = "層別" AndAlso row.Cells("前站結束時間").Value.ToString = "" Then
-                    SAP_First_Upload(row, AreaID)
-                    Return
+                Dim Go As Boolean = False
+                Dim RequestColumns As New List(Of String)
+                If row.Cells("完成").Value IsNot Nothing AndAlso row.Cells("完成").Value <> "" Then
+                    Exit Sub
+                End If
+                If row.Cells("班別").Value.ToString() = "首件" OrElse row.Cells("班別").Value.ToString() = "其他" Then
+                    For Each rc As String In {"批號", "料號", "層別", "站點", "面次", "入料片數", "出料片數"}
+                        If Not (row.Cells(rc).Value IsNot Nothing AndAlso row.Cells(rc).Value.ToString() <> "") Then
+                            RequestColumns.Add(rc)
+                        End If
+                    Next
                 End If
 
-                Dim PID As String = row.Cells("LogID").Value.ToString
+                If RequestColumns.Count = 0 Then
+                    Dim part As String = row.Cells("料號").Value.ToString
+                    Dim proc As String = row.Cells("站點").Value.ToString
+                    Dim lot As String = row.Cells("批號").Value.ToString
+                    Dim layer As String = row.Cells("層別").Value.ToString
 
-                If Not isRefresh Then
-                    Dim cell As DataGridViewCell = row.Cells(e.ColumnIndex)
-                    Dim count As String
-                    If row.Cells("前站結束時間").Value.ToString = "首件" Then
-                        count = "1"
+                    '確認面次
+                    Dim face As String = ""
+                    If row.Cells("面次").Value IsNot Nothing AndAlso row.Cells("面次").Value.ToString = "PB" Then
+                        face = "2"
                     Else
-                        count = "0"
+                        face = "1"
                     End If
 
-                    If e.RowIndex >= 0 AndAlso e.ColumnIndex >= 0 Then
-                        If Cmd_Formula.Count > 0 AndAlso Column_Formula_All.Contains(ReportUI_DataGridView.Columns(cell.ColumnIndex).Name) Then
-                            ColumnFormula(row, cell)
+
+                    If e.ColumnIndex < ReportUI_DataGridView.Columns("操作員").Index And ParaName <> "日期" Then
+                        If Column_Formula.Count <> 0 Then
+                            Dim FormulaRequestColumn As String = ""
+                            For c As Integer = 0 To ReportUI_DataGridView.Columns("操作員").Index - 1
+                                If Not CheckValue(row, ReportUI_DataGridView.Columns(c).Name) Then
+                                    row.Cells(c).Style.BackColor = Color.Red
+                                    Return
+                                End If
+                                If Column_Formula_All.Contains(ReportUI_DataGridView.Columns(c).Name) Then
+                                    If row.Cells(c).Value Is Nothing OrElse row.Cells(c).Value.ToString = "" Then
+                                        row.Cells(c).Style.BackColor = Color.Red
+                                        FormulaRequestColumn = FormulaRequestColumn + ReportUI_DataGridView.Columns(c).Name + "、"
+                                    End If
+                                End If
+                            Next
+                            If FormulaRequestColumn <> "" Then
+                                FormulaRequestColumn = FormulaRequestColumn.Substring(0, FormulaRequestColumn.Length - 1)
+                                MessageBox.Show("請將運算所需欄位填寫完畢 ")
+                                Return
+                            End If
                         End If
+                        First_Upload(row, AreaID, lot, proc, layer, face)
+                        Return
                     End If
-                    SAP_CheckPnl(row, e, AreaID)
-                    If cell.Value IsNot Nothing AndAlso cell.Value.ToString <> "" AndAlso cell.ColumnIndex >= ReportUI_DataGridView.Columns("操作員").Index Then
 
-                        If cell.ColumnIndex = ReportUI_DataGridView.Columns("操作員").Index Then
-                            ' 設定資料格為唯讀
-                            'cell.ReadOnly = True
-                            'cell.Style.BackColor = SystemColors.ControlLight
-                            'Dim cmd As String = "UPDATE " & DbLog & "
-                            '                                      SET [OP] = '" + Trim(cell.Value.ToString) + "'
-                            '                                      WHERE [AreaID] = " + AreaID + " AND [ProcName] = '" + proc + "' AND [Lotnum] = '" + lot + "' AND [Layer] = '" + layer + "' AND [Count] = " + count
-                            Dim cmd As String = "UPDATE " & DbLog & "
+                    Dim PID As String = row.Cells("LogID").Value.ToString
+
+                    If Not isRefresh Then
+                        Dim cell As DataGridViewCell = row.Cells(e.ColumnIndex)
+                        If e.RowIndex >= 0 AndAlso e.ColumnIndex >= 0 Then
+                            If Cmd_Formula.Count > 0 AndAlso Column_Formula_All.Contains(ReportUI_DataGridView.Columns(cell.ColumnIndex).Name) Then
+                                ColumnFormula(row, cell)
+                            End If
+                        End If
+                        SAP_CheckPnl(row, e, AreaID)
+                        If cell.Value IsNot Nothing AndAlso cell.Value.ToString <> "" AndAlso cell.ColumnIndex >= ReportUI_DataGridView.Columns("操作員").Index Then
+
+                            If cell.ColumnIndex = ReportUI_DataGridView.Columns("操作員").Index Then
+                                ' 設定資料格為唯讀
+                                'cell.ReadOnly = True
+                                'cell.Style.BackColor = SystemColors.ControlLight
+                                'Dim cmd As String = "UPDATE " & DbLog & "
+                                '                                      SET [OP] = '" + Trim(cell.Value.ToString) + "'
+                                '                                      WHERE [AreaID] = " + AreaID + " AND [ProcName] = '" + proc + "' AND [Lotnum] = '" + lot + "' AND [Layer] = '" + layer + "' AND [Count] = " + count
+                                Dim cmd As String = "UPDATE " & DbLog & "
                                                                   SET [OP] = '" + Trim(cell.Value.ToString) + "'
                                                                   WHERE [Pkey] = " + PID
 
-                            SQL_Query(cmd)
-                        ElseIf cell.ColumnIndex <> ReportUI_DataGridView.Columns("備註").Index Then
-                            ' 設定資料格為唯讀
-                            'cell.ReadOnly = True
-                            'cell.Style.BackColor = SystemColors.ControlLight
+                                SQL_Query(cmd)
+                            ElseIf cell.ColumnIndex <> ReportUI_DataGridView.Columns("備註").Index Then
+                                ' 設定資料格為唯讀
+                                'cell.ReadOnly = True
+                                'cell.Style.BackColor = SystemColors.ControlLight
 
-                            '確認面次
-                            Dim face As String = ""
-                            If ReportUI_DataGridView.Rows(cell.RowIndex).Cells("面次").Value.ToString = "PB" Then
-                                face = "2"
-                            Else
-                                face = "1"
-                            End If
-                            '20231012 修改可覆寫資料
-                            Dim cmd As String = " UPDATE " & DbLogParameter & "
+                                '20231012 修改可覆寫資料
+                                Dim cmd As String = " UPDATE " & DbLogParameter & "
                                                                   SET [UploadTime] = '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "',
                                                                           [ParameterVaules] = '" + Trim(cell.Value.ToString) + "'
-                                                                  WHERE [PID] = " + PID + " AND [CID] = '" + CID(ParaName) + "' AND [Face] = '" + face + "' AND [Count] = " + count + ""
-                            'Dim cmd As String = " UPDATE " & DbLogParameter & "
-                            '                                      SET [UploadTime] = '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "',
-                            '                                              [ParameterVaules] = '" + Trim(cell.Value.ToString) + "'
-                            '                                      WHERE [AreaID] = " + AreaID + " AND [ProcName] = '" + proc + "' AND [Lotnum] = '" + lot + "' AND [LayerName] = '" + layer + "' AND [ParameterName] = '" + ParaName + "' AND [Count] = " + count + ""
+                                                                  WHERE [PID] = " + PID + " AND [CID] = '" + CID(ParaName) + "' AND [Face] = '" + face + "'"
+                                'Dim cmd As String = " UPDATE " & DbLogParameter & "
+                                '                                      SET [UploadTime] = '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "',
+                                '                                              [ParameterVaules] = '" + Trim(cell.Value.ToString) + "'
+                                '                                      WHERE [AreaID] = " + AreaID + " AND [ProcName] = '" + proc + "' AND [Lotnum] = '" + lot + "' AND [LayerName] = '" + layer + "' AND [ParameterName] = '" + ParaName + "' AND [Count] = " + count + ""
 
-                            'Dim cmd As String = "DECLARE @Val nvarchar(MAX)
-                            '                                      SET @Val = (SELECT ISNULL([ParameterVaules],'') AS Val FROM " & DbLogParameter & " WITH (NOLOCK) WHERE [AreaID] = " + AreaID + " AND [ProcName] = '" + proc + "' AND [Lotnum] = '" + lot + "' AND [LayerName] = '" + layer + "' AND [ParameterName] = '" + ParaName + "'  AND [Count] = " + count + ")
-                            '                                      IF @Val IS NULL OR @Val = ''
-                            '                                      BEGIN
-                            '                                      UPDATE " & DbLogParameter & "
-                            '                                      SET [UploadTime] = '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "',
-                            '                                              [ParameterVaules] = '" + cell.Value.ToString + "'
-                            '                                      WHERE [AreaID] = " + AreaID + " AND [ProcName] = '" + proc + "' AND [Lotnum] = '" + lot + "' AND [LayerName] = '" + layer + "' AND [ParameterName] = '" + ParaName + "' AND [Count] = " + count + "
-                            '                                      END"
-                            SQL_Query(cmd)
+                                'Dim cmd As String = "DECLARE @Val nvarchar(MAX)
+                                '                                      SET @Val = (SELECT ISNULL([ParameterVaules],'') AS Val FROM " & DbLogParameter & " WITH (NOLOCK) WHERE [AreaID] = " + AreaID + " AND [ProcName] = '" + proc + "' AND [Lotnum] = '" + lot + "' AND [LayerName] = '" + layer + "' AND [ParameterName] = '" + ParaName + "'  AND [Count] = " + count + ")
+                                '                                      IF @Val IS NULL OR @Val = ''
+                                '                                      BEGIN
+                                '                                      UPDATE " & DbLogParameter & "
+                                '                                      SET [UploadTime] = '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "',
+                                '                                              [ParameterVaules] = '" + cell.Value.ToString + "'
+                                '                                      WHERE [AreaID] = " + AreaID + " AND [ProcName] = '" + proc + "' AND [Lotnum] = '" + lot + "' AND [LayerName] = '" + layer + "' AND [ParameterName] = '" + ParaName + "' AND [Count] = " + count + "
+                                '                                      END"
+                                SQL_Query(cmd)
                             Else
                                 'Dim cmd As String = "UPDATE " & DbLog & "
                                 '                                      SET [Remark] = '" + Trim(cell.Value.ToString) + "'
@@ -611,19 +645,91 @@ Public Class ReportUI
                                                                   SET [Remark] = '" + Trim(cell.Value.ToString) + "'
                                                                   WHERE [Pkey] = " + PID
 
-                            SQL_Query(cmd)
+                                SQL_Query(cmd)
+                            End If
                         End If
                     End If
-                End If
-            Else
-                If ReportUI_DataGridView.Columns(e.ColumnIndex).Name <> "料號" AndAlso ReportUI_DataGridView.Columns(e.ColumnIndex).Name <> "批號" AndAlso ReportUI_DataGridView.Columns(e.ColumnIndex).Name <> "層別" AndAlso ReportUI_DataGridView.Columns(e.ColumnIndex).Name <> "站點" Then
-                    MessageBox.Show("請將""料號""、""批號""、""層別""、""站點""填寫完畢")
+                Else
+                    If e.ColumnIndex > ReportUI_DataGridView.Columns("備註").Index Then
+                        If row.Cells(ParaName).Value <> "" Then
+                            ChangeValueIgnore = True
+                            Dim msg As String = ""
+                            For Each c As String In RequestColumns
+                                row.Cells(c).Style.BackColor = Color.Red
+                                msg = msg + """" + c + """、"
+                            Next
+                            msg = msg.Substring(0, msg.Length - 1)
+                            MessageBox.Show("請將" + msg + "填寫完畢")
+                            row.Cells(ParaName).Value = ""
+
+                        End If
+                        ChangeValueIgnore = False
+                        Return
+                    Else
+                        CheckValue(row, ParaName)
+                    End If
                 End If
             End If
         Catch ex As Exception
             WriteLog(ex, LogFilePath, "ReportUI_DataGridView_CellValueChanged_" + ReportUI_DataGridView.Columns(e.ColumnIndex).Name + "_" + ReportUI_DataGridView.Rows(e.RowIndex).Cells("批號").Value.ToString)
+            ChangeValueIgnore = False
         End Try
     End Sub
+
+    Private Function CheckValue(ByVal row As DataGridViewRow, ByVal ParaName As String) As Boolean
+        Try
+            Dim result As New DateTime
+            ChangeValueIgnore = True
+            If row.Cells(ParaName).Value IsNot Nothing AndAlso row.Cells(ParaName).Value.ToString <> "" Then
+                If (ParaName = "日期" OrElse ParaName = "前站結束時間" OrElse ParaName = "開始時間" OrElse ParaName = "結束時間") Then
+                    If DateTime.TryParse(row.Cells(ParaName).Value.ToString, result) Then
+                        row.Cells(ParaName).Value = result.ToString("yyyy-MM-dd HH:mm:ss")
+                    Else
+                        MessageBox.Show("請輸入日期格式""yyyy-MM-dd HH:mm:ss"" Ex:""" + Now.ToString("yyyy-MM-dd HH:mm:ss") + """")
+                        row.Cells(ParaName).Value = ""
+                        Return False
+                    End If
+                ElseIf ParaName = "料號" Then
+                    If row.Cells(ParaName).Value.ToString.Length <> 10 Then
+                        MessageBox.Show("請輸入10碼料號 Ex:""2230634A05""")
+                        row.Cells(ParaName).Value = ""
+                        Return False
+                    End If
+                ElseIf ParaName = "批號" Then
+                    If row.Cells(ParaName).Value.ToString.Length <> 14 OrElse Not row.Cells(ParaName).Value.ToString.Contains("-") Then
+                        MessageBox.Show("請輸入14碼批號 Ex:""23B63019-01-00""")
+                        row.Cells(ParaName).Value = ""
+                        Return False
+                    End If
+                ElseIf ParaName = "層別" Then
+                    If (row.Cells(ParaName).Value.ToString.Length < 5 OrElse row.Cells(ParaName).Value.ToString.Length > 7) OrElse (Not row.Cells(ParaName).Value.ToString Like "-L*L*" AndAlso row.Cells(ParaName).Value.ToString <> "-Outer") Then
+                        MessageBox.Show("請輸入正確的層別 Ex:""-Outer"" or ""-L3L16""")
+                        row.Cells(ParaName).Value = ""
+                        Return False
+                    End If
+                ElseIf ParaName = "站點" Then
+                    If row.Cells(ParaName).Value.ToString.Length <> 8 Then
+                        MessageBox.Show("請輸入8碼站製程別 Ex:""ABF2MPO1""")
+                        row.Cells(ParaName).Value = ""
+                        Return False
+                    End If
+                ElseIf (ParaName = "入料片數" OrElse ParaName = "出料片數") Then
+                    If Not IsNumeric(row.Cells(ParaName).Value.ToString) Then
+                        MessageBox.Show("請輸入數字 Ex:""48""")
+                        row.Cells(ParaName).Value = ""
+                        Return False
+                    End If
+                End If
+            End If
+            ChangeValueIgnore = False
+            Return True
+        Catch ex As Exception
+            WriteLog(ex, LogFilePath, "CheckValue")
+            ChangeValueIgnore = False
+            Return False
+        End Try
+    End Function
+
 
     Private Sub RrportUI_FormClosing(sender As Object, e As FormClosingEventArgs) Handles Me.FormClosing
         e.Cancel = True ' 取消視窗關閉操作
@@ -691,7 +797,7 @@ Public Class ReportUI
                         End If
 
                         '若不在WIP則確認資料是否完整
-                        If Not ExistsWIP Then
+                        If (Not ExistsWIP) OrElse (Not {"D", "N"}.Contains(row.Cells("班別").Value.ToString)) Then
                             Dim isUpload As Boolean = False
                             isUpload = DataUpload(row)
                             '資料如果完整則Show提示字元
@@ -727,7 +833,7 @@ Public Class ReportUI
                     ElseIf Face = "PB" Then
                         NextFace = "PF"
                     End If
-                        Dim isFullData As Boolean = False
+                    Dim isFullData As Boolean = False
                     Dim now As String = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
                     If row.Cells("操作員").Value IsNot Nothing AndAlso row.Cells("操作員").Value.ToString() <> "" Then
                         For i = ReportUI_DataGridView.Columns("備註").Index + 1 To ReportUI_DataGridView.Columns("btnModify").Index - 1 Step 1
@@ -763,7 +869,7 @@ Public Class ReportUI
                     End If
 
                     '確認所有可填欄位接已填寫後變更資料Flag
-                    If isFullData AndAlso row.Cells("結束時間").Value.ToString <> "" Then
+                    If isFullData AndAlso (row.Cells("結束時間").Value.ToString <> "" OrElse Not {"D", "N"}.Contains(row.Cells("班別").Value.ToString)) Then
                         Dim remark As String = ""
                         If row.Cells("備註").Value <> Nothing Then remark = row.Cells("備註").Value.ToString
                         Dim cmd As String = "UPDATE " & DbLog & "
@@ -772,8 +878,9 @@ Public Class ReportUI
                                                               [Version] = '" + Version + "'
                                                           WHERE [Pkey] = " + PID
                         SQL_Query(cmd)
-
+                        ChangeValueIgnore = True
                         row.Cells("完成").Value = now
+                        ChangeValueIgnore = False
                         For i = 0 To ReportUI_DataGridView.Columns("完成").Index - 1
                             row.Cells(i).ReadOnly = True
                             row.Cells(i).Style.BackColor = Color.Cyan
@@ -788,6 +895,7 @@ Public Class ReportUI
             Return False
         Catch ex As Exception
             WriteLog(ex, LogFilePath, "DataUpload")
+            ChangeValueIgnore = False
             Return False
         End Try
     End Function
@@ -847,16 +955,40 @@ Public Class ReportUI
 
     Private Sub Btn_First_Click(sender As Object, e As EventArgs) Handles Btn_First.Click
         Try
-            Dim count As Integer = ReportUI_DataGridView.Rows.Count
-            ReportUI_DataGridView.Rows.Add("", "", "首件", "", "", "", "", "", "", "", "", "", "", "", "", "", "")
-            For i = 0 To ReportUI_DataGridView.Columns("備註").Index - 2
-                If ReportUI_DataGridView.Columns(i).Name <> "前站結束時間" Then
-                    ReportUI_DataGridView.Rows(count).Cells(i).ReadOnly = False
-                    ReportUI_DataGridView.Rows(count).Cells(i).Style.BackColor = SystemColors.ControlLightLight
-                End If
-            Next
+            If Area <> "" Then
+
+                Dim count As Integer = ReportUI_DataGridView.Rows.Count
+                Dim dgvcbocClass As New DataGridViewComboBoxCell
+                dgvcbocClass.Items.Add("首件")
+                dgvcbocClass.Items.Add("其他")
+                Dim dgvcbocFace As New DataGridViewComboBoxCell
+                dgvcbocFace.Items.Add("N/A")
+                dgvcbocFace.Items.Add("PF")
+                dgvcbocFace.Items.Add("PB")
+
+                ChangeValueIgnore = True
+                ReportUI_DataGridView.Rows.Add("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "")
+                ReportUI_DataGridView.Rows(count).Cells("班別") = dgvcbocClass
+
+                ReportUI_DataGridView.Rows(count).Cells("班別").Value = "首件"
+
+                ReportUI_DataGridView.Rows(count).Cells("面次") = dgvcbocFace
+
+                ReportUI_DataGridView.Rows(count).Cells("面次").Value = "N/A"
+                ChangeValueIgnore = False
+                For i = 0 To ReportUI_DataGridView.Columns("備註").Index - 2
+                    If ReportUI_DataGridView.Columns(i).Name <> "日期" Then
+                        ReportUI_DataGridView.Rows(count).Cells(i).ReadOnly = False
+                        ReportUI_DataGridView.Rows(count).Cells(i).Style.BackColor = SystemColors.ControlLightLight
+                    End If
+                Next
+                ReportUI_DataGridView.Rows(count).Selected = True
+                ReportUI_DataGridView.Select()
+            End If
+
         Catch ex As Exception
             WriteLog(ex, LogFilePath, "Btn_First_Click")
+            ChangeValueIgnore = False
         End Try
     End Sub
 
@@ -1052,6 +1184,31 @@ Public Class ReportUI
     Private Sub cboMachine_TextChanged(sender As Object, e As EventArgs) Handles cboMachine.TextChanged
 
     End Sub
+
+    Private Sub TimeSetting()
+        Try
+            dtpStartTime.MaxDate = Now
+            dtpEndTime.MaxDate = Now
+            Dim start_date As DateTime
+            start_date = CType(Now, Date).AddDays(-1)
+            dtpStartTime.Value = Format(Now.AddHours(-1), "yyyy/MM/dd HH:mm:ss")
+            dtpEndTime.Value = Format(Now, "yyyy/MM/dd HH:mm:ss")
+
+            'dtpEndTime.MinDate = dtpStartTime.Value
+
+        Catch ex As Exception
+            WriteLog(ex, LogFilePath, "TimeSetting")
+        End Try
+    End Sub
+
+    Private Sub dtpStartTime_ValueChanged(sender As System.Object, e As System.EventArgs) Handles dtpStartTime.ValueChanged
+        dtpEndTime.MinDate = dtpStartTime.Value
+    End Sub
+
+    Private Sub dtpEndTime_ValueChanged(sender As System.Object, e As System.EventArgs) Handles dtpEndTime.ValueChanged
+        dtpEndTime.MinDate = dtpStartTime.Value
+    End Sub
+
 
     'Private Sub ReportUI_DataGridView_CellEndEdit(sender As Object, e As DataGridViewCellEventArgs) Handles ReportUI_DataGridView.CellEndEdit
     '    Try

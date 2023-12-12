@@ -280,9 +280,9 @@ Public Class ProductionReport_Setting
     Private Sub BtnProc_ProcQuery_Click(sender As Object, e As EventArgs) Handles BtnProc_ProcQuery.Click
         Dim cmd As String = ""
         If TxtProc_ProcQuery.Text = "" OrElse TxtProc_ProcQuery.Text = "*" Then
-            cmd = "SELECT [Pkey],[Module] AS [模組] ,[Section] AS [課別] ,[Area] AS [區域名稱] ,[ProcName] AS [站點]  ,'****' AS [密碼] ,ISNULL([Location],'') AS [Location] ,ISNULL([MachineNo],'') AS [機台愉進編號] ,[Machine] AS [機台愉進名稱] FROM " & DbProc & " WITH(NOLOCK) ORDER BY [Pkey] DESC"
+            cmd = "SELECT [Pkey],[Module] AS [模組] ,[Section] AS [課別] ,[Area] AS [區域名稱] ,[ProcName] AS [站點]  ,[Password] AS [密碼] ,ISNULL([Location],'') AS [Location] ,ISNULL([MachineNo],'') AS [機台愉進編號] ,[Machine] AS [機台愉進名稱] FROM " & DbProc & " WITH(NOLOCK) ORDER BY [Pkey] DESC"
         Else
-            cmd = "SELECT [Pkey],[Module] AS [模組] ,[Section] AS [課別] ,[Area] AS [區域名稱] ,[ProcName] AS [站點]  ,'****' AS [密碼] ,ISNULL([Location],'') AS [Location] ,ISNULL([MachineNo],'') AS [機台愉進編號] ,[Machine] AS [機台愉進名稱] FROM " & DbProc & " WITH(NOLOCK) WHERE [ProcName] LIKE '%" & TxtProc_ProcQuery.Text & "%'  ORDER BY [Pkey] DESC"
+            cmd = "SELECT [Pkey],[Module] AS [模組] ,[Section] AS [課別] ,[Area] AS [區域名稱] ,[ProcName] AS [站點]  ,[Password] AS [密碼] ,ISNULL([Location],'') AS [Location] ,ISNULL([MachineNo],'') AS [機台愉進編號] ,[Machine] AS [機台愉進名稱] FROM " & DbProc & " WITH(NOLOCK) WHERE [ProcName] LIKE '%" & TxtProc_ProcQuery.Text & "%'  ORDER BY [Pkey] DESC"
         End If
         Dim dt As DataTable = SQL_Query(SQL_Conn_MQL03, cmd)
 

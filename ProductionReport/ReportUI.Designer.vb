@@ -114,6 +114,7 @@ Partial Class ReportUI
         '
         Me.Btn_TEST.Location = New System.Drawing.Point(1507, 28)
         Me.Btn_TEST.Name = "Btn_TEST"
+        Me.Btn_TEST.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.Btn_TEST.Size = New System.Drawing.Size(75, 23)
         Me.Btn_TEST.TabIndex = 157
         Me.Btn_TEST.Text = "測試"
@@ -125,20 +126,20 @@ Partial Class ReportUI
         Me.Notice.AutoSize = True
         Me.Notice.Font = New System.Drawing.Font("新細明體", 14.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
         Me.Notice.ForeColor = System.Drawing.Color.Red
-        Me.Notice.Location = New System.Drawing.Point(310, 48)
+        Me.Notice.Location = New System.Drawing.Point(182, 33)
         Me.Notice.Name = "Notice"
         Me.Notice.Size = New System.Drawing.Size(0, 19)
         Me.Notice.TabIndex = 158
         '
         'Btn_First
         '
+        Me.Btn_First.Font = New System.Drawing.Font("微軟正黑體", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
         Me.Btn_First.Location = New System.Drawing.Point(216, 69)
         Me.Btn_First.Name = "Btn_First"
         Me.Btn_First.Size = New System.Drawing.Size(75, 23)
         Me.Btn_First.TabIndex = 159
         Me.Btn_First.Text = "首件"
         Me.Btn_First.UseVisualStyleBackColor = True
-        Me.Btn_First.Visible = False
         '
         'TxtLot
         '

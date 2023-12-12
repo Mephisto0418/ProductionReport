@@ -74,6 +74,7 @@
   <ItemGroup>
     <Compile Include="Module\DataGridViewExport.vb" />
     <Compile Include="Module\ErrorLog.vb" />
+    <Compile Include="Module\First_Pnl.vb" />
     <Compile Include="Module\ReCode.vb" />
     <Compile Include="Module\SAP_Custom.vb" />
     <Compile Include="Module\SQL.vb" />

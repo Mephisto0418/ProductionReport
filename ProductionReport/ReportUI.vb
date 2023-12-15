@@ -12,7 +12,7 @@ Imports System.Data.SqlClient
 '20231030 Boris            建立Table & SP名稱的變數
 
 Public Class ReportUI
-    Dim Version As String = "2.0.23.12.01.1"
+    Dim Version As String = "2.0.23.12.15.1"
     Dim Program As String = "ProductionReport"
     Public Area As String = ""
     Public AreaID As String = ""
@@ -372,11 +372,12 @@ Public Class ReportUI
                 Dim RIndex As Integer
                 Dim is_duplicate As Boolean = False
                 For Each dr As DataGridViewRow In ReportUI_DataGridView.Rows
-                    If new_dr("LogID") = dr.Cells("LogID").Value.ToString Then
+                    If new_dr("LogID") = dr.Cells("LogID").Value.ToString AndAlso new_dr("面次") = dr.Cells("面次").Value.ToString Then
                         is_duplicate = True
                         RIndex = dr.Index
                         Exit For
                     End If
+
                 Next
                 If Not is_duplicate Then
                     Dim MoveInTime As String = ""
@@ -773,7 +774,7 @@ Public Class ReportUI
                                     Dim Notyet As Boolean = False
 
                                     For Each col In formulacol
-                                        If row.Cells(col).Value Is Nothing OrElse String.IsNullOrEmpty(row.Cells(col).Value.ToString()) OrElse (col = "入料片數" And row.Cells(col).Value.ToString = 0) Then
+                                        If row.Cells(col).Value Is Nothing OrElse String.IsNullOrEmpty(row.Cells(col).Value.ToString()) OrElse (col = "入料片數" AndAlso row.Cells(col).Value.ToString = 0) Then
                                             Notyet = True
                                             Exit For
                                         Else
@@ -852,6 +853,9 @@ Public Class ReportUI
                     If isFullData AndAlso row.Cells("結束時間").Value.ToString <> "" AndAlso Face.Contains("P") Then
                         Dim row2 As New DataGridViewRow
                         For Each ro As DataGridViewRow In ReportUI_DataGridView.Rows
+                            If ro.Cells("LogID").Value.ToString = PID Then
+                                Dim NONE As String = ""
+                            End If
                             If ro.Cells("LogID").Value.ToString = PID AndAlso ro.Cells("面次").Value.ToString = NextFace Then
                                 row2 = ro
                                 Exit For

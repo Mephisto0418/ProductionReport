@@ -25,7 +25,7 @@ Partial Class ReportUI
         Me.components = New System.ComponentModel.Container()
         Me.MenuBar = New System.Windows.Forms.MenuStrip()
         Me.Query = New System.Windows.Forms.ToolStripMenuItem()
-        Me.ReportUI_DataGridView = New System.Windows.Forms.DataGridView()
+        Me.dgvReport = New System.Windows.Forms.DataGridView()
         Me.TimerRefresh = New System.Windows.Forms.Timer(Me.components)
         Me.cboAreaName = New System.Windows.Forms.ComboBox()
         Me.Btn_TEST = New System.Windows.Forms.Button()
@@ -56,8 +56,13 @@ Partial Class ReportUI
         Me.lblEndTime_Eng = New System.Windows.Forms.Label()
         Me.lblRemarkUpload_Eng = New System.Windows.Forms.Label()
         Me.lblLot_Eng = New System.Windows.Forms.Label()
+        Me.cboModule = New System.Windows.Forms.ComboBox()
+        Me.lblAreaName = New System.Windows.Forms.Label()
+        Me.lblModule = New System.Windows.Forms.Label()
+        Me.lblModule_Eng = New System.Windows.Forms.Label()
+        Me.lblAreaName_Eng = New System.Windows.Forms.Label()
         Me.MenuBar.SuspendLayout()
-        CType(Me.ReportUI_DataGridView, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.dgvReport, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.grpRemark.SuspendLayout()
         Me.SuspendLayout()
         '
@@ -78,21 +83,21 @@ Partial Class ReportUI
         Me.Query.Size = New System.Drawing.Size(46, 21)
         Me.Query.Text = "查詢"
         '
-        'ReportUI_DataGridView
+        'dgvReport
         '
-        Me.ReportUI_DataGridView.AllowUserToAddRows = False
-        Me.ReportUI_DataGridView.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+        Me.dgvReport.AllowUserToAddRows = False
+        Me.dgvReport.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
             Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.ReportUI_DataGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.ColumnHeader
-        Me.ReportUI_DataGridView.ClipboardCopyMode = System.Windows.Forms.DataGridViewClipboardCopyMode.EnableWithoutHeaderText
-        Me.ReportUI_DataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
-        Me.ReportUI_DataGridView.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter
-        Me.ReportUI_DataGridView.Location = New System.Drawing.Point(0, 97)
-        Me.ReportUI_DataGridView.Name = "ReportUI_DataGridView"
-        Me.ReportUI_DataGridView.RowTemplate.Height = 24
-        Me.ReportUI_DataGridView.Size = New System.Drawing.Size(1584, 498)
-        Me.ReportUI_DataGridView.TabIndex = 155
+        Me.dgvReport.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.ColumnHeader
+        Me.dgvReport.ClipboardCopyMode = System.Windows.Forms.DataGridViewClipboardCopyMode.EnableWithoutHeaderText
+        Me.dgvReport.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
+        Me.dgvReport.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter
+        Me.dgvReport.Location = New System.Drawing.Point(0, 97)
+        Me.dgvReport.Name = "dgvReport"
+        Me.dgvReport.RowTemplate.Height = 24
+        Me.dgvReport.Size = New System.Drawing.Size(1584, 498)
+        Me.dgvReport.TabIndex = 155
         '
         'TimerRefresh
         '
@@ -104,10 +109,9 @@ Partial Class ReportUI
         Me.cboAreaName.FlatStyle = System.Windows.Forms.FlatStyle.System
         Me.cboAreaName.Font = New System.Drawing.Font("微軟正黑體", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
         Me.cboAreaName.FormattingEnabled = True
-        Me.cboAreaName.Location = New System.Drawing.Point(12, 68)
+        Me.cboAreaName.Location = New System.Drawing.Point(94, 63)
         Me.cboAreaName.Name = "cboAreaName"
-        Me.cboAreaName.RightToLeft = System.Windows.Forms.RightToLeft.Yes
-        Me.cboAreaName.Size = New System.Drawing.Size(167, 25)
+        Me.cboAreaName.Size = New System.Drawing.Size(114, 25)
         Me.cboAreaName.TabIndex = 156
         '
         'Btn_TEST
@@ -126,7 +130,7 @@ Partial Class ReportUI
         Me.Notice.AutoSize = True
         Me.Notice.Font = New System.Drawing.Font("新細明體", 14.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
         Me.Notice.ForeColor = System.Drawing.Color.Red
-        Me.Notice.Location = New System.Drawing.Point(182, 33)
+        Me.Notice.Location = New System.Drawing.Point(220, 33)
         Me.Notice.Name = "Notice"
         Me.Notice.Size = New System.Drawing.Size(0, 19)
         Me.Notice.TabIndex = 158
@@ -134,7 +138,7 @@ Partial Class ReportUI
         'Btn_First
         '
         Me.Btn_First.Font = New System.Drawing.Font("微軟正黑體", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
-        Me.Btn_First.Location = New System.Drawing.Point(216, 69)
+        Me.Btn_First.Location = New System.Drawing.Point(216, 66)
         Me.Btn_First.Name = "Btn_First"
         Me.Btn_First.Size = New System.Drawing.Size(75, 23)
         Me.Btn_First.TabIndex = 159
@@ -144,7 +148,7 @@ Partial Class ReportUI
         'TxtLot
         '
         Me.TxtLot.Font = New System.Drawing.Font("微軟正黑體", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
-        Me.TxtLot.Location = New System.Drawing.Point(361, 69)
+        Me.TxtLot.Location = New System.Drawing.Point(361, 66)
         Me.TxtLot.Name = "TxtLot"
         Me.TxtLot.Size = New System.Drawing.Size(159, 25)
         Me.TxtLot.TabIndex = 160
@@ -153,7 +157,7 @@ Partial Class ReportUI
         '
         Me.lblLot.AutoSize = True
         Me.lblLot.Font = New System.Drawing.Font("微軟正黑體", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
-        Me.lblLot.Location = New System.Drawing.Point(310, 65)
+        Me.lblLot.Location = New System.Drawing.Point(310, 62)
         Me.lblLot.Name = "lblLot"
         Me.lblLot.Size = New System.Drawing.Size(45, 20)
         Me.lblLot.TabIndex = 161
@@ -409,19 +413,79 @@ Partial Class ReportUI
         '
         Me.lblLot_Eng.AutoSize = True
         Me.lblLot_Eng.Font = New System.Drawing.Font("微軟正黑體", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
-        Me.lblLot_Eng.Location = New System.Drawing.Point(307, 83)
+        Me.lblLot_Eng.Location = New System.Drawing.Point(307, 82)
         Me.lblLot_Eng.Name = "lblLot_Eng"
         Me.lblLot_Eng.Size = New System.Drawing.Size(51, 15)
         Me.lblLot_Eng.TabIndex = 182
         Me.lblLot_Eng.Text = "(LotNo.)"
         Me.lblLot_Eng.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
+        'cboModule
+        '
+        Me.cboModule.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.cboModule.FlatStyle = System.Windows.Forms.FlatStyle.System
+        Me.cboModule.Font = New System.Drawing.Font("微軟正黑體", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.cboModule.FormattingEnabled = True
+        Me.cboModule.Items.AddRange(New Object() {"1", "2", "3", "4", "5"})
+        Me.cboModule.Location = New System.Drawing.Point(94, 34)
+        Me.cboModule.Name = "cboModule"
+        Me.cboModule.RightToLeft = System.Windows.Forms.RightToLeft.Yes
+        Me.cboModule.Size = New System.Drawing.Size(114, 25)
+        Me.cboModule.TabIndex = 183
+        '
+        'lblAreaName
+        '
+        Me.lblAreaName.AutoSize = True
+        Me.lblAreaName.BackColor = System.Drawing.Color.Transparent
+        Me.lblAreaName.Font = New System.Drawing.Font("微軟正黑體", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.lblAreaName.Location = New System.Drawing.Point(14, 62)
+        Me.lblAreaName.Name = "lblAreaName"
+        Me.lblAreaName.Size = New System.Drawing.Size(81, 20)
+        Me.lblAreaName.TabIndex = 184
+        Me.lblAreaName.Text = "報表名稱 :"
+        '
+        'lblModule
+        '
+        Me.lblModule.AutoSize = True
+        Me.lblModule.BackColor = System.Drawing.Color.Transparent
+        Me.lblModule.Font = New System.Drawing.Font("微軟正黑體", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.lblModule.Location = New System.Drawing.Point(45, 31)
+        Me.lblModule.Name = "lblModule"
+        Me.lblModule.Size = New System.Drawing.Size(49, 20)
+        Me.lblModule.TabIndex = 185
+        Me.lblModule.Text = "模組 :"
+        '
+        'lblModule_Eng
+        '
+        Me.lblModule_Eng.AutoSize = True
+        Me.lblModule_Eng.Font = New System.Drawing.Font("微軟正黑體", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.lblModule_Eng.Location = New System.Drawing.Point(39, 49)
+        Me.lblModule_Eng.Name = "lblModule_Eng"
+        Me.lblModule_Eng.Size = New System.Drawing.Size(56, 15)
+        Me.lblModule_Eng.TabIndex = 186
+        Me.lblModule_Eng.Text = "(Module)"
+        Me.lblModule_Eng.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        '
+        'lblAreaName_Eng
+        '
+        Me.lblAreaName_Eng.AutoSize = True
+        Me.lblAreaName_Eng.Font = New System.Drawing.Font("微軟正黑體", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.lblAreaName_Eng.Location = New System.Drawing.Point(13, 82)
+        Me.lblAreaName_Eng.Name = "lblAreaName_Eng"
+        Me.lblAreaName_Eng.Size = New System.Drawing.Size(84, 15)
+        Me.lblAreaName_Eng.TabIndex = 187
+        Me.lblAreaName_Eng.Text = "(Report Name)"
+        Me.lblAreaName_Eng.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        '
         'ReportUI
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 12.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(1584, 599)
-        Me.Controls.Add(Me.ReportUI_DataGridView)
+        Me.Controls.Add(Me.cboAreaName)
+        Me.Controls.Add(Me.lblAreaName)
+        Me.Controls.Add(Me.cboModule)
+        Me.Controls.Add(Me.dgvReport)
         Me.Controls.Add(Me.grpRemark)
         Me.Controls.Add(Me.MenuBar)
         Me.Controls.Add(Me.Btn_RefreshStop)
@@ -430,13 +494,15 @@ Partial Class ReportUI
         Me.Controls.Add(Me.Btn_First)
         Me.Controls.Add(Me.Notice)
         Me.Controls.Add(Me.Btn_TEST)
-        Me.Controls.Add(Me.cboAreaName)
         Me.Controls.Add(Me.lblLot_Eng)
+        Me.Controls.Add(Me.lblModule)
+        Me.Controls.Add(Me.lblModule_Eng)
+        Me.Controls.Add(Me.lblAreaName_Eng)
         Me.Name = "ReportUI"
         Me.Text = "ReportUI [維運 : 李博軒]"
         Me.MenuBar.ResumeLayout(False)
         Me.MenuBar.PerformLayout()
-        CType(Me.ReportUI_DataGridView, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.dgvReport, System.ComponentModel.ISupportInitialize).EndInit()
         Me.grpRemark.ResumeLayout(False)
         Me.grpRemark.PerformLayout()
         Me.ResumeLayout(False)
@@ -446,7 +512,7 @@ Partial Class ReportUI
 
     Friend WithEvents MenuBar As MenuStrip
     Friend WithEvents Query As ToolStripMenuItem
-    Friend WithEvents ReportUI_DataGridView As DataGridView
+    Friend WithEvents dgvReport As DataGridView
     Friend WithEvents TimerRefresh As Timer
     Friend WithEvents cboAreaName As ComboBox
     Friend WithEvents Btn_TEST As Button
@@ -477,4 +543,9 @@ Partial Class ReportUI
     Friend WithEvents lblEndTime_Eng As Label
     Friend WithEvents lblRemarkUpload_Eng As Label
     Friend WithEvents lblLot_Eng As Label
+    Friend WithEvents cboModule As ComboBox
+    Friend WithEvents lblAreaName As Label
+    Friend WithEvents lblModule As Label
+    Friend WithEvents lblModule_Eng As Label
+    Friend WithEvents lblAreaName_Eng As Label
 End Class

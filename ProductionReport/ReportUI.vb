@@ -12,7 +12,7 @@ Imports System.Data.SqlClient
 '20231030 Boris            建立Table & SP名稱的變數
 
 Public Class ReportUI
-    Dim Version As String = "2.0.23.12.15.1"
+    Dim Version As String = "2.0.23.12.20.1"
     Dim Program As String = "ProductionReport"
     Public Area As String = ""
     Public AreaID As String = ""
@@ -32,7 +32,8 @@ Public Class ReportUI
     Dim Cmd_Formula As New List(Of String())
     Dim HistPath As String = "ProductionReportHist\ProductionReportHist.exe"
     Dim asr As New ProductionReport.My.MySettings
-    Dim MFmodule As String = asr.Item("MFmodule")
+    ' Dim MFmodule As String = asr.Item("MFmodule")
+    Dim MFmodule As String = "1"
     '11/06新增參數
     Dim CID As New Dictionary(Of String, String)
     'Dim ST As New Thread(AddressOf StopTimer)
@@ -77,36 +78,44 @@ Public Class ReportUI
         '暫停刷新資料直到選擇站點
         TimerRefresh.Stop()
         '站點名稱搜尋
-        cboAreaName.Items.Clear()
 
-        Using dt As DataTable = SQL_Query("SELECT  [OnlineVersion],ISNULL([TestVersion],0) AS [TestVersion] FROM " & DbVersion & " WHERE [Program] = '" & Program & "'")
-            If Not (CInt(Version.Replace(".", "")) > CInt(dt(0)(0).ToString.Replace(".", "")) OrElse CInt(Version.Replace(".", "")) = CInt(dt(0)(1).ToString.Replace(".", ""))) Then
-                MessageBox.Show("請確認是否使用最新版本")
-                Environment.Exit(Environment.ExitCode)
-                Application.Exit()
-            End If
-        End Using
+        cboModule.SelectedIndex = 0
 
-        Using dt As DataTable = SQL_Query("SELECT DISTINCT [Area],[Password],[ProcName],ISNULL([Location],'') AS [Location],[Pkey] FROM " & DbProc & " WITH (NOLOCK) WHERE [Module] = " & MFmodule & "　ORDER BY [Area]") '搜尋資料庫內的所有站點和密碼
-            For Each row As DataRow In dt.Rows
-                cboAreaName.Items.Add(row("Area")) '在站點選項添加對應項目
-                Dim procinfo As String() = {row("Password"), row("ProcName"), row("Location"), row("Pkey")}
-                Me.ProcInfo.Add(row("Area"), procinfo) '新增與站點對應密碼
-            Next
-        End Using
 
         'dgv雙重緩衝
-        Dim type As Type = ReportUI_DataGridView.GetType()
+        Dim type As Type = dgvReport.GetType()
         Dim pi As PropertyInfo = type.GetProperty("DoubleBuffered", System.Reflection.BindingFlags.Instance Or System.Reflection.BindingFlags.NonPublic)
-        pi.SetValue(ReportUI_DataGridView, True, Nothing)
+        pi.SetValue(dgvReport, True, Nothing)
 
-        If Not {"0", "4"}.Contains(MFmodule) Then
-            grpRemark.Visible = False
-        End If
-
-        TimeSetting()
 
     End Sub
+    Private Sub cboModule_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cboModule.SelectedIndexChanged
+        Try
+            cboAreaName.Items.Clear()
+            MFmodule = cboModule.SelectedItem
+            ProcInfo.Clear()
+
+            Using dt As DataTable = SQL_Query("SELECT DISTINCT [Area],[Password],[ProcName],ISNULL([Location],'') AS [Location],[Pkey] FROM " & DbProc & " WITH (NOLOCK) WHERE [Module] = " & MFmodule & "　ORDER BY [Area]") '搜尋資料庫內的所有站點和密碼
+                For Each row As DataRow In dt.Rows
+                    cboAreaName.Items.Add(row("Area")) '在站點選項添加對應項目
+                    Dim procinfo As String() = {row("Password"), row("ProcName"), row("Location"), row("Pkey")}
+                    Me.ProcInfo.Add(row("Area"), procinfo) '新增與站點對應密碼
+                Next
+            End Using
+
+            If Not {"0", "4"}.Contains(MFmodule) Then
+                grpRemark.Visible = False
+            Else
+                grpRemark.Visible = True
+            End If
+
+            TimeSetting()
+
+        Catch ex As Exception
+            WriteLog(ex, LogFilePath, "cboModule_SelectedIndexChanged")
+        End Try
+    End Sub
+
     Private Sub AreaName_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cboAreaName.SelectedIndexChanged
         Try
             '清空資料
@@ -122,9 +131,9 @@ Public Class ReportUI
                 End If
                 'isRefresh = True
                 'DataGridView初始化
-                ReportUI_DataGridView.DataSource = Nothing
-                ReportUI_DataGridView.Rows.Clear()
-                ReportUI_DataGridView.Columns.Clear()
+                dgvReport.DataSource = Nothing
+                dgvReport.Rows.Clear()
+                dgvReport.Columns.Clear()
                 Column_All.Clear()
                 Column.Clear()
                 Column_Query.Clear()
@@ -167,9 +176,9 @@ Public Class ReportUI
                 '生成模組通用欄位
                 For Each cols As String In ColsOrigin
                     Dim col As String() = cols.Split(";")
-                    ReportUI_DataGridView.Columns.Add(col(0), col(0) & vbCrLf & Trim(col(1)))
+                    dgvReport.Columns.Add(col(0), col(0) & vbCrLf & Trim(col(1)))
                 Next
-                For Each dgvCol As DataGridViewColumn In ReportUI_DataGridView.Columns
+                For Each dgvCol As DataGridViewColumn In dgvReport.Columns
                     If dgvCol.Name <> "操作員" AndAlso dgvCol.Name <> "備註" Then
                         dgvCol.ReadOnly = True
                         dgvCol.DefaultCellStyle.BackColor = SystemColors.ControlLight
@@ -200,24 +209,24 @@ Public Class ReportUI
                         Column_Formula_All += row("FormulaColumn").ToString
                         Requirement.Add(row("ParameterName").ToString, {row("isRequire").ToString, row("DefaultValues").ToString}) '儲存欄位選必填&預設值資訊
                         '建立欄位
-                        ReportUI_DataGridView.Columns.Add(row("ParameterName").ToString, row("ParameterName").ToString & vbCrLf & row("EnglishName").ToString)
-                        ReportUI_DataGridView.Columns(row("ParameterName").ToString).ReadOnly = True
-                        ReportUI_DataGridView.Columns(row("ParameterName").ToString).DefaultCellStyle.BackColor = SystemColors.ControlLight
+                        dgvReport.Columns.Add(row("ParameterName").ToString, row("ParameterName").ToString & vbCrLf & row("EnglishName").ToString)
+                        dgvReport.Columns(row("ParameterName").ToString).ReadOnly = True
+                        dgvReport.Columns(row("ParameterName").ToString).DefaultCellStyle.BackColor = SystemColors.ControlLight
                         Column_All.Add(row("ParameterName").ToString)
                     ElseIf Convert.ToBoolean(row("isQuery")) Then '自動代入欄位
                         Column_Query.Add(row("ParameterName").ToString)  '儲存參數名稱
                         Cmd_Param = Cmd_Param + row("QueryCommand").ToString + vbCrLf  'SQL語法串接
                         Requirement.Add(row("ParameterName").ToString, {row("isRequire").ToString, row("DefaultValues").ToString}) '儲存欄位選必填&預設值資訊
                         '建立欄位
-                        ReportUI_DataGridView.Columns.Add(row("ParameterName").ToString, row("ParameterName").ToString & vbCrLf & row("EnglishName").ToString)
-                        ReportUI_DataGridView.Columns(row("ParameterName").ToString).ReadOnly = True
-                        ReportUI_DataGridView.Columns(row("ParameterName").ToString).DefaultCellStyle.BackColor = SystemColors.ControlLight
+                        dgvReport.Columns.Add(row("ParameterName").ToString, row("ParameterName").ToString & vbCrLf & row("EnglishName").ToString)
+                        dgvReport.Columns(row("ParameterName").ToString).ReadOnly = True
+                        dgvReport.Columns(row("ParameterName").ToString).DefaultCellStyle.BackColor = SystemColors.ControlLight
                         Column_All.Add(row("ParameterName").ToString)
                     Else '手動輸入欄位
                         Column.Add(row("ParameterName"))
                         Requirement.Add(row("ParameterName").ToString, {row("isRequire").ToString, row("DefaultValues").ToString}) '儲存欄位選必填&預設值資訊
                         '建立欄位
-                        ReportUI_DataGridView.Columns.Add(row("ParameterName").ToString, row("ParameterName").ToString & vbCrLf & row("EnglishName").ToString)
+                        dgvReport.Columns.Add(row("ParameterName").ToString, row("ParameterName").ToString & vbCrLf & row("EnglishName").ToString)
                         Column_All.Add(row("ParameterName").ToString)
                     End If
                 Next
@@ -230,15 +239,15 @@ Public Class ReportUI
                 bc.FlatStyle = FlatStyle.Flat
                 bc.Style.BackColor = Color.Cyan
                 btnCol.CellTemplate = bc
-                ReportUI_DataGridView.Columns.Add(btnCol)
-                ReportUI_DataGridView.Columns.Add("完成", "完成" & vbCrLf & "(Compelete)")
-                ReportUI_DataGridView.Columns.Add("LogID", "LogID")
-                ReportUI_DataGridView.Columns("btnModify").Width = 40
-                ReportUI_DataGridView.Columns("完成").Width = 60
-                ReportUI_DataGridView.Columns("完成").ReadOnly = True
-                ReportUI_DataGridView.Columns("LogID").Width = 60
-                ReportUI_DataGridView.Columns("LogID").ReadOnly = True
-                ReportUI_DataGridView.Columns("LogID").Visible = False
+                dgvReport.Columns.Add(btnCol)
+                dgvReport.Columns.Add("完成", "完成" & vbCrLf & "(Compelete)")
+                dgvReport.Columns.Add("LogID", "LogID")
+                dgvReport.Columns("btnModify").Width = 40
+                dgvReport.Columns("完成").Width = 60
+                dgvReport.Columns("完成").ReadOnly = True
+                dgvReport.Columns("LogID").Width = 60
+                dgvReport.Columns("LogID").ReadOnly = True
+                dgvReport.Columns("LogID").Visible = False
                 'For Each dgvCol As DataGridViewColumn In ReportUI_DataGridView.Columns
                 '    'dgvCol.SortMode = DataGridViewColumnSortMode.NotSortable
                 '    If dgvCol.HeaderText = "修改" Then dgvCol.Width = 40
@@ -303,7 +312,7 @@ Public Class ReportUI
             Else
                 Return
             End If
-            ReportUI_DataGridView.Columns(10).Frozen = True '凍結欄位
+            dgvReport.Columns(10).Frozen = True '凍結欄位
             'SAP_CheckID(AreaID)
 
             TimerRefresh.Start()
@@ -318,6 +327,15 @@ Public Class ReportUI
         Try
             'isRefresh = True
             TimerRefresh.Stop()
+
+            Using dt As DataTable = SQL_Query("SELECT  [OnlineVersion],ISNULL([TestVersion],0) AS [TestVersion] FROM " & DbVersion & " WHERE [Program] = '" & Program & "'")
+                If Not (CInt(Version.Replace(".", "")) > CInt(dt(0)(0).ToString.Replace(".", "")) OrElse CInt(Version.Replace(".", "")) = CInt(dt(0)(1).ToString.Replace(".", ""))) Then
+                    MessageBox.Show("請重開程式以使用最新版本")
+                    'Environment.Exit(Environment.ExitCode)
+                    'Application.Exit()
+                End If
+            End Using
+
             'Dim proc As String() = ProcInfo(AreaName.SelectedItem.ToString)(1).Split(",")
             'Dim StrMachine As String = ""
             'For Each mac In Machine
@@ -371,7 +389,7 @@ Public Class ReportUI
                 lots.Add(new_dr("批號").ToString)
                 Dim RIndex As Integer
                 Dim is_duplicate As Boolean = False
-                For Each dr As DataGridViewRow In ReportUI_DataGridView.Rows
+                For Each dr As DataGridViewRow In dgvReport.Rows
                     If new_dr("LogID") = dr.Cells("LogID").Value.ToString AndAlso new_dr("面次") = dr.Cells("面次").Value.ToString Then
                         is_duplicate = True
                         RIndex = dr.Index
@@ -407,10 +425,10 @@ Public Class ReportUI
                         para.Add(CType(new_dr("完成時間"), DateTime).ToString("yyyy-MM-dd HH:mm:ss"))
                     End If
                     para.Add(new_dr("LogID"))
-                    ReportUI_DataGridView.Rows.Insert(0, para.ToArray)
+                    dgvReport.Rows.Insert(0, para.ToArray)
                     If new_dr("面次").ToString = "PB" Then
-                        ReportUI_DataGridView.Rows(0).Cells("操作員").ReadOnly = True
-                        ReportUI_DataGridView.Rows(0).Cells("操作員").Style.BackColor = SystemColors.ControlLight
+                        dgvReport.Rows(0).Cells("操作員").ReadOnly = True
+                        dgvReport.Rows(0).Cells("操作員").Style.BackColor = SystemColors.ControlLight
                     End If
                     'If new_dr("操作員").ToString <> "" Then
                     '    ReportUI_DataGridView.Rows(0).Cells("操作員").ReadOnly = True
@@ -418,10 +436,10 @@ Public Class ReportUI
                     'End If
 
                     If new_dr("已上傳").ToString = "True" Then
-                            ReportUI_DataGridView.Rows(0).Cells("完成").Style.BackColor = Color.Lime
-                        End If
-                    Else
-                        Dim MoveInTime As String = ""
+                        dgvReport.Rows(0).Cells("完成").Style.BackColor = Color.Lime
+                    End If
+                Else
+                    Dim MoveInTime As String = ""
                     Dim LastEndTime As String = ""
                     Dim CheckInTime As String = ""
                     Dim CheckOutTime As String = ""
@@ -449,11 +467,11 @@ Public Class ReportUI
                     End If
                     para.Add(new_dr("LogID"))
 
-                    ReportUI_DataGridView.Rows.RemoveAt(RIndex)
-                    ReportUI_DataGridView.Rows.Insert(RIndex, para.ToArray)
+                    dgvReport.Rows.RemoveAt(RIndex)
+                    dgvReport.Rows.Insert(RIndex, para.ToArray)
                     If new_dr("面次").ToString = "PB" Then
-                        ReportUI_DataGridView.Rows(RIndex).Cells("操作員").ReadOnly = True
-                        ReportUI_DataGridView.Rows(RIndex).Cells("操作員").Style.BackColor = SystemColors.ControlLight
+                        dgvReport.Rows(RIndex).Cells("操作員").ReadOnly = True
+                        dgvReport.Rows(RIndex).Cells("操作員").Style.BackColor = SystemColors.ControlLight
                     End If
                     'If new_dr("操作員").ToString <> "" Then
                     '    ReportUI_DataGridView.Rows(RIndex).Cells("操作員").ReadOnly = True
@@ -461,7 +479,7 @@ Public Class ReportUI
                     'End If
 
                     If new_dr("已上傳").ToString = "True" Then
-                        ReportUI_DataGridView.Rows(RIndex).Cells("完成").Style.BackColor = Color.Lime
+                        dgvReport.Rows(RIndex).Cells("完成").Style.BackColor = Color.Lime
                     End If
                 End If
             Next
@@ -471,10 +489,10 @@ Public Class ReportUI
             ' 恢復 DataGridView 的更新
             'isRefresh = False
             CheckColumn()
-            ReportUI_DataGridView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.ColumnHeader
-            ReportUI_DataGridView.Refresh()
-            ReportUI_DataGridView.ResumeLayout()
-            ReportUI_DataGridView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None
+            dgvReport.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.ColumnHeader
+            dgvReport.Refresh()
+            dgvReport.ResumeLayout()
+            dgvReport.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None
             TimerRefresh.Start()
             QueryMachineState()
             TimeSetting()
@@ -487,24 +505,24 @@ Public Class ReportUI
     End Sub
 
     Private Sub ModifyButton_Click(ByVal sender As Object, ByVal e As DataGridViewCellEventArgs)
-        If ReportUI_DataGridView.Rows(e.RowIndex).Cells("完成").Value IsNot Nothing AndAlso ReportUI_DataGridView.Rows(e.RowIndex).Cells("完成").Value.ToString <> "" Then
+        If dgvReport.Rows(e.RowIndex).Cells("完成").Value IsNot Nothing AndAlso dgvReport.Rows(e.RowIndex).Cells("完成").Value.ToString <> "" Then
             Return
         End If
 
         ' 將該行特定欄位 ReadOnly 屬性改為 False
-        For i = ReportUI_DataGridView.Columns("備註").Index To ReportUI_DataGridView.Columns("btnModify").Index - 1
+        For i = dgvReport.Columns("備註").Index To dgvReport.Columns("btnModify").Index - 1
             '判斷是否為手動欄位或是H3內層線路特別欄位
-            If Column.Contains(ReportUI_DataGridView.Columns(i).Name) OrElse Column_CCF.Contains(ReportUI_DataGridView.Columns(i).Name) OrElse (ReportUI_DataGridView.Rows(e.RowIndex).Cells(i).Value IsNot Nothing AndAlso ReportUI_DataGridView.Rows(e.RowIndex).Cells(i).Value.ToString = "") Then
-                ReportUI_DataGridView.Rows(e.RowIndex).Cells(i).ReadOnly = False
-                ReportUI_DataGridView.Rows(e.RowIndex).Cells(i).Style.BackColor = SystemColors.ControlLightLight
+            If Column.Contains(dgvReport.Columns(i).Name) OrElse Column_CCF.Contains(dgvReport.Columns(i).Name) OrElse (dgvReport.Rows(e.RowIndex).Cells(i).Value IsNot Nothing AndAlso dgvReport.Rows(e.RowIndex).Cells(i).Value.ToString = "") Then
+                dgvReport.Rows(e.RowIndex).Cells(i).ReadOnly = False
+                dgvReport.Rows(e.RowIndex).Cells(i).Style.BackColor = SystemColors.ControlLightLight
             End If
         Next
-        ReportUI_DataGridView.Rows(e.RowIndex).Cells("操作員").ReadOnly = False
-        ReportUI_DataGridView.Rows(e.RowIndex).Cells("操作員").Style.BackColor = SystemColors.ControlLightLight
+        dgvReport.Rows(e.RowIndex).Cells("操作員").ReadOnly = False
+        dgvReport.Rows(e.RowIndex).Cells("操作員").Style.BackColor = SystemColors.ControlLightLight
     End Sub
 
     Private Sub CheckParaUploaded(ByVal row As DataGridViewRow)
-        For i = 0 To ReportUI_DataGridView.Columns("完成").Index - 1
+        For i = 0 To dgvReport.Columns("完成").Index - 1
             row.Cells(i).ReadOnly = True
             row.Cells(i).Style.BackColor = Color.Cyan
         Next
@@ -512,7 +530,7 @@ Public Class ReportUI
 
     '20231017 Boris 取消ReadOnly
     Private Sub CheckColumn()
-        For Each row As DataGridViewRow In ReportUI_DataGridView.Rows
+        For Each row As DataGridViewRow In dgvReport.Rows
             If row.Cells("完成").Value IsNot Nothing AndAlso row.Cells("完成").Value.ToString <> "" Then
                 CheckParaUploaded(row)
             Else
@@ -531,11 +549,11 @@ Public Class ReportUI
     End Sub
 
     '20231017 Boris 取消ReadOnly
-    Private Sub ReportUI_DataGridView_CellValueChanged(sender As Object, e As DataGridViewCellEventArgs) Handles ReportUI_DataGridView.CellValueChanged
+    Private Sub ReportUI_DataGridView_CellValueChanged(sender As Object, e As DataGridViewCellEventArgs) Handles dgvReport.CellValueChanged
         Try
             If Not ChangeValueIgnore Then
-                Dim row As DataGridViewRow = ReportUI_DataGridView.Rows(e.RowIndex)
-                Dim ParaName As String = ReportUI_DataGridView.Columns(e.ColumnIndex).Name
+                Dim row As DataGridViewRow = dgvReport.Rows(e.RowIndex)
+                Dim ParaName As String = dgvReport.Columns(e.ColumnIndex).Name
                 Dim Go As Boolean = False
                 Dim RequestColumns As New List(Of String)
                 If row.Cells("完成").Value IsNot Nothing AndAlso row.Cells("完成").Value <> "" Then
@@ -564,18 +582,18 @@ Public Class ReportUI
                     End If
 
 
-                    If e.ColumnIndex < ReportUI_DataGridView.Columns("操作員").Index And ParaName <> "日期" Then
+                    If e.ColumnIndex < dgvReport.Columns("操作員").Index And ParaName <> "日期" Then
                         If Column_Formula.Count <> 0 Then
                             Dim FormulaRequestColumn As String = ""
-                            For c As Integer = 0 To ReportUI_DataGridView.Columns("操作員").Index - 1
-                                If Not CheckValue(row, ReportUI_DataGridView.Columns(c).Name) Then
+                            For c As Integer = 0 To dgvReport.Columns("操作員").Index - 1
+                                If Not CheckValue(row, dgvReport.Columns(c).Name) Then
                                     row.Cells(c).Style.BackColor = Color.Red
                                     Return
                                 End If
-                                If Column_Formula_All.Contains(ReportUI_DataGridView.Columns(c).Name) Then
+                                If Column_Formula_All.Contains(dgvReport.Columns(c).Name) Then
                                     If row.Cells(c).Value Is Nothing OrElse row.Cells(c).Value.ToString = "" Then
                                         row.Cells(c).Style.BackColor = Color.Red
-                                        FormulaRequestColumn = FormulaRequestColumn + ReportUI_DataGridView.Columns(c).Name + "、"
+                                        FormulaRequestColumn = FormulaRequestColumn + dgvReport.Columns(c).Name + "、"
                                     End If
                                 End If
                             Next
@@ -594,14 +612,14 @@ Public Class ReportUI
                     If Not isRefresh Then
                         Dim cell As DataGridViewCell = row.Cells(e.ColumnIndex)
                         If e.RowIndex >= 0 AndAlso e.ColumnIndex >= 0 Then
-                            If Cmd_Formula.Count > 0 AndAlso Column_Formula_All.Contains(ReportUI_DataGridView.Columns(cell.ColumnIndex).Name) Then
+                            If Cmd_Formula.Count > 0 AndAlso Column_Formula_All.Contains(dgvReport.Columns(cell.ColumnIndex).Name) Then
                                 ColumnFormula(row, cell)
                             End If
                         End If
                         SAP_CheckPnl(row, e, AreaID)
-                        If cell.Value IsNot Nothing AndAlso cell.Value.ToString <> "" AndAlso cell.ColumnIndex >= ReportUI_DataGridView.Columns("操作員").Index Then
+                        If cell.Value IsNot Nothing AndAlso cell.Value.ToString <> "" AndAlso cell.ColumnIndex >= dgvReport.Columns("操作員").Index Then
 
-                            If cell.ColumnIndex = ReportUI_DataGridView.Columns("操作員").Index Then
+                            If cell.ColumnIndex = dgvReport.Columns("操作員").Index Then
                                 ' 設定資料格為唯讀
                                 'cell.ReadOnly = True
                                 'cell.Style.BackColor = SystemColors.ControlLight
@@ -613,7 +631,7 @@ Public Class ReportUI
                                                                   WHERE [Pkey] = " + PID
 
                                 SQL_Query(cmd)
-                            ElseIf cell.ColumnIndex <> ReportUI_DataGridView.Columns("備註").Index Then
+                            ElseIf cell.ColumnIndex <> dgvReport.Columns("備註").Index Then
                                 ' 設定資料格為唯讀
                                 'cell.ReadOnly = True
                                 'cell.Style.BackColor = SystemColors.ControlLight
@@ -651,7 +669,7 @@ Public Class ReportUI
                         End If
                     End If
                 Else
-                    If e.ColumnIndex > ReportUI_DataGridView.Columns("備註").Index Then
+                    If e.ColumnIndex > dgvReport.Columns("備註").Index Then
                         If row.Cells(ParaName).Value <> "" Then
                             ChangeValueIgnore = True
                             Dim msg As String = ""
@@ -672,7 +690,7 @@ Public Class ReportUI
                 End If
             End If
         Catch ex As Exception
-            WriteLog(ex, LogFilePath, "ReportUI_DataGridView_CellValueChanged_" + ReportUI_DataGridView.Columns(e.ColumnIndex).Name + "_" + ReportUI_DataGridView.Rows(e.RowIndex).Cells("批號").Value.ToString)
+            WriteLog(ex, LogFilePath, "ReportUI_DataGridView_CellValueChanged_" + dgvReport.Columns(e.ColumnIndex).Name + "_" + dgvReport.Rows(e.RowIndex).Cells("批號").Value.ToString)
             ChangeValueIgnore = False
         End Try
     End Sub
@@ -750,7 +768,7 @@ Public Class ReportUI
             'Next
 
             ' 比較 DataTable 中的每一行，更新 DataGridView 中的值
-            For Each row As DataGridViewRow In ReportUI_DataGridView.Rows
+            For Each row As DataGridViewRow In dgvReport.Rows
                 If row.Cells("站點").Value IsNot Nothing AndAlso row.Cells("站點").Value.ToString() <> "" AndAlso row.Cells("批號").Value IsNot Nothing AndAlso row.Cells("批號").Value.ToString() <> "" AndAlso row.Cells("層別").Value IsNot Nothing AndAlso row.Cells("層別").Value.ToString() <> "" AndAlso row.Cells("料號").Value IsNot Nothing AndAlso row.Cells("料號").Value.ToString() <> "" Then
                     Dim proc_dgv As String = row.Cells("站點").Value.ToString()
                     Dim lot_dgv As String = row.Cells("批號").Value.ToString()
@@ -808,7 +826,7 @@ Public Class ReportUI
                         End If
                     Else
                         '不包含在新的查詢結果則刪除此行
-                        ReportUI_DataGridView.Rows.Remove(row)
+                        dgvReport.Rows.Remove(row)
                         Continue For
                     End If
                 End If
@@ -837,14 +855,14 @@ Public Class ReportUI
                     Dim isFullData As Boolean = False
                     Dim now As String = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
                     If row.Cells("操作員").Value IsNot Nothing AndAlso row.Cells("操作員").Value.ToString() <> "" Then
-                        For i = ReportUI_DataGridView.Columns("備註").Index + 1 To ReportUI_DataGridView.Columns("btnModify").Index - 1 Step 1
-                            If Convert.ToBoolean(Requirement(ReportUI_DataGridView.Columns(i).Name)(0)) Then
+                        isFullData = True
+                        For i = dgvReport.Columns("備註").Index + 1 To dgvReport.Columns("btnModify").Index - 1 Step 1
+                            If Convert.ToBoolean(Requirement(dgvReport.Columns(i).Name)(0)) Then
                                 If Not (row.Cells(i).Value IsNot Nothing AndAlso row.Cells(i).Value.ToString() <> "") Then
                                     isFullData = False
                                     Exit For
                                 End If
                             End If
-                            isFullData = True
                         Next
                     Else
                         isFullData = False
@@ -852,7 +870,7 @@ Public Class ReportUI
                     '確認正反面資料
                     If isFullData AndAlso row.Cells("結束時間").Value.ToString <> "" AndAlso Face.Contains("P") Then
                         Dim row2 As New DataGridViewRow
-                        For Each ro As DataGridViewRow In ReportUI_DataGridView.Rows
+                        For Each ro As DataGridViewRow In dgvReport.Rows
                             If ro.Cells("LogID").Value.ToString = PID Then
                                 Dim NONE As String = ""
                             End If
@@ -861,19 +879,23 @@ Public Class ReportUI
                                 Exit For
                             End If
                         Next
-                        For i = ReportUI_DataGridView.Columns("備註").Index + 1 To ReportUI_DataGridView.Columns("btnModify").Index - 1 Step 1
-                            If Convert.ToBoolean(Requirement(ReportUI_DataGridView.Columns(i).Name)(0)) Then
-                                If Not (row2.Cells(i).Value IsNot Nothing AndAlso row2.Cells(i).Value.ToString() <> "") Then
-                                    isFullData = False
-                                    Exit For
+                        If row2.Index > 0 Then
+                            For i = dgvReport.Columns("備註").Index + 1 To dgvReport.Columns("btnModify").Index - 1 Step 1
+                                If Convert.ToBoolean(Requirement(dgvReport.Columns(i).Name)(0)) Then
+                                    If Not (row2.Cells(i).Value IsNot Nothing AndAlso row2.Cells(i).Value.ToString() <> "") Then
+                                        isFullData = False
+                                        Exit For
+                                    End If
                                 End If
-                            End If
-                            isFullData = True
-                        Next
+                                isFullData = True
+                            Next
+                        Else
+                        End If
+
                     End If
 
-                    '確認所有可填欄位接已填寫後變更資料Flag
-                    If isFullData AndAlso (row.Cells("結束時間").Value.ToString <> "" OrElse Not {"D", "N"}.Contains(row.Cells("班別").Value.ToString)) Then
+                        '確認所有可填欄位接已填寫後變更資料Flag
+                        If isFullData AndAlso (row.Cells("結束時間").Value.ToString <> "" OrElse Not {"D", "N"}.Contains(row.Cells("班別").Value.ToString)) Then
                         Dim remark As String = ""
                         If row.Cells("備註").Value <> Nothing Then remark = row.Cells("備註").Value.ToString
                         Dim cmd As String = "UPDATE " & DbLog & "
@@ -885,7 +907,7 @@ Public Class ReportUI
                         ChangeValueIgnore = True
                         row.Cells("完成").Value = now
                         ChangeValueIgnore = False
-                        For i = 0 To ReportUI_DataGridView.Columns("完成").Index - 1
+                        For i = 0 To dgvReport.Columns("完成").Index - 1
                             row.Cells(i).ReadOnly = True
                             row.Cells(i).Style.BackColor = Color.Cyan
                         Next
@@ -921,7 +943,7 @@ Public Class ReportUI
             Dim cmd As String
             Dim index As Integer = 0
             For Each cols In Cmd_Formula
-                If cols(1).Contains(ReportUI_DataGridView.Columns(Cell.ColumnIndex).Name) Then
+                If cols(1).Contains(dgvReport.Columns(Cell.ColumnIndex).Name) Then
                     formulacol = cols(1).Split(",")
                     For Each col In formulacol
                         If row.Cells(col).Value Is Nothing OrElse String.IsNullOrEmpty(row.Cells(col).Value.ToString()) OrElse (col = "入料片數" And row.Cells(col).Value.ToString = 0) Then
@@ -961,7 +983,7 @@ Public Class ReportUI
         Try
             If Area <> "" Then
 
-                Dim count As Integer = ReportUI_DataGridView.Rows.Count
+                Dim count As Integer = dgvReport.Rows.Count
                 Dim dgvcbocClass As New DataGridViewComboBoxCell
                 dgvcbocClass.Items.Add("首件")
                 dgvcbocClass.Items.Add("其他")
@@ -971,23 +993,23 @@ Public Class ReportUI
                 dgvcbocFace.Items.Add("PB")
 
                 ChangeValueIgnore = True
-                ReportUI_DataGridView.Rows.Add("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "")
-                ReportUI_DataGridView.Rows(count).Cells("班別") = dgvcbocClass
+                dgvReport.Rows.Add("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "")
+                dgvReport.Rows(count).Cells("班別") = dgvcbocClass
 
-                ReportUI_DataGridView.Rows(count).Cells("班別").Value = "首件"
+                dgvReport.Rows(count).Cells("班別").Value = "首件"
 
-                ReportUI_DataGridView.Rows(count).Cells("面次") = dgvcbocFace
+                dgvReport.Rows(count).Cells("面次") = dgvcbocFace
 
-                ReportUI_DataGridView.Rows(count).Cells("面次").Value = "N/A"
+                dgvReport.Rows(count).Cells("面次").Value = "N/A"
                 ChangeValueIgnore = False
-                For i = 0 To ReportUI_DataGridView.Columns("備註").Index - 2
-                    If ReportUI_DataGridView.Columns(i).Name <> "日期" Then
-                        ReportUI_DataGridView.Rows(count).Cells(i).ReadOnly = False
-                        ReportUI_DataGridView.Rows(count).Cells(i).Style.BackColor = SystemColors.ControlLightLight
+                For i = 0 To dgvReport.Columns("備註").Index - 2
+                    If dgvReport.Columns(i).Name <> "日期" Then
+                        dgvReport.Rows(count).Cells(i).ReadOnly = False
+                        dgvReport.Rows(count).Cells(i).Style.BackColor = SystemColors.ControlLightLight
                     End If
                 Next
-                ReportUI_DataGridView.Rows(count).Selected = True
-                ReportUI_DataGridView.Select()
+                dgvReport.Rows(count).Selected = True
+                dgvReport.Select()
             End If
 
         Catch ex As Exception
@@ -996,11 +1018,11 @@ Public Class ReportUI
         End Try
     End Sub
 
-    Private Sub ReportUI_DataGridView_CellClick(sender As Object, e As DataGridViewCellEventArgs) Handles ReportUI_DataGridView.CellClick
+    Private Sub ReportUI_DataGridView_CellClick(sender As Object, e As DataGridViewCellEventArgs) Handles dgvReport.CellClick
         Try
             If e.RowIndex >= 0 And e.ColumnIndex >= 0 Then
                 ' 確認是在 btncol 欄位點擊
-                If e.ColumnIndex = ReportUI_DataGridView.Columns("btnModify").Index Then
+                If e.ColumnIndex = dgvReport.Columns("btnModify").Index Then
                     ' 執行 ModifyButton_Click 事件
                     ModifyButton_Click(sender, e)
                 End If
@@ -1010,10 +1032,10 @@ Public Class ReportUI
         End Try
     End Sub
 
-    Private Sub ReportUI_DataGridView_CellDoubleClick(sender As Object, e As DataGridViewCellEventArgs) Handles ReportUI_DataGridView.CellDoubleClick
+    Private Sub ReportUI_DataGridView_CellDoubleClick(sender As Object, e As DataGridViewCellEventArgs) Handles dgvReport.CellDoubleClick
         Try
             If e.RowIndex > 0 And e.ColumnIndex > 0 Then
-                SAP_CheckPnl(ReportUI_DataGridView.Rows(e.RowIndex), e, AreaID)
+                SAP_CheckPnl(dgvReport.Rows(e.RowIndex), e, AreaID)
             End If
         Catch ex As Exception
             WriteLog(ex, LogFilePath, "ReportUI_DataGridView_CellDoubleClick")
@@ -1027,10 +1049,10 @@ Public Class ReportUI
             If e.KeyData = Keys.Enter Then
                 If TxtLot.Text.Length >= 14 AndAlso TxtLot.Text.Length <= 18 Then
                     TimerRefresh.Stop()
-                    For Each row As DataGridViewRow In ReportUI_DataGridView.Rows
+                    For Each row As DataGridViewRow In dgvReport.Rows
                         If row.Cells("批號").Value IsNot Nothing AndAlso row.Cells("批號").Value.ToString Like "*" + Trim(TxtLot.Text.Substring(0, 14)) + "*" AndAlso Not isMatch Then
-                            ReportUI_DataGridView.Rows.RemoveAt(row.Index)
-                            ReportUI_DataGridView.Rows.Insert(0, row)
+                            dgvReport.Rows.RemoveAt(row.Index)
+                            dgvReport.Rows.Insert(0, row)
                             isMatch = True
                             MatchCount += 1
                         Else
@@ -1075,7 +1097,7 @@ Public Class ReportUI
 
     'End Sub
 
-    Private Sub ReportUI_DataGridView_KeyDown(sender As Object, e As KeyEventArgs) Handles ReportUI_DataGridView.KeyDown
+    Private Sub ReportUI_DataGridView_KeyDown(sender As Object, e As KeyEventArgs) Handles dgvReport.KeyDown
         Try
             If e.Control Then
                 Select Case e.KeyCode
@@ -1097,21 +1119,21 @@ Public Class ReportUI
     End Sub
 
     Private Sub CopyCells()
-        Clipboard.SetDataObject(ReportUI_DataGridView.GetClipboardContent)
+        Clipboard.SetDataObject(dgvReport.GetClipboardContent)
     End Sub
 
     Private Sub PasteCells()
         Dim s = Clipboard.GetText
-        Dim ci = ReportUI_DataGridView.CurrentCell.ColumnIndex
-        Dim ri = ReportUI_DataGridView.CurrentCell.RowIndex
-        Dim colCount = ReportUI_DataGridView.Columns.Count
-        Dim rowCount = ReportUI_DataGridView.Rows.Count
+        Dim ci = dgvReport.CurrentCell.ColumnIndex
+        Dim ri = dgvReport.CurrentCell.RowIndex
+        Dim colCount = dgvReport.Columns.Count
+        Dim rowCount = dgvReport.Rows.Count
 
         For Each r In s.Split({ControlChars.CrLf}, StringSplitOptions.None)
             Dim Cell = ci
             For Each c In r.Split({ControlChars.Tab}, StringSplitOptions.None)
                 If Cell >= colCount Then Exit For
-                ReportUI_DataGridView(Cell, ri).Value = c
+                dgvReport(Cell, ri).Value = c
                 Cell += 1
             Next
             ri += 1
@@ -1128,12 +1150,20 @@ Public Class ReportUI
     End Sub
 
     Private Sub Combox_DropDown(sender As Object, e As EventArgs) Handles cboMachine.DropDown, cboAreaName.DropDown
-        For Each item In cboMachine.Items
-            Dim tmpLabel As New Label
-            tmpLabel.Text = cboMachine.GetItemText(item)
-            tmpLabel.Font = cboMachine.Font
-            If tmpLabel.PreferredSize.Width > cboMachine.DropDownWidth Then cboMachine.DropDownWidth = tmpLabel.PreferredSize.Width
-        Next
+        Try
+            If TypeOf sender Is ComboBox Then
+                Dim cbo As ComboBox = DirectCast(sender, ComboBox)
+                For Each item In cbo.Items
+                    Dim tmpLabel As New Label
+                    tmpLabel.Text = cbo.GetItemText(item)
+                    tmpLabel.Font = cbo.Font
+                    If tmpLabel.PreferredSize.Width > cbo.DropDownWidth Then cbo.DropDownWidth = tmpLabel.PreferredSize.Width
+                Next
+
+            End If
+        Catch ex As Exception
+            WriteLog(ex, LogFilePath, "Combox_DropDown")
+        End Try
     End Sub
 
 
@@ -1191,12 +1221,10 @@ Public Class ReportUI
 
     Private Sub TimeSetting()
         Try
-            dtpStartTime.MaxDate = Now
-            dtpEndTime.MaxDate = Now
-            Dim start_date As DateTime
-            start_date = CType(Now, Date).AddDays(-1)
-            dtpStartTime.Value = Format(Now.AddHours(-1), "yyyy/MM/dd HH:mm:ss")
-            dtpEndTime.Value = Format(Now, "yyyy/MM/dd HH:mm:ss")
+            'dtpStartTime.MaxDate = Now
+            'dtpEndTime.MaxDate = Now
+
+            dtpStartTime.Value = Format(Now.AddHours(-1), "yyyy/MM/dd HH:mm")
 
             'dtpEndTime.MinDate = dtpStartTime.Value
 
@@ -1207,10 +1235,14 @@ Public Class ReportUI
 
     Private Sub dtpStartTime_ValueChanged(sender As System.Object, e As System.EventArgs) Handles dtpStartTime.ValueChanged
         dtpEndTime.MinDate = dtpStartTime.Value
+        Dim result As DateTime
+        If DateTime.TryParse(dtpStartTime.Value, result) Then
+            dtpEndTime.Value = Format(result.AddHours(1), "yyyy/MM/dd HH:mm")
+        End If
     End Sub
 
     Private Sub dtpEndTime_ValueChanged(sender As System.Object, e As System.EventArgs) Handles dtpEndTime.ValueChanged
-        dtpEndTime.MinDate = dtpStartTime.Value
+
     End Sub
 
 

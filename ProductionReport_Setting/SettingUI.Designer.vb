@@ -112,6 +112,9 @@ Partial Class ProductionReport_Setting
         Me.DgvF_Operator = New System.Windows.Forms.DataGridViewComboBoxColumn()
         Me.DgvF_Values = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.DgvF_Remark = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.txtF_QID_Copy = New System.Windows.Forms.TextBox()
+        Me.lblF_QID_Copy = New System.Windows.Forms.Label()
+        Me.btnF_QID_Copy = New System.Windows.Forms.Button()
         Me.TabMain.SuspendLayout()
         Me.TabProc.SuspendLayout()
         Me.PnlProc_Optional1.SuspendLayout()
@@ -830,6 +833,9 @@ Partial Class ProductionReport_Setting
         '
         'TabQuery
         '
+        Me.TabQuery.Controls.Add(Me.btnF_QID_Copy)
+        Me.TabQuery.Controls.Add(Me.txtF_QID_Copy)
+        Me.TabQuery.Controls.Add(Me.lblF_QID_Copy)
         Me.TabQuery.Controls.Add(Me.BtnF_Test)
         Me.TabQuery.Controls.Add(Me.DgvTest)
         Me.TabQuery.Controls.Add(Me.LblF_QueryCommand)
@@ -1136,6 +1142,37 @@ Partial Class ProductionReport_Setting
         Me.DgvF_Remark.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
         Me.DgvF_Remark.Width = 300
         '
+        'txtF_QID_Copy
+        '
+        Me.txtF_QID_Copy.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.txtF_QID_Copy.Font = New System.Drawing.Font("微軟正黑體", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.txtF_QID_Copy.Location = New System.Drawing.Point(971, 46)
+        Me.txtF_QID_Copy.Name = "txtF_QID_Copy"
+        Me.txtF_QID_Copy.Size = New System.Drawing.Size(45, 25)
+        Me.txtF_QID_Copy.TabIndex = 44
+        Me.txtF_QID_Copy.Tag = "1"
+        '
+        'lblF_QID_Copy
+        '
+        Me.lblF_QID_Copy.AutoSize = True
+        Me.lblF_QID_Copy.Font = New System.Drawing.Font("微軟正黑體", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.lblF_QID_Copy.Location = New System.Drawing.Point(914, 49)
+        Me.lblF_QID_Copy.Name = "lblF_QID_Copy"
+        Me.lblF_QID_Copy.Size = New System.Drawing.Size(51, 20)
+        Me.lblF_QID_Copy.TabIndex = 43
+        Me.lblF_QID_Copy.Text = "QID : "
+        '
+        'btnF_QID_Copy
+        '
+        Me.btnF_QID_Copy.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.btnF_QID_Copy.Font = New System.Drawing.Font("微軟正黑體", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.btnF_QID_Copy.Location = New System.Drawing.Point(1071, 46)
+        Me.btnF_QID_Copy.Name = "btnF_QID_Copy"
+        Me.btnF_QID_Copy.Size = New System.Drawing.Size(85, 29)
+        Me.btnF_QID_Copy.TabIndex = 45
+        Me.btnF_QID_Copy.Text = "複製"
+        Me.btnF_QID_Copy.UseVisualStyleBackColor = True
+        '
         'ProductionReport_Setting
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 12.0!)
@@ -1257,4 +1294,7 @@ Partial Class ProductionReport_Setting
     Friend WithEvents LblPara_Default As Label
     Friend WithEvents ChkPara_isRequire As CheckBox
     Friend WithEvents LblPara_isRequire As Label
+    Friend WithEvents btnF_QID_Copy As Button
+    Friend WithEvents txtF_QID_Copy As TextBox
+    Friend WithEvents lblF_QID_Copy As Label
 End Class

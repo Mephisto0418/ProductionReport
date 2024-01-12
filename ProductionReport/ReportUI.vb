@@ -12,7 +12,7 @@ Imports System.Data.SqlClient
 '20231030 Boris            建立Table & SP名稱的變數
 
 Public Class ReportUI
-    Dim Version As String = "2.0.23.12.20.1"
+    Dim Version As String = "2.0.23.12.25.1"
     Dim Program As String = "ProductionReport"
     Public Area As String = ""
     Public AreaID As String = ""
@@ -582,7 +582,7 @@ Public Class ReportUI
                     End If
 
 
-                    If e.ColumnIndex < dgvReport.Columns("操作員").Index And ParaName <> "日期" Then
+                    If (e.ColumnIndex < dgvReport.Columns("操作員").Index And ParaName <> "日期") AndAlso (row.Cells("班別").Value.ToString() <> "D" AndAlso row.Cells("班別").Value.ToString() <> "N") Then
                         If Column_Formula.Count <> 0 Then
                             Dim FormulaRequestColumn As String = ""
                             For c As Integer = 0 To dgvReport.Columns("操作員").Index - 1

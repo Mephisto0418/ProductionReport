@@ -3,7 +3,7 @@ Imports System.Text
 
 Module DataGridViewExport
 
-    Public LogFolder As String = "C:\ProductionReportLog\Log\"
+    Public LogFolder As String = "C:\ProductionReport\Log\"
 
     Sub ExportToCSV(data As DataTable, logfolder As String, lot As String, layer As String, proc As String, index As String)
         Try

@@ -543,9 +543,12 @@ Public Class ProductionReport_Setting
                     TxtPara_QID.Text = DgvPara.Rows(e.RowIndex).Cells("QID").Value.ToString
                     ChkPara_isRequire.Checked = Convert.ToBoolean(DgvPara.Rows(e.RowIndex).Cells("是否為必填欄位").Value)
                     TxtPara_Default.Text = DgvPara.Rows(e.RowIndex).Cells("欄位預設值").Value.ToString
-
+                If CboPara_Sort.Text = "" Then
+                    ParaSort = 0
+                Else
                     ParaSort = CboPara_Sort.Text
-                    BtnPara_Update.Enabled = True
+                End If
+                BtnPara_Update.Enabled = True
                     BtnPara_Add.Enabled = False
                 ElseIf e.ColumnIndex = DgvPara.Columns("編輯").Index AndAlso e.RowIndex >= 0 Then
                     TabMain.SelectedIndex = 2
@@ -604,6 +607,7 @@ Public Class ProductionReport_Setting
 
     Private Sub BtnF_Refresh_Click(sender As Object, e As EventArgs) Handles BtnF_Refresh.Click
         Try
+            txtF_QID_Copy.Text = ""
             QueryCommand = ""
             DgvF.AllowUserToAddRows = False
             SPC_ComboBox_Invisible()
@@ -1060,6 +1064,56 @@ AftError:
         End Try
     End Sub
 
+    Private Sub txtF_QID_Copy_TextChanged(sender As Object, e As EventArgs) Handles txtF_QID_Copy.TextChanged
+        Try
+            If txtF_QID_Copy.Text <> "" AndAlso Not IsNumeric(txtF_QID_Copy.Text) Then
+                txtF_QID_Copy.Text = ""
+                MessageBox.Show("請輸入數字")
+            End If
+        Catch ex As Exception
+            WriteLog(ex, "txtF_QID_Copy_TextChanged")
+        End Try
+    End Sub
+
+    Private Sub btnF_QID_Copy_Click(sender As Object, e As EventArgs) Handles btnF_QID_Copy.Click
+        Try
+            If txtF_QID_Copy.Text <> "" Then
+                QueryCommand = ""
+                DgvF.AllowUserToAddRows = False
+                SPC_ComboBox_Invisible()
+                DgvF_Operator.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
+                CboF_Type.Items.Clear()
+                CboF_Type.Items.Add("OP參數")
+                CboF_Type.Items.Add("SPC")
+                CboF_Type.Items.Add("愉進系統")
+                CboF_Type.Items.Add("欄位間計算")
+                CboF_Type.Items.Add("其他")
+                CboF_Value.Items.Clear()
+                CboF_Value.Enabled = False
+
+                Dim cmd As String = "SELECT [QueryCommand],[QueryType],[QueryValue],[Filter1_operator],[Filter1],[Filter2_operator],[Filter2],[Filter3_operator],[Filter3],[Filter4_operator],[Filter4],[Filter5_operator],[Filter5]
+                                                 FROM " & DbProcParameterRule & "
+                                                 WHERE [QID] = " & txtF_QID_Copy.Text & ""
+                Dim dt As DataTable = SQL_Query(SQL_Conn_MQL03, cmd)
+
+                TxtF_QueryCommand.Text = dt(0)(0).ToString
+                CboF_Type.Text = dt(0)(1).ToString
+                'Call CboF_Type_SelectedIndexChanged(Nothing, e)
+                CboF_Value.Text = dt(0)(2).ToString
+                Dim index As Integer = 0
+                For Each row As DataGridViewRow In DgvF.Rows
+                    index += 1
+                    row.Cells(DgvF_Operator.Index).Value = dt(0)(2 + index * 2 - 1)
+                    row.Cells(DgvF_Values.Index).Value = dt(0)(2 + index * 2)
+                Next
+                CboF_SPC_Condition.Text = dt(0)(11)
+                CboF_SPC_Group.Text = dt(0)(12)
+                TxtF_QueryCommand.ReadOnly = True
+            End If
+        Catch ex As Exception
+            WriteLog(ex, "btnF_QID_Copy_Click")
+        End Try
+    End Sub
 #End Region
 
     Private Function Operator_Values_Check(ByVal op As String, ByVal val As String) As String

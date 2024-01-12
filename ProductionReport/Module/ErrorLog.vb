@@ -1,7 +1,8 @@
 ﻿Imports System.IO
 
 Module ErrorLog
-    Public LogFilePath As String = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location) & "\Log\"
+    'Public LogFilePath As String = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location) & "\Log\"
+    Public LogFilePath As String = "C:\ProductionReport\Log\"
     Sub WriteLog(ByVal ex As Exception, ByVal LogFilePath As String, ByVal ErrorArea As String)
         '取得行數
         Dim stackTrace As New StackTrace(ex, True)

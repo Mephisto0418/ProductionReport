@@ -1,10 +1,10 @@
 ﻿Module SAP_Custom
-    Private SAP_AreaID As String() = {"91", "92", "93"}
+    Private SAP_AreaID As String() = {"74", "75", "76"}
     Public SAP_Pnlqty As String = ""
 
     Sub SAP_CheckID(ByVal AreaID As String)
         Try
-            If AreaID >= 91 And AreaID <= 98 Then
+            If AreaID >= 74 And AreaID <= 81 Then
                 ReportUI.Btn_First.Visible = True
             Else
                 ReportUI.Btn_First.Visible = False

@@ -26,11 +26,11 @@ Public Class ReportUI
     Public Column_Query As New List(Of String) '自動帶入欄位
     Dim Column_Formula As New List(Of String) '運算欄位
     Dim Column_Formula_All As String '運算欄位
-    Dim Column_CCF As String() = {"Trace Width(TOP)", "Trace Width(BOTTOM)", "Trace Space(TOP)", "Trace Space(BOTTOM)", "CuPad(TOP)", "CuPad(BOTTOM)"} '內層線路特殊欄位
+    Dim Column_Special As String() = {"Trace Width(TOP)", "Trace Width(BOTTOM)", "Trace Space(TOP)", "Trace Space(BOTTOM)", "CuPad(TOP)", "CuPad(BOTTOM)", "正面錫厚平均", "背面錫厚平均", "AVG 水滴角", "MAX 水滴角", "MIN 水滴角"} '內層線路特殊欄位
     Dim Machine As New Dictionary(Of String, String)
     Dim Cmd_Param As String = ""
     Dim Cmd_Formula As New List(Of String())
-    Dim HistPath As String = "ProductionReportHist\ProductionReportHist.exe"
+    Dim HistPath As String = "\\utchfarslink\Link\System_ALL\H3_Datamation_Portal\ProductionReport\History\ProductionReportHist.exe"
     Dim asr As New ProductionReport.My.MySettings
     ' Dim MFmodule As String = asr.Item("MFmodule")
     Dim MFmodule As String = "1"
@@ -129,6 +129,7 @@ Public Class ReportUI
                     cboAreaName.SelectedItem = Area
                     Return
                 End If
+
                 'isRefresh = True
                 'DataGridView初始化
                 dgvReport.DataSource = Nothing
@@ -511,8 +512,8 @@ Public Class ReportUI
 
         ' 將該行特定欄位 ReadOnly 屬性改為 False
         For i = dgvReport.Columns("備註").Index To dgvReport.Columns("btnModify").Index - 1
-            '判斷是否為手動欄位或是H3內層線路特別欄位
-            If Column.Contains(dgvReport.Columns(i).Name) OrElse Column_CCF.Contains(dgvReport.Columns(i).Name) OrElse (dgvReport.Rows(e.RowIndex).Cells(i).Value IsNot Nothing AndAlso dgvReport.Rows(e.RowIndex).Cells(i).Value.ToString = "") Then
+            '判斷是否為手動欄位或是特別欄位
+            If Column.Contains(dgvReport.Columns(i).Name) OrElse Column_Special.Contains(dgvReport.Columns(i).Name) OrElse (dgvReport.Rows(e.RowIndex).Cells(i).Value IsNot Nothing AndAlso dgvReport.Rows(e.RowIndex).Cells(i).Value.ToString = "") Then
                 dgvReport.Rows(e.RowIndex).Cells(i).ReadOnly = False
                 dgvReport.Rows(e.RowIndex).Cells(i).Style.BackColor = SystemColors.ControlLightLight
             End If

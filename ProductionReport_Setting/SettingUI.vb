@@ -497,14 +497,36 @@ Public Class ProductionReport_Setting
                                WHERE [AreaID] = " & TxtPara_AreaID.Text & " AND [PID] BETWEEN " & ParaSort & " AND " & CboPara_Sort.Text & " 
                                UPDATE " & DbProcParameter & " 
                                SET [PID] = '" & CboPara_Sort.Text & "',[ParameterName] = '" & Trim(TxtPara_ParaName.Text) & "',[EnglishName] = '" & Trim(TxtPara_EngName.Text) & "',[isQuery] = '" & Convert.ToInt32(ChkPara_isQuery.Checked).ToString & "',[isRequire] = '" & Convert.ToInt32(ChkPara_isRequire.Checked).ToString & "',[DefaultValues] = '" & Trim(TxtPara_Default.Text) & "'
-                               WHERE [Pkey] = '" & TxtPara_Pkey.Text & "'"
+                               WHERE [Pkey] = '" & TxtPara_Pkey.Text & "'
+                               UPDATE t1 
+                               SET t1.[PID] = t2.[NEW_PID]
+                               FROM " & DbProcParameter & " AS t1
+                               INNER JOIN (SELECT TOP (1000) [Pkey]
+                                     ,[AreaID]
+                                     ,[PID]
+                                     ,ROW_NUMBER() OVER (ORDER BY PID) AS [NEW_PID]
+                                 FROM " & DbProcParameter & "
+                                 WHERE AreaID = " & TxtPara_AreaID.Text & "
+                                 ORDER BY PID
+                               ) AS t2 ON t1.[Pkey] = t2.[Pkey]"
             ElseIf CInt(CboPara_Sort.Text) < ParaSort Then '新的順序編號<舊的順序編號
                 cmd = "UPDATE " & DbProcParameter & "
                                SET [PID] = [PID] + 1
                                WHERE [AreaID] = " & TxtPara_AreaID.Text & " AND [PID] BETWEEN " & CboPara_Sort.Text & " AND " & ParaSort & " 
                                UPDATE " & DbProcParameter & " 
                                SET [PID] = '" & CboPara_Sort.Text & "',[ParameterName] = '" & Trim(TxtPara_ParaName.Text) & "',[EnglishName] = '" & Trim(TxtPara_EngName.Text) & "',[isQuery] = '" & Convert.ToInt32(ChkPara_isQuery.Checked).ToString & "',[isRequire] = '" & Convert.ToInt32(ChkPara_isRequire.Checked).ToString & "',[DefaultValues] = '" & Trim(TxtPara_Default.Text) & "'
-                               WHERE [Pkey] = '" & TxtPara_Pkey.Text & "'"
+                               WHERE [Pkey] = '" & TxtPara_Pkey.Text & "'
+                               UPDATE t1 
+                               SET t1.[PID] = t2.[NEW_PID]
+                               FROM " & DbProcParameter & " AS t1
+                               INNER JOIN (SELECT TOP (1000) [Pkey]
+                                     ,[AreaID]
+                                     ,[PID]
+                                     ,ROW_NUMBER() OVER (ORDER BY PID) AS [NEW_PID]
+                                 FROM " & DbProcParameter & "
+                                 WHERE AreaID = " & TxtPara_AreaID.Text & "
+                                 ORDER BY PID
+                               ) AS t2 ON t1.[Pkey] = t2.[Pkey]"
             End If
 
             SQL_Query(SQL_Conn_MQL03, cmd)
@@ -554,7 +576,7 @@ Public Class ProductionReport_Setting
                     TabMain.SelectedIndex = 2
                 If DgvPara.Rows(e.RowIndex).Cells("QID").Value.ToString = "0" Then TxtF_QID.Text = "" Else TxtF_QID.Text = DgvPara.Rows(e.RowIndex).Cells("QID").Value.ToString
                 TxtF_Pkey.Text = DgvPara.Rows(e.RowIndex).Cells("Pkey").Value.ToString
-                ParaColumn = "入料片數,"
+                ParaColumn = "入料片數,出料片數,"
                 For Each pararow As DataGridViewRow In DgvPara.Rows
                     ParaColumn += pararow.Cells("欄位名稱").Value.ToString + ","
                 Next
@@ -704,7 +726,7 @@ Public Class ProductionReport_Setting
             TxtF_QueryCommand.Text = ""
             DgvF.Rows.Add("製程代碼(8碼)", "[ProcName]", "=", "", "若留空白則查詢當站資訊 Ex. SMK1CLN1")
             DgvF.Rows.Add("愉進過帳狀態", "[AftStatus]", "=", "", "MoveIn Or CheckIn Or CheckOut Or MoveOut")
-            DgvTest.Rows.Add("批號", "VarPart", "")
+            DgvTest.Rows.Add("批號", "VarLot", "")
             DgvTest.Rows.Add("層別", "VarLayer", "")
             CboF_Value.Items.Clear()
             CboF_Value.Enabled = True
@@ -748,6 +770,10 @@ Public Class ProductionReport_Setting
             CboF_SPC_Group.Items.Add("四階")
             CboF_SPC_Group.Items.Add("樣本平均")
             CboF_SPC_Group.SelectedIndex = 0
+            DgvTest.Rows.Clear()
+            DgvTest.Rows.Add("批號", "VarLot", "")
+        Else
+            DgvTest.Rows.Clear()
         End If
         QueryCommand_Create()
     End Sub
@@ -803,7 +829,11 @@ Public Class ProductionReport_Setting
                     cmd = cmd.Replace("ff" + index.ToString, ope).Replace("f" + index.ToString, val)
                 Next
                 For i = index + 1 To 5
-                    cmd = cmd.Replace("ff" + i.ToString, "").Replace("f" + i.ToString, "")
+                    If i = 5 Then
+                        cmd = cmd.Replace("ff5", CboF_SPC_Condition.Text).Replace("f5", CboF_SPC_Group.Text)
+                    Else
+                        cmd = cmd.Replace("ff" + i.ToString, "").Replace("f" + i.ToString, "")
+                    End If
                 Next
             Else
                 F_SaveType = "Add"
@@ -814,7 +844,8 @@ Public Class ProductionReport_Setting
                              VALUES('" & TxtF_Pkey.Text & "','" & TxtF_QueryCommand.Text.Replace("'", "''") & "','" & CboF_Type.SelectedItem & "','" & CboF_Value.SelectedItem & "','f1','ff1','f2','ff2','f3','ff3','f4','ff4','f5','ff5')
                              UPDATE " & DbProcParameter & "
                              SET [QID] = (SELECT id FROM @ID)
-                             WHERE [Pkey] = '" & TxtF_Pkey.Text & "'"
+                             WHERE [Pkey] = '" & TxtF_Pkey.Text & "'
+                             SELECT [id] FROM @ID"
                 Dim index As Integer = 0
                 For Each row As DataGridViewRow In DgvF.Rows
                     index += 1
@@ -834,7 +865,7 @@ Public Class ProductionReport_Setting
                 Next
                 For i = index + 1 To 5
                     If i = 5 Then
-                        cmd = cmd.Replace("ff5", CboF_SPC_Group.Text).Replace("f5", CboF_SPC_Condition.Text)
+                        cmd = cmd.Replace("ff5", CboF_SPC_Condition.Text).Replace("f5", CboF_SPC_Group.Text)
                     Else
                         cmd = cmd.Replace("ff" + i.ToString, "").Replace("f" + i.ToString, "")
                     End If
@@ -849,7 +880,13 @@ Public Class ProductionReport_Setting
 
             End If
 
-            SQL_Query(SQL_Conn_MQL03, cmd)
+            ' SQL_Query(SQL_Conn_MQL03, cmd)
+            If F_SaveType = "Add" Then
+                Dim dt As DataTable = SQL_Query(SQL_Conn_MQL03, cmd)
+                TxtF_QID.Text = dt(0)(0)
+            Else
+                SQL_Query(SQL_Conn_MQL03, cmd)
+            End If
             isException = False
             MessageBox.Show("儲存成功")
         Catch ex As Exception
@@ -996,7 +1033,15 @@ AftError:
                         QueryCommand += ",c.[AL],c.[UAL],c.[LAL]"
                     End If
                 ElseIf CboF_Type.SelectedIndex = 1 Then
-                    QueryCommand += vbCrLf + "ORDER BY a.[MeasTime]"
+                    QueryCommand += vbCrLf + "GROUP BY a.[MeasTime]"
+                    If CboF_Value.SelectedItem = "CL" Then
+                        QueryCommand += ",c.[TopCL],c.[TopUCL],c.[TopLCL]"
+                    ElseIf CboF_Value.SelectedItem = "SL" Then
+                        QueryCommand += ",c.[SL],c.[USL],c.[LSL]"
+                    ElseIf CboF_Value.SelectedItem = "AL" Then
+                        QueryCommand += ",c.[AL],c.[UAL],c.[LAL]"
+                    End If
+                    QueryCommand += vbCrLf + "ORDER BY a.[MeasTime] DESC"
                 End If
 
             ElseIf CboF_Type.SelectedIndex = 3 Then
@@ -1153,7 +1198,7 @@ AND [Revision] = 'VarRev'")
 	  INNER JOIN " & DbSPCFile & " AS d WITH (NOLOCK) ON c.[FileID] = d.[FileID]
 	  INNER JOIN " & DbSPCFileGroup & " AS e WITH (NOLOCK) ON d.[FileGroupID] = e.[FileGroupID]
 WHERE 1=1")
-        ServerCommand.Add("愉進系統", "FROM " & DbHist & "
+        ServerCommand.Add("愉進系統", "FROM " & DbHist & " WITH(NOLOCK)
 WHERE [lotnum] = 'VarLot'
 AND [LayerName] = 'VarLayer'")
         ServerCommand.Add("欄位間計算", "Imports System

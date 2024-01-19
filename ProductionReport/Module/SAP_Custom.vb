@@ -17,7 +17,7 @@
     Sub SAP_CheckPnl(ByVal row As DataGridViewRow, ByVal e As DataGridViewCellEventArgs, ByVal AreaID As String)
         Dim Cell As DataGridViewCell = row.Cells(e.ColumnIndex)
         Try
-            If Cell.RowIndex > 0 AndAlso SAP_AreaID.Contains(AreaID) Then
+            If Cell.RowIndex >= 0 AndAlso SAP_AreaID.Contains(AreaID) Then
                 If ReportUI.dgvReport.Columns(Cell.ColumnIndex).Name = "第一片基板數量" AndAlso Cell.Value IsNot Nothing AndAlso Cell.Value.ToString <> "" Then
                     If IsNumeric(Cell.Value.ToString) AndAlso (CInt(Cell.Value.ToString) >= 1 And CInt(Cell.Value.ToString) <= 58) Then
                         SAP_Pnlqty = Cell.Value.ToString

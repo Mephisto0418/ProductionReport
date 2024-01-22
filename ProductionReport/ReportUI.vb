@@ -120,15 +120,15 @@ Public Class ReportUI
         Try
             '清空資料
             If cboAreaName.SelectedItem <> Nothing AndAlso Area = "" Or Area <> cboAreaName.SelectedItem Then
-                Dim pw As String = InputBox("請輸入密碼：", "輸入密碼", " ")
-                If pw = "" Then
-                    cboAreaName.SelectedIndex = -1
-                    Return
-                ElseIf pw <> ProcInfo(cboAreaName.SelectedItem.ToString)(0) Then
-                    MessageBox.Show("密碼輸入錯誤")
-                    cboAreaName.SelectedItem = Area
-                    Return
-                End If
+                'Dim pw As String = InputBox("請輸入密碼：", "輸入密碼", " ")
+                'If pw = "" Then
+                '    cboAreaName.SelectedIndex = -1
+                '    Return
+                'ElseIf pw <> ProcInfo(cboAreaName.SelectedItem.ToString)(0) Then
+                '    MessageBox.Show("密碼輸入錯誤")
+                '    cboAreaName.SelectedItem = Area
+                '    Return
+                'End If
 
                 'isRefresh = True
                 'DataGridView初始化

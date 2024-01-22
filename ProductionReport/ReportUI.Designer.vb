@@ -170,7 +170,7 @@ Partial Class ReportUI
         Me.Btn_RefreshStop.Name = "Btn_RefreshStop"
         Me.Btn_RefreshStop.Size = New System.Drawing.Size(102, 42)
         Me.Btn_RefreshStop.TabIndex = 162
-        Me.Btn_RefreshStop.Text = "暫停刷新" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "(Refresh Stop)" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10)
+        Me.Btn_RefreshStop.Text = "暫停五分鐘" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "(Refresh Stop)" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10)
         Me.Btn_RefreshStop.UseVisualStyleBackColor = True
         '
         'lblMachine
@@ -426,7 +426,7 @@ Partial Class ReportUI
         Me.cboModule.FlatStyle = System.Windows.Forms.FlatStyle.System
         Me.cboModule.Font = New System.Drawing.Font("微軟正黑體", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
         Me.cboModule.FormattingEnabled = True
-        Me.cboModule.Items.AddRange(New Object() {"1", "2", "3", "4", "5"})
+        Me.cboModule.Items.AddRange(New Object() {"1", "2", "3", "4", "5", "0"})
         Me.cboModule.Location = New System.Drawing.Point(94, 34)
         Me.cboModule.Name = "cboModule"
         Me.cboModule.RightToLeft = System.Windows.Forms.RightToLeft.Yes

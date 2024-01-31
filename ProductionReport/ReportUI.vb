@@ -12,7 +12,7 @@ Imports System.Data.SqlClient
 '20231030 Boris            建立Table & SP名稱的變數
 
 Public Class ReportUI
-    Dim Version As String = "2.0.23.12.25.1"
+    Dim Version As String = "2.0.24.01.31.1"
     Dim Program As String = "ProductionReport"
     Public Area As String = ""
     Public AreaID As String = ""
@@ -26,7 +26,7 @@ Public Class ReportUI
     Public Column_Query As New List(Of String) '自動帶入欄位
     Dim Column_Formula As New List(Of String) '運算欄位
     Dim Column_Formula_All As String '運算欄位
-    Dim Column_Special As String() = {"Trace Width(TOP)", "Trace Width(BOTTOM)", "Trace Space(TOP)", "Trace Space(BOTTOM)", "CuPad(TOP)", "CuPad(BOTTOM)", "正面錫厚平均", "背面錫厚平均", "AVG 水滴角", "MAX 水滴角", "MIN 水滴角"} '內層線路特殊欄位
+    Dim Column_Special As String() = {"Trace Width(TOP)", "Trace Width(BOTTOM)", "Trace Space(TOP)", "Trace Space(BOTTOM)", "CuPad(TOP)", "CuPad(BOTTOM)", "正面錫厚平均", "背面錫厚平均", "AVG 水滴角", "MAX 水滴角", "MIN 水滴角", "WYKO孔深最大值Via方形(RECT)>5um", "WYKO孔深最大值Via方形(RECT)<13um ", "WYKO平均孔深Via ", "HDW WYKO孔深平均最小值Via方形 (Rect) >5um (Min.)", "HDW WYKO孔深平均最大值Via 方形(Rect) <13um (Max.)", "HDW WYKO平均孔深Via", "HUP WYKO孔深平均最小值Via 方形(Rect) >5um (Min.)", "HUP WYKO孔深平均最大值Via 方形(Rect) <13um (Max.)", "HUP WYKO 平均孔深Via", "WYKO孔深最小值Via 方形(Rect) >5um", "WYKO孔深最大值Via 方形(Rect) <13um", "WYKO 平均孔深Via"} 'SPC特殊欄位
     Dim Machine As New Dictionary(Of String, String)
     Dim Cmd_Param As String = ""
     Dim Cmd_Formula As New List(Of String())
@@ -361,9 +361,10 @@ Public Class ReportUI
             'Dim cmdcol As String = "EXECUTE [H3_Systematic].[dbo].[ProductionQuery_Columns_Insert] @AreaID = '" & AreaID & "'"
             Parameters.Clear()
             Parameters.Add({"@AreaID", AreaID})
-
+            Dim temp As String = "1,2"
+            temp.Split(",").Count
             Try
-                SQL_StoredProcedure(SpFixecColumnNew, Parameters)
+            SQL_StoredProcedure(SpFixecColumnNew, Parameters)
             Catch ex As SqlException
                 SQL_StoredProcedure(SpFixecColumnNew, Parameters)
             End Try
@@ -391,7 +392,7 @@ Public Class ReportUI
                 Dim RIndex As Integer
                 Dim is_duplicate As Boolean = False
                 For Each dr As DataGridViewRow In dgvReport.Rows
-                    If new_dr("LogID") = dr.Cells("LogID").Value.ToString AndAlso new_dr("面次") = dr.Cells("面次").Value.ToString Then
+                    If (dr.Cells("LogID").Value IsNot Nothing AndAlso new_dr("LogID") = dr.Cells("LogID").Value.ToString) AndAlso (dr.Cells("面次").Value IsNot Nothing AndAlso new_dr("面次") = dr.Cells("面次").Value.ToString) Then
                         is_duplicate = True
                         RIndex = dr.Index
                         Exit For
@@ -770,13 +771,14 @@ Public Class ReportUI
 
             ' 比較 DataTable 中的每一行，更新 DataGridView 中的值
             For Each row As DataGridViewRow In dgvReport.Rows
-                If row.Cells("站點").Value IsNot Nothing AndAlso row.Cells("站點").Value.ToString() <> "" AndAlso row.Cells("批號").Value IsNot Nothing AndAlso row.Cells("批號").Value.ToString() <> "" AndAlso row.Cells("層別").Value IsNot Nothing AndAlso row.Cells("層別").Value.ToString() <> "" AndAlso row.Cells("料號").Value IsNot Nothing AndAlso row.Cells("料號").Value.ToString() <> "" Then
+                'If row.Cells("站點").Value IsNot Nothing AndAlso row.Cells("站點").Value.ToString() <> "" AndAlso row.Cells("批號").Value IsNot Nothing AndAlso row.Cells("批號").Value.ToString() <> "" AndAlso row.Cells("層別").Value IsNot Nothing AndAlso row.Cells("層別").Value.ToString() <> "" AndAlso row.Cells("料號").Value IsNot Nothing AndAlso row.Cells("料號").Value.ToString() <> "" Then
+                If row.Cells("LogID").Value IsNot Nothing AndAlso row.Cells("LogID").Value.ToString() <> "" Then
                     Dim proc_dgv As String = row.Cells("站點").Value.ToString()
                     Dim lot_dgv As String = row.Cells("批號").Value.ToString()
                     Dim layer_dgv As String = row.Cells("層別").Value.ToString()
 
                     '確認每一筆DataGridView上的資料是否包含在最新查詢出來的Table
-                    If lots.Contains(lot_dgv) Then
+                    If lots.Contains(lot_dgv) OrElse (Not {"D", "N"}.Contains(row.Cells("班別").Value.ToString)) Then
                         '確認物料是否還在WIP
                         Dim ExistsWIP As Boolean = False
                         For Each wipRow As DataRow In wip_dt.Rows
@@ -808,9 +810,13 @@ Public Class ReportUI
                                             cmd = cmd.Replace("var" + j.ToString, row.Cells(formulacol(j - 1)).Value.ToString)
                                         Next
 
-                                        Dim result As Double
-                                        result = Math.Round(ReCoding(cmd), 4)
-                                        row.Cells(Column_Formula(i)).Value = result
+                                        Dim result = ReCoding(cmd)
+                                        If IsNumeric(result) Then
+                                            row.Cells(Column_Formula(i)).Value = Math.Round(result, 4)
+                                        Else
+                                            row.Cells(Column_Formula(i)).Value = result
+                                        End If
+
                                     End If
                                 End If
                             Next
@@ -895,8 +901,8 @@ Public Class ReportUI
 
                     End If
 
-                        '確認所有可填欄位接已填寫後變更資料Flag
-                        If isFullData AndAlso (row.Cells("結束時間").Value.ToString <> "" OrElse Not {"D", "N"}.Contains(row.Cells("班別").Value.ToString)) Then
+                    '確認所有可填欄位接已填寫後變更資料Flag
+                    If isFullData AndAlso (row.Cells("結束時間").Value.ToString <> "" OrElse Not {"D", "N"}.Contains(row.Cells("班別").Value.ToString)) Then
                         Dim remark As String = ""
                         If row.Cells("備註").Value <> Nothing Then remark = row.Cells("備註").Value.ToString
                         Dim cmd As String = "UPDATE " & DbLog & "

@@ -426,7 +426,7 @@ Partial Class ReportUI
         Me.cboModule.FlatStyle = System.Windows.Forms.FlatStyle.System
         Me.cboModule.Font = New System.Drawing.Font("微軟正黑體", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
         Me.cboModule.FormattingEnabled = True
-        Me.cboModule.Items.AddRange(New Object() {"1", "2", "3", "4", "5", "0"})
+        Me.cboModule.Items.AddRange(New Object() {"1", "2", "3", "4", "5"})
         Me.cboModule.Location = New System.Drawing.Point(94, 34)
         Me.cboModule.Name = "cboModule"
         Me.cboModule.RightToLeft = System.Windows.Forms.RightToLeft.Yes

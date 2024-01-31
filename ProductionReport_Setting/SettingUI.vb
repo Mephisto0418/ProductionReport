@@ -743,7 +743,10 @@ Public Class ProductionReport_Setting
             DgvF.Rows.Add("計算欄位", "Var", "", "", "請按照順序填寫，複數欄位請以逗號("","")分隔 Ex. " & ParaColumn & " ")
             DgvF.Rows.Add("計算公式", "Formula", "", "", "填寫公式時請按照上面填寫的順序將變數命名為var1、var2... Ex. (var1/var2)*100")
             CboF_Value.Items.Clear()
-            CboF_Value.Enabled = False
+            CboF_Value.Items.Add("數字")
+            CboF_Value.Items.Add("文字")
+            CboF_Value.Items.Add("其他")
+            CboF_Value.Enabled = True
 
             '建立語法
             QueryCommand_Create()
@@ -1052,10 +1055,27 @@ AftError:
                     FormulaColumn = DgvF.Rows(0).Cells(DgvF_Values.Index).Value.ToString.Split(",")
                     FormulaCommand = DgvF.Rows(1).Cells(DgvF_Values.Index).Value.ToString
                     FormulaCommand = FormulaCommand.ToUpper()
-                    For i = FormulaColumn.Count To 1 Step -1
-                        FormulaCommand = FormulaCommand.Replace("VAR" + i.ToString + "", "CDbl(""var" + i.ToString + """)")
-                    Next
-                    QueryCommand = QueryCommand.Replace("0.0", FormulaCommand)
+                    If CboF_Value.SelectedIndex = 0 Then
+                        For i = FormulaColumn.Count To 1 Step -1
+                            FormulaCommand = FormulaCommand.Replace("VAR" + i.ToString + "", "CDbl(""var" + i.ToString + """)")
+                        Next
+                        QueryCommand = QueryCommand.Replace("0.0", "(" & FormulaCommand & ").ToString")
+                    ElseIf CboF_Value.SelectedIndex = 1 Then
+                        For i = FormulaColumn.Count To 1 Step -1
+                            FormulaCommand = FormulaCommand.Replace("VAR" + i.ToString + "", """var" + i.ToString + """")
+                        Next
+                        QueryCommand = QueryCommand.Replace("0.0", FormulaCommand)
+                    ElseIf CboF_Value.SelectedIndex = 2 Then
+                        For i = FormulaColumn.Count To 1 Step -1
+                            FormulaCommand = FormulaCommand.Replace("VAR" + i.ToString + "", """var" + i.ToString + """")
+                        Next
+                        QueryCommand = QueryCommand.Replace("result = 0.0", FormulaCommand)
+                    Else
+                        For i = FormulaColumn.Count To 1 Step -1
+                            FormulaCommand = FormulaCommand.Replace("VAR" + i.ToString + "", "CDbl(""var" + i.ToString + """)")
+                        Next
+                        QueryCommand = QueryCommand.Replace("0.0", FormulaCommand)
+                    End If
                 End If
             End If
 
@@ -1096,10 +1116,10 @@ AftError:
                     MessageBox.Show("連線 : 成功 " + vbCrLf + "結果 : 查無資料")
                 End If
             ElseIf CboF_Type.SelectedIndex = 3 Then
-                Dim result As Double = -999
+                Dim result As String = " "
                 result = ReCoding(cmd)
-                If result <> -999 Then
-                    MessageBox.Show("測試 : 成功 " + vbCrLf + "結果 : " + result.ToString)
+                If result <> " " Then
+                    MessageBox.Show("測試 : 成功 " + vbCrLf + "結果 : " + result)
                 Else
                     MessageBox.Show("測試 : 失敗 ")
                 End If
@@ -1203,8 +1223,8 @@ WHERE [lotnum] = 'VarLot'
 AND [LayerName] = 'VarLayer'")
         ServerCommand.Add("欄位間計算", "Imports System
   Public Class Calculator
-    Public Function Calculate() as Double
-    Dim result As Double = 0
+    Public Function Calculate() as String
+    Dim result As String = """"
     result = 0.0
     Return result
   End Function

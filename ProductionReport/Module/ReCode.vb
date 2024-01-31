@@ -19,7 +19,7 @@ Module ReCode
             Dim calculatorType As Type = results.CompiledAssembly.GetType("Calculator")
             Dim calculator As Object = Activator.CreateInstance(calculatorType)
             Dim calculateMethod As MethodInfo = calculatorType.GetMethod("Calculate")
-            Dim result As Double = DirectCast(calculateMethod.Invoke(calculator, Nothing), Double)
+            Dim result = calculateMethod.Invoke(calculator, Nothing)
             Console.WriteLine("計算結果： " & result)
             Return result
         End If

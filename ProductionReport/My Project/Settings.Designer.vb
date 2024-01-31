@@ -56,10 +56,21 @@ Namespace My
         
         <Global.System.Configuration.ApplicationScopedSettingAttribute(),  _
          Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
-         Global.System.Configuration.DefaultSettingValueAttribute("5")>  _
+         Global.System.Configuration.DefaultSettingValueAttribute("3")>  _
         Public ReadOnly Property MFmodule() As String
             Get
                 Return CType(Me("MFmodule"),String)
+            End Get
+        End Property
+        
+        <Global.System.Configuration.ApplicationScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.SpecialSettingAttribute(Global.System.Configuration.SpecialSetting.ConnectionString),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("Data Source=10.44.66.105;Initial Catalog=master;Persist Security Info=True;User I"& _ 
+            "D=pptcim;Password=cim945")>  _
+        Public ReadOnly Property MQL03masterConnectionString() As String
+            Get
+                Return CType(Me("MQL03masterConnectionString"),String)
             End Get
         End Property
     End Class

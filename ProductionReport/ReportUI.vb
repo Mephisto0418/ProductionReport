@@ -12,7 +12,7 @@ Imports System.Data.SqlClient
 '20231030 Boris            建立Table & SP名稱的變數
 
 Public Class ReportUI
-    Dim Version As String = "2.0.24.01.31.1"
+    Dim Version As String = "2.0.24.02.06.1"
     Dim Program As String = "ProductionReport"
     Public Area As String = ""
     Public AreaID As String = ""
@@ -364,17 +364,17 @@ Public Class ReportUI
             Dim temp As String = "1,2"
             temp.Split(",").Count
             Try
-            SQL_StoredProcedure(SpFixecColumnNew, Parameters)
+                'SQL_StoredProcedure(SpFixecColumnNew, Parameters)
             Catch ex As SqlException
-                SQL_StoredProcedure(SpFixecColumnNew, Parameters)
+                'SQL_StoredProcedure(SpFixecColumnNew, Parameters)
             End Try
 
             Try
                 'SQL_Query(cmdcol)
-                SQL_StoredProcedure(SpFreeColumn, Parameters)
+                'SQL_StoredProcedure(SpFreeColumn, Parameters)
             Catch ex As SqlException
                 'SQL_Query(cmdcol)
-                SQL_StoredProcedure(SpFreeColumn, Parameters)
+                'SQL_StoredProcedure(SpFreeColumn, Parameters)
             End Try
             'Dim cmdquery As String = "EXECUTE [H3_Systematic].[dbo].[ProductionQuery_NEW] @AreaID = '" & AreaID & "'"
             'Dim new_dt As DataTable = SQL_Query(cmdquery)
@@ -803,7 +803,7 @@ Public Class ReportUI
                                         End If
                                     Next
                                     If Notyet Then
-                                        Exit For
+                                        Continue For
                                     Else
                                         Dim cmd As String = Cmd_Formula(i)(0)
                                         For j = formulacol.Count To 1 Step -1
@@ -812,7 +812,8 @@ Public Class ReportUI
 
                                         Dim result = ReCoding(cmd)
                                         If IsNumeric(result) Then
-                                            row.Cells(Column_Formula(i)).Value = Math.Round(result, 4)
+                                            Dim result2 As Double = Convert.ToDouble(result)
+                                            row.Cells(Column_Formula(i)).Value = Math.Round(result2, 4)
                                         Else
                                             row.Cells(Column_Formula(i)).Value = result
                                         End If

@@ -12,7 +12,7 @@ Imports System.Data.SqlClient
 '20231030 Boris            建立Table & SP名稱的變數
 
 Public Class ReportUI
-    Dim Version As String = "2.0.24.02.06.1"
+    Dim Version As String = "2.0.24.02.07.1"
     Dim Program As String = "ProductionReport"
     Public Area As String = ""
     Public AreaID As String = ""
@@ -364,17 +364,17 @@ Public Class ReportUI
             Dim temp As String = "1,2"
             temp.Split(",").Count
             Try
-                'SQL_StoredProcedure(SpFixecColumnNew, Parameters)
+                SQL_StoredProcedure(SpFixecColumnNew, Parameters)
             Catch ex As SqlException
-                'SQL_StoredProcedure(SpFixecColumnNew, Parameters)
+                SQL_StoredProcedure(SpFixecColumnNew, Parameters)
             End Try
 
             Try
                 'SQL_Query(cmdcol)
-                'SQL_StoredProcedure(SpFreeColumn, Parameters)
+                SQL_StoredProcedure(SpFreeColumn, Parameters)
             Catch ex As SqlException
                 'SQL_Query(cmdcol)
-                'SQL_StoredProcedure(SpFreeColumn, Parameters)
+                SQL_StoredProcedure(SpFreeColumn, Parameters)
             End Try
             'Dim cmdquery As String = "EXECUTE [H3_Systematic].[dbo].[ProductionQuery_NEW] @AreaID = '" & AreaID & "'"
             'Dim new_dt As DataTable = SQL_Query(cmdquery)

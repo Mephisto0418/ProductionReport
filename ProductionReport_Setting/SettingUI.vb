@@ -1054,7 +1054,7 @@ AftError:
                     Dim FormulaColumn As String()
                     FormulaColumn = DgvF.Rows(0).Cells(DgvF_Values.Index).Value.ToString.Split(",")
                     FormulaCommand = DgvF.Rows(1).Cells(DgvF_Values.Index).Value.ToString
-                    FormulaCommand = FormulaCommand.ToUpper()
+                    FormulaCommand = FormulaCommand.Replace("var", "VAR").Replace("Var", "VAR")
                     If CboF_Value.SelectedIndex = 0 Then
                         For i = FormulaColumn.Count To 1 Step -1
                             FormulaCommand = FormulaCommand.Replace("VAR" + i.ToString + "", "CDbl(""var" + i.ToString + """)")

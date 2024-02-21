@@ -12,7 +12,7 @@ Imports System.Data.SqlClient
 '20231030 Boris            建立Table & SP名稱的變數
 
 Public Class ReportUI
-    Dim Version As String = "2.0.24.02.07.1"
+    Dim Version As String = "2.0.24.02.21.1"
     Dim Program As String = "ProductionReport"
     Public Area As String = ""
     Public AreaID As String = ""
@@ -971,9 +971,15 @@ Public Class ReportUI
                             cmd = cmd.Replace("var" + i.ToString, row.Cells(formulacol(i - 1)).Value.ToString)
                         Next
 
-                        Dim result As Double
-                        result = Math.Round(ReCoding(cmd), 4)
-                        row.Cells(tarcol).Value = result
+                        Dim result = ReCoding(cmd)
+                        If IsNumeric(result) Then
+                            Dim result2 As Double = Convert.ToDouble(result)
+                            row.Cells(tarcol).Value = Math.Round(result2, 4)
+                        Else
+                            row.Cells(tarcol).Value = result
+                        End If
+                        'result = Math.Round(ReCoding(cmd), 4)
+                        'row.Cells(tarcol).Value = result
                         'ColumnFormula(row.Cells(tarcol))
                         'Exit For
                     End If

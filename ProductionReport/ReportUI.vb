@@ -12,7 +12,7 @@ Imports System.Data.SqlClient
 '20231030 Boris            建立Table & SP名稱的變數
 
 Public Class ReportUI
-    Dim Version As String = "2.1.24.02.27.2"
+    Dim Version As String = "2.1.24.02.27.3"
     Dim Program As String = "ProductionReport"
     Public Area As String = ""
     Public AreaID As String = ""
@@ -608,6 +608,10 @@ Public Class ReportUI
                         End If
                         First_Upload(row, AreaID, lot, proc, layer, face)
                         Return
+                    ElseIf PTH_AreaID.Contains(AreaID) Then
+                        If (row.Cells("LogID").Value Is Nothing OrElse row.Cells("LogID").Value.ToString() = "") AndAlso row.Cells("班別").Value.ToString() <> "D" AndAlso row.Cells("班別").Value.ToString() <> "N" Then
+                            First_Upload(row, AreaID, lot, proc, layer, face)
+                        End If
                     End If
 
                     Dim PID As String = row.Cells("LogID").Value.ToString

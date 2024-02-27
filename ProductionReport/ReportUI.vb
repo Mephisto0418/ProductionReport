@@ -12,7 +12,7 @@ Imports System.Data.SqlClient
 '20231030 Boris            建立Table & SP名稱的變數
 
 Public Class ReportUI
-    Dim Version As String = "2.0.24.02.21.1"
+    Dim Version As String = "2.1.24.02.27.1"
     Dim Program As String = "ProductionReport"
     Public Area As String = ""
     Public AreaID As String = ""
@@ -313,8 +313,9 @@ Public Class ReportUI
             Else
                 Return
             End If
-            dgvReport.Columns(10).Frozen = True '凍結欄位
             'SAP_CheckID(AreaID)
+            PTH_CheckID(AreaID)
+            dgvReport.Columns(dgvReport.Columns("面次").Index).Frozen = True '凍結欄位
 
             TimerRefresh.Start()
             TimerRefresh_Tick(sender, e)
@@ -771,14 +772,23 @@ Public Class ReportUI
 
             ' 比較 DataTable 中的每一行，更新 DataGridView 中的值
             For Each row As DataGridViewRow In dgvReport.Rows
+                Dim proc_dgv As String = row.Cells("站點").Value.ToString()
+                Dim lot_dgv As String = row.Cells("批號").Value.ToString()
+                Dim layer_dgv As String = row.Cells("層別").Value.ToString()
+                Dim face_dgv As String = row.Cells("面次").Value.ToString()
+
+                If PTH_AreaID.Contains(AreaID) Then
+                    If (row.Cells("LogID").Value Is Nothing OrElse row.Cells("LogID").Value.ToString() = "") AndAlso row.Cells("班別").Value.ToString() <> "D" AndAlso row.Cells("班別").Value.ToString() <> "N" Then
+                        First_Upload(row, AreaID, lot_dgv, proc_dgv, layer_dgv, face_dgv)
+                    End If
+                End If
+
                 'If row.Cells("站點").Value IsNot Nothing AndAlso row.Cells("站點").Value.ToString() <> "" AndAlso row.Cells("批號").Value IsNot Nothing AndAlso row.Cells("批號").Value.ToString() <> "" AndAlso row.Cells("層別").Value IsNot Nothing AndAlso row.Cells("層別").Value.ToString() <> "" AndAlso row.Cells("料號").Value IsNot Nothing AndAlso row.Cells("料號").Value.ToString() <> "" Then
                 If row.Cells("LogID").Value IsNot Nothing AndAlso row.Cells("LogID").Value.ToString() <> "" Then
-                    Dim proc_dgv As String = row.Cells("站點").Value.ToString()
-                    Dim lot_dgv As String = row.Cells("批號").Value.ToString()
-                    Dim layer_dgv As String = row.Cells("層別").Value.ToString()
 
-                    '確認每一筆DataGridView上的資料是否包含在最新查詢出來的Table
-                    If lots.Contains(lot_dgv) OrElse (Not {"D", "N"}.Contains(row.Cells("班別").Value.ToString)) Then
+
+                    '確認每一筆DataGridView上的資料是否包含在最新查詢出來的Table]
+                    If lots.Contains(lot_dgv) OrElse (Not {"D", "N", "分批"}.Contains(row.Cells("班別").Value.ToString)) Then
                         '確認物料是否還在WIP
                         Dim ExistsWIP As Boolean = False
                         For Each wipRow As DataRow In wip_dt.Rows
@@ -795,7 +805,7 @@ Public Class ReportUI
                                     Dim Notyet As Boolean = False
 
                                     For Each col In formulacol
-                                        If row.Cells(col).Value Is Nothing OrElse String.IsNullOrEmpty(row.Cells(col).Value.ToString()) OrElse (col = "入料片數" AndAlso row.Cells(col).Value.ToString = 0) Then
+                                        If row.Cells(col).Value Is Nothing OrElse String.IsNullOrEmpty(row.Cells(col).Value.ToString()) OrElse (col = "入料片數" AndAlso row.Cells(col).Value.ToString = "0") Then
                                             Notyet = True
                                             Exit For
                                         Else
@@ -822,6 +832,8 @@ Public Class ReportUI
                                 End If
                             Next
                         End If
+
+
 
                         '若不在WIP則確認資料是否完整
                         If (Not ExistsWIP) OrElse (Not {"D", "N"}.Contains(row.Cells("班別").Value.ToString)) Then
@@ -955,7 +967,7 @@ Public Class ReportUI
                 If cols(1).Contains(dgvReport.Columns(Cell.ColumnIndex).Name) Then
                     formulacol = cols(1).Split(",")
                     For Each col In formulacol
-                        If row.Cells(col).Value Is Nothing OrElse String.IsNullOrEmpty(row.Cells(col).Value.ToString()) OrElse (col = "入料片數" And row.Cells(col).Value.ToString = 0) Then
+                        If row.Cells(col).Value Is Nothing OrElse String.IsNullOrEmpty(row.Cells(col).Value.ToString()) OrElse (col = "入料片數" AndAlso row.Cells(col).Value.ToString = "0") Then
                             Notyet = True
                             Exit For
                         Else
@@ -1036,11 +1048,21 @@ Public Class ReportUI
     Private Sub ReportUI_DataGridView_CellClick(sender As Object, e As DataGridViewCellEventArgs) Handles dgvReport.CellClick
         Try
             If e.RowIndex >= 0 And e.ColumnIndex >= 0 Then
-                ' 確認是在 btncol 欄位點擊
-                If e.ColumnIndex = dgvReport.Columns("btnModify").Index Then
-                    ' 執行 ModifyButton_Click 事件
-                    ModifyButton_Click(sender, e)
+                If dgvReport.Rows(e.RowIndex).Cells(e.ColumnIndex).GetType() = GetType(DataGridViewButtonCell) Then
+                    ' 確認是在 btncol 欄位點擊
+                    If e.ColumnIndex = dgvReport.Columns("btnModify").Index Then
+                        ' 執行 ModifyButton_Click 事件
+                        ModifyButton_Click(sender, e)
+                        Return
+                    End If
+
+                    If e.ColumnIndex = dgvReport.Columns("btnSplit").Index Then
+                        PTH_SplitClick(e, ChangeValueIgnore)
+                    ElseIf e.ColumnIndex = dgvReport.Columns("btnDelete").Index Then
+                        PTH_DeleteClick(e)
+                    End If
                 End If
+
             End If
         Catch ex As Exception
             WriteLog(ex, LogFilePath, "ReportUI_DataGridView_CellClick")

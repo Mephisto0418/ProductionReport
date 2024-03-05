@@ -12,7 +12,7 @@ Imports System.Data.SqlClient
 '20231030 Boris            建立Table & SP名稱的變數
 
 Public Class ReportUI
-    Dim Version As String = "2.1.24.02.27.3"
+    Dim Version As String = "2.1.24.03.05.1"
     Dim Program As String = "ProductionReport"
     Public Area As String = ""
     Public AreaID As String = ""
@@ -585,7 +585,7 @@ Public Class ReportUI
                     End If
 
 
-                    If (e.ColumnIndex < dgvReport.Columns("操作員").Index And ParaName <> "日期") AndAlso (row.Cells("班別").Value.ToString() <> "D" AndAlso row.Cells("班別").Value.ToString() <> "N") Then
+                    If (e.ColumnIndex < dgvReport.Columns("操作員").Index And ParaName <> "日期") AndAlso (row.Cells("班別").Value.ToString() = "首件" OrElse row.Cells("班別").Value.ToString() = "其他") AndAlso (row.Cells("LogID").Value Is Nothing OrElse row.Cells("LogID").Value.ToString = "") Then
                         If Column_Formula.Count <> 0 Then
                             Dim FormulaRequestColumn As String = ""
                             For c As Integer = 0 To dgvReport.Columns("操作員").Index - 1
@@ -610,6 +610,9 @@ Public Class ReportUI
                         Return
                     ElseIf PTH_AreaID.Contains(AreaID) Then
                         If (row.Cells("LogID").Value Is Nothing OrElse row.Cells("LogID").Value.ToString() = "") AndAlso row.Cells("班別").Value.ToString() <> "D" AndAlso row.Cells("班別").Value.ToString() <> "N" Then
+                            If Not CheckValue(row, ParaName) Then
+                                Return
+                            End If
                             First_Upload(row, AreaID, lot, proc, layer, face)
                         End If
                     End If
@@ -624,18 +627,37 @@ Public Class ReportUI
                             End If
                         End If
                         SAP_CheckPnl(row, e, AreaID)
-                        If cell.Value IsNot Nothing AndAlso cell.Value.ToString <> "" AndAlso cell.ColumnIndex >= dgvReport.Columns("操作員").Index Then
+                        If cell.Value IsNot Nothing AndAlso cell.Value.ToString <> "" AndAlso row.Cells("LogID").Value IsNot Nothing AndAlso row.Cells("LogID").Value.ToString <> "" Then
+                            If Not CheckValue(row, ParaName) Then
+                                Return
+                            End If
+                            Dim ColNames As New Dictionary(Of String, String)
+                            ColNames.Add("前站結束時間", "[LastEndTime]")
+                            ColNames.Add("開始時間", "[StartTime]")
+                            ColNames.Add("結束時間", "[EndTime]")
+                            ColNames.Add("機台", "[EQID]")
+                            ColNames.Add("產品類型", "[IType]")
+                            ColNames.Add("入料片數", "[Inputpcs]")
+                            ColNames.Add("出料片數", "[Outputpcs]")
+                            ColNames.Add("過帳工號", "[WID]")
+                            ColNames.Add("過帳人員", "[User]")
+                            ColNames.Add("操作員", "[OP]")
+                            ColNames.Add("備註", "[Remark]")
 
-                            If cell.ColumnIndex = dgvReport.Columns("操作員").Index Then
-                                ' 設定資料格為唯讀
-                                'cell.ReadOnly = True
-                                'cell.Style.BackColor = SystemColors.ControlLight
-                                'Dim cmd As String = "UPDATE " & DbLog & "
-                                '                                      SET [OP] = '" + Trim(cell.Value.ToString) + "'
-                                '                                      WHERE [AreaID] = " + AreaID + " AND [ProcName] = '" + proc + "' AND [Lotnum] = '" + lot + "' AND [Layer] = '" + layer + "' AND [Count] = " + count
+                            'If cell.ColumnIndex = dgvReport.Columns("操作員").Index Then
+                            '    ' 設定資料格為唯讀
+                            '    'cell.ReadOnly = True
+                            '    'cell.Style.BackColor = SystemColors.ControlLight
+                            '    'Dim cmd As String = "UPDATE " & DbLog & "
+                            '    '                                      SET [OP] = '" + Trim(cell.Value.ToString) + "'
+                            '    '                                      WHERE [AreaID] = " + AreaID + " AND [ProcName] = '" + proc + "' AND [Lotnum] = '" + lot + "' AND [Layer] = '" + layer + "' AND [Count] = " + count
+                            '    Dim cmd As String = "UPDATE " & DbLog & "
+                            '                                      SET [OP] = '" + Trim(cell.Value.ToString) + "'
+                            '                                      WHERE [Pkey] = " + PID
+                            If ColNames.ContainsKey(dgvReport.Columns(e.ColumnIndex).Name) Then
                                 Dim cmd As String = "UPDATE " & DbLog & "
-                                                                  SET [OP] = '" + Trim(cell.Value.ToString) + "'
-                                                                  WHERE [Pkey] = " + PID
+                                                                          SET " & ColNames(dgvReport.Columns(e.ColumnIndex).Name) & " = '" & Trim(cell.Value.ToString) & "'
+                                                                          WHERE [Pkey] = " + PID
 
                                 SQL_Query(cmd)
                             ElseIf cell.ColumnIndex <> dgvReport.Columns("備註").Index Then
@@ -663,15 +685,15 @@ Public Class ReportUI
                                 '                                      WHERE [AreaID] = " + AreaID + " AND [ProcName] = '" + proc + "' AND [Lotnum] = '" + lot + "' AND [LayerName] = '" + layer + "' AND [ParameterName] = '" + ParaName + "' AND [Count] = " + count + "
                                 '                                      END"
                                 SQL_Query(cmd)
-                            Else
-                                'Dim cmd As String = "UPDATE " & DbLog & "
+                                'Else
+                                '    'Dim cmd As String = "UPDATE " & DbLog & "
+                                '    '                                      SET [Remark] = '" + Trim(cell.Value.ToString) + "'
+                                '    '                                      WHERE [AreaID] = " + AreaID + " AND [ProcName] = '" + proc + "' AND [Lotnum] = '" + lot + "' AND [Layer] = '" + layer + "' AND [Count] = " + count
+                                '    Dim cmd As String = "UPDATE " & DbLog & "
                                 '                                      SET [Remark] = '" + Trim(cell.Value.ToString) + "'
-                                '                                      WHERE [AreaID] = " + AreaID + " AND [ProcName] = '" + proc + "' AND [Lotnum] = '" + lot + "' AND [Layer] = '" + layer + "' AND [Count] = " + count
-                                Dim cmd As String = "UPDATE " & DbLog & "
-                                                                  SET [Remark] = '" + Trim(cell.Value.ToString) + "'
-                                                                  WHERE [Pkey] = " + PID
+                                '                                      WHERE [Pkey] = " + PID
 
-                                SQL_Query(cmd)
+                                '    SQL_Query(cmd)
                             End If
                         End If
                     End If
@@ -747,12 +769,12 @@ Public Class ReportUI
                     End If
                 End If
             End If
-            ChangeValueIgnore = False
             Return True
         Catch ex As Exception
             WriteLog(ex, LogFilePath, "CheckValue")
-            ChangeValueIgnore = False
             Return False
+        Finally
+            ChangeValueIgnore = False
         End Try
     End Function
 
@@ -779,20 +801,33 @@ Public Class ReportUI
                 Dim proc_dgv As String = row.Cells("站點").Value.ToString()
                 Dim lot_dgv As String = row.Cells("批號").Value.ToString()
                 Dim layer_dgv As String = row.Cells("層別").Value.ToString()
-                Dim face_dgv As String = row.Cells("面次").Value.ToString()
+
+                Dim face As String = ""
+                If row.Cells("面次").Value IsNot Nothing AndAlso row.Cells("面次").Value.ToString = "PB" Then
+                    face = "2"
+                Else
+                    face = "1"
+                End If
 
                 If PTH_AreaID.Contains(AreaID) Then
-                    If (row.Cells("LogID").Value Is Nothing OrElse row.Cells("LogID").Value.ToString() = "") AndAlso row.Cells("班別").Value.ToString() <> "D" AndAlso row.Cells("班別").Value.ToString() <> "N" Then
-                        First_Upload(row, AreaID, lot_dgv, proc_dgv, layer_dgv, face_dgv)
+                    If (row.Cells("LogID").Value Is Nothing OrElse row.Cells("LogID").Value.ToString() = "") AndAlso row.Cells("班別").Value.ToString() = "分批" Then
+                        First_Upload(row, AreaID, lot_dgv, proc_dgv, layer_dgv, face)
                     End If
                 End If
 
                 'If row.Cells("站點").Value IsNot Nothing AndAlso row.Cells("站點").Value.ToString() <> "" AndAlso row.Cells("批號").Value IsNot Nothing AndAlso row.Cells("批號").Value.ToString() <> "" AndAlso row.Cells("層別").Value IsNot Nothing AndAlso row.Cells("層別").Value.ToString() <> "" AndAlso row.Cells("料號").Value IsNot Nothing AndAlso row.Cells("料號").Value.ToString() <> "" Then
                 If row.Cells("LogID").Value IsNot Nothing AndAlso row.Cells("LogID").Value.ToString() <> "" Then
-
+                    If row.Cells("班別").Value.ToString() <> "D" AndAlso row.Cells("班別").Value.ToString() <> "N" Then
+                        For i = 0 To row.Cells("備註").ColumnIndex - 2
+                            If Not {"班別", "料號", "批號", "層別", "站點", "機台", "日期", "前站結束時間", "產品類型", "面次"}.Contains(dgvReport.Columns(i).Name) Then
+                                row.Cells(i).ReadOnly = False
+                                row.Cells(i).Style.BackColor = SystemColors.ControlLightLight
+                            End If
+                        Next
+                    End If
 
                     '確認每一筆DataGridView上的資料是否包含在最新查詢出來的Table]
-                    If lots.Contains(lot_dgv) OrElse (Not {"D", "N", "分批"}.Contains(row.Cells("班別").Value.ToString)) Then
+                    If lots.Contains(lot_dgv) OrElse (Not {"D", "N"}.Contains(row.Cells("班別").Value.ToString)) Then
                         '確認物料是否還在WIP
                         Dim ExistsWIP As Boolean = False
                         For Each wipRow As DataRow In wip_dt.Rows
@@ -851,9 +886,9 @@ Public Class ReportUI
                     Else
                         '不包含在新的查詢結果則刪除此行
                         dgvReport.Rows.Remove(row)
-                        Continue For
+                            Continue For
+                        End If
                     End If
-                End If
             Next
 
         Catch ex As Exception
@@ -1138,49 +1173,49 @@ Public Class ReportUI
 
     'End Sub
 
-    Private Sub ReportUI_DataGridView_KeyDown(sender As Object, e As KeyEventArgs) Handles dgvReport.KeyDown
-        Try
-            If e.Control Then
-                Select Case e.KeyCode
-                    Case Keys.C
-                        CopyCells()
-                        e.Handled = True
-                    Case Keys.V
-                        PasteCells()
-                        e.Handled = True
-                End Select
-                'ElseIf e.KeyCode = Keys.Delete Then
-                '    ReportUI_DataGridView.CurrentCell.Value = ""
-                '    e.Handled = True
-            End If
-        Catch ex As Exception
-            WriteLog(ex, LogFilePath, "ReportUI_DataGridView_KeyDown")
-        End Try
+    'Private Sub ReportUI_DataGridView_KeyDown(sender As Object, e As KeyEventArgs) Handles dgvReport.KeyDown
+    '    Try
+    '        If e.Control Then
+    '            Select Case e.KeyCode
+    '                Case Keys.C
+    '                    CopyCells()
+    '                    e.Handled = True
+    '                Case Keys.V
+    '                    PasteCells()
+    '                    e.Handled = True
+    '            End Select
+    '            'ElseIf e.KeyCode = Keys.Delete Then
+    '            '    ReportUI_DataGridView.CurrentCell.Value = ""
+    '            '    e.Handled = True
+    '        End If
+    '    Catch ex As Exception
+    '        WriteLog(ex, LogFilePath, "ReportUI_DataGridView_KeyDown")
+    '    End Try
 
-    End Sub
+    'End Sub
 
-    Private Sub CopyCells()
-        Clipboard.SetDataObject(dgvReport.GetClipboardContent)
-    End Sub
+    'Private Sub CopyCells()
+    '    Clipboard.SetDataObject(dgvReport.GetClipboardContent)
+    'End Sub
 
-    Private Sub PasteCells()
-        Dim s = Clipboard.GetText
-        Dim ci = dgvReport.CurrentCell.ColumnIndex
-        Dim ri = dgvReport.CurrentCell.RowIndex
-        Dim colCount = dgvReport.Columns.Count
-        Dim rowCount = dgvReport.Rows.Count
+    'Private Sub PasteCells()
+    '    Dim s = Clipboard.GetText
+    '    Dim ci = dgvReport.CurrentCell.ColumnIndex
+    '    Dim ri = dgvReport.CurrentCell.RowIndex
+    '    Dim colCount = dgvReport.Columns.Count
+    '    Dim rowCount = dgvReport.Rows.Count
 
-        For Each r In s.Split({ControlChars.CrLf}, StringSplitOptions.None)
-            Dim Cell = ci
-            For Each c In r.Split({ControlChars.Tab}, StringSplitOptions.None)
-                If Cell >= colCount Then Exit For
-                dgvReport(Cell, ri).Value = c
-                Cell += 1
-            Next
-            ri += 1
-            If ri >= rowCount Then Exit For
-        Next
-    End Sub
+    '    For Each r In s.Split({ControlChars.CrLf}, StringSplitOptions.None)
+    '        Dim Cell = ci
+    '        For Each c In r.Split({ControlChars.Tab}, StringSplitOptions.None)
+    '            If Cell >= colCount Then Exit For
+    '            dgvReport(Cell, ri).Value = c
+    '            Cell += 1
+    '        Next
+    '        ri += 1
+    '        If ri >= rowCount Then Exit For
+    '    Next
+    'End Sub
 
     Private Sub cboMachine_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cboMachine.SelectedIndexChanged
         Try

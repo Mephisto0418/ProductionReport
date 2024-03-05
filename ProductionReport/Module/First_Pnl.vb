@@ -90,8 +90,14 @@
             End If
             ReportUI.ChangeValueIgnore = False
             For i = 0 To row.DataGridView.Columns("備註").Index - 2
-                row.Cells(i).ReadOnly = True
-                row.Cells(i).Style.BackColor = SystemColors.ControlLight
+                'If row.Cells(i).Value IsNot Nothing AndAlso row.Cells(i).Value.ToString <> "" Then
+                '    row.Cells(i).ReadOnly = True
+                '    row.Cells(i).Style.BackColor = SystemColors.ControlLight
+                'End If
+                If {"班別", "料號", "批號", "層別", "站點", "機台", "日期", "前站結束時間", "產品類型", "面次"}.Contains(ReportUI.dgvReport.Columns(i).Name) Then
+                    row.Cells(i).ReadOnly = True
+                    row.Cells(i).Style.BackColor = SystemColors.ControlLight
+                End If
             Next
         Catch ex As Exception
             WriteLog(ex, LogFilePath, "First_Upload")

@@ -111,7 +111,7 @@ Partial Class ReportUI
         Me.cboAreaName.FormattingEnabled = True
         Me.cboAreaName.Location = New System.Drawing.Point(94, 63)
         Me.cboAreaName.Name = "cboAreaName"
-        Me.cboAreaName.Size = New System.Drawing.Size(114, 25)
+        Me.cboAreaName.Size = New System.Drawing.Size(172, 25)
         Me.cboAreaName.TabIndex = 156
         '
         'Btn_TEST
@@ -138,7 +138,7 @@ Partial Class ReportUI
         'Btn_First
         '
         Me.Btn_First.Font = New System.Drawing.Font("微軟正黑體", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
-        Me.Btn_First.Location = New System.Drawing.Point(216, 66)
+        Me.Btn_First.Location = New System.Drawing.Point(272, 66)
         Me.Btn_First.Name = "Btn_First"
         Me.Btn_First.Size = New System.Drawing.Size(75, 23)
         Me.Btn_First.TabIndex = 159
@@ -148,7 +148,7 @@ Partial Class ReportUI
         'TxtLot
         '
         Me.TxtLot.Font = New System.Drawing.Font("微軟正黑體", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
-        Me.TxtLot.Location = New System.Drawing.Point(361, 66)
+        Me.TxtLot.Location = New System.Drawing.Point(417, 66)
         Me.TxtLot.Name = "TxtLot"
         Me.TxtLot.Size = New System.Drawing.Size(159, 25)
         Me.TxtLot.TabIndex = 160
@@ -157,7 +157,7 @@ Partial Class ReportUI
         '
         Me.lblLot.AutoSize = True
         Me.lblLot.Font = New System.Drawing.Font("微軟正黑體", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
-        Me.lblLot.Location = New System.Drawing.Point(310, 62)
+        Me.lblLot.Location = New System.Drawing.Point(366, 62)
         Me.lblLot.Name = "lblLot"
         Me.lblLot.Size = New System.Drawing.Size(45, 20)
         Me.lblLot.TabIndex = 161
@@ -413,7 +413,7 @@ Partial Class ReportUI
         '
         Me.lblLot_Eng.AutoSize = True
         Me.lblLot_Eng.Font = New System.Drawing.Font("微軟正黑體", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
-        Me.lblLot_Eng.Location = New System.Drawing.Point(307, 82)
+        Me.lblLot_Eng.Location = New System.Drawing.Point(363, 82)
         Me.lblLot_Eng.Name = "lblLot_Eng"
         Me.lblLot_Eng.Size = New System.Drawing.Size(51, 15)
         Me.lblLot_Eng.TabIndex = 182

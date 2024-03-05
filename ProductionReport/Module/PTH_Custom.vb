@@ -1,5 +1,5 @@
 ﻿Module PTH_Custom
-    Public PTH_AreaID As String() = {"61", "62"}
+    Public PTH_AreaID As String() = {"49", "61", "62", "101", "102", "103"}
     Private DeletePw As String = "0000"
 
     Sub PTH_CheckID(ByVal AreaID As String)
@@ -59,20 +59,29 @@
             For i As Integer = 0 To ReportUI.dgvReport.Columns("備註").Index
                 If ReportUI.dgvReport.Columns(i).Name = "班別" Then
                     paralist.Add("分批")
-                ElseIf {"料號", "批號", "層別", "站點"}.Contains(ReportUI.dgvReport.Columns(i).Name) Then
+                ElseIf {"料號", "批號", "層別", "站點", "機台", "前站結束時間", "產品類型"}.Contains(ReportUI.dgvReport.Columns(i).Name) Then
                     paralist.Add(ReportUI.dgvReport.Rows(e.RowIndex).Cells(i).Value.ToString)
                 Else
                     paralist.Add("")
                 End If
             Next
             ReportUI.dgvReport.Rows.Insert(RowNum, paralist.ToArray)
+            Dim dgvcbocFace As New DataGridViewComboBoxCell
+            dgvcbocFace.Items.Add("N/A")
+            dgvcbocFace.Items.Add("PF")
+            dgvcbocFace.Items.Add("PB")
+
+            ReportUI.dgvReport.Rows(RowNum).Cells("面次") = dgvcbocFace
+
+            ReportUI.dgvReport.Rows(RowNum).Cells("面次").Value = "N/A"
+
             ChangeValueIgnore = False
-            'For i = 0 To ReportUI.dgvReport.Columns("備註").Index - 2
-            '    If ReportUI.dgvReport.Columns(i).Name <> "日期" Then
-            '        ReportUI.dgvReport.Rows(RowNum).Cells(i).ReadOnly = True
-            '        ReportUI.dgvReport.Rows(RowNum).Cells(i).Style.BackColor = SystemColors.ControlLightLight
-            '    End If
-            'Next
+            For i = 0 To ReportUI.dgvReport.Columns("備註").Index - 2
+                If Not {"班別", "料號", "批號", "層別", "站點", "機台", "日期", "前站結束時間", "產品類型"}.Contains(ReportUI.dgvReport.Columns(i).Name) Then
+                    ReportUI.dgvReport.Rows(RowNum).Cells(i).ReadOnly = False
+                    ReportUI.dgvReport.Rows(RowNum).Cells(i).Style.BackColor = SystemColors.ControlLightLight
+                End If
+            Next
 
         Catch ex As Exception
             WriteLog(ex, LogFilePath, "PTH_SplitClick")

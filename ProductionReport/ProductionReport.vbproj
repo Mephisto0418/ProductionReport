@@ -108,6 +108,12 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Settings.vb" />
+    <Compile Include="Time.Designer.vb">
+      <DependentUpon>Time.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Time.vb">
+      <SubType>Form</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="My Project\Resources.resx">
@@ -121,6 +127,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="SAP_PnlKeyIn.resx">
       <DependentUpon>SAP_PnlKeyIn.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Time.resx">
+      <DependentUpon>Time.vb</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

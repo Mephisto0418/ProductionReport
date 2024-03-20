@@ -12,7 +12,7 @@ Imports System.Data.SqlClient
 '20231030 Boris            建立Table & SP名稱的變數
 
 Public Class ReportUI
-    Dim Version As String = "2.1.24.03.05.1"
+    Dim Version As String = "2.1.24.03.020.1"
     Dim Program As String = "ProductionReport"
     Public Area As String = ""
     Public AreaID As String = ""
@@ -143,6 +143,7 @@ Public Class ReportUI
                 Cmd_Param = ""
                 Cmd_Formula.Clear()
                 Requirement.Clear()
+                Requirement.Add("操作員", {"TRUE", ""}) '儲存欄位選必填&預設值資訊
                 CID.Clear()
                 MachineState.Clear()
                 Machine.Clear()
@@ -627,7 +628,8 @@ Public Class ReportUI
                             End If
                         End If
                         SAP_CheckPnl(row, e, AreaID)
-                        If cell.Value IsNot Nothing AndAlso cell.Value.ToString <> "" AndAlso row.Cells("LogID").Value IsNot Nothing AndAlso row.Cells("LogID").Value.ToString <> "" Then
+                        'If cell.Value IsNot Nothing AndAlso cell.Value.ToString <> "" AndAlso row.Cells("LogID").Value IsNot Nothing AndAlso row.Cells("LogID").Value.ToString <> "" Then
+                        If row.Cells("LogID").Value IsNot Nothing AndAlso row.Cells("LogID").Value.ToString <> "" Then
                             If Not CheckValue(row, ParaName) Then
                                 Return
                             End If
@@ -655,20 +657,31 @@ Public Class ReportUI
                             '                                      SET [OP] = '" + Trim(cell.Value.ToString) + "'
                             '                                      WHERE [Pkey] = " + PID
                             If ColNames.ContainsKey(dgvReport.Columns(e.ColumnIndex).Name) Then
+                                Dim val As String = ""
+                                If cell.Value IsNot Nothing AndAlso cell.Value.ToString <> "" Then
+                                    val = Trim(cell.Value.ToString)
+                                End If
+
                                 Dim cmd As String = "UPDATE " & DbLog & "
-                                                                          SET " & ColNames(dgvReport.Columns(e.ColumnIndex).Name) & " = '" & Trim(cell.Value.ToString) & "'
+                                                                          SET " & ColNames(dgvReport.Columns(e.ColumnIndex).Name) & " = '" & val & "'
                                                                           WHERE [Pkey] = " + PID
 
                                 SQL_Query(cmd)
+                                cell.Style.BackColor = SystemColors.ControlLightLight
                             ElseIf cell.ColumnIndex <> dgvReport.Columns("備註").Index Then
                                 ' 設定資料格為唯讀
                                 'cell.ReadOnly = True
                                 'cell.Style.BackColor = SystemColors.ControlLight
 
+                                Dim val As String = ""
+                                If cell.Value IsNot Nothing AndAlso cell.Value.ToString <> "" Then
+                                    val = Trim(cell.Value.ToString)
+                                End If
+
                                 '20231012 修改可覆寫資料
                                 Dim cmd As String = " UPDATE " & DbLogParameter & "
                                                                   SET [UploadTime] = '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "',
-                                                                          [ParameterVaules] = '" + Trim(cell.Value.ToString) + "'
+                                                                          [ParameterVaules] = '" + val + "'
                                                                   WHERE [PID] = " + PID + " AND [CID] = '" + CID(ParaName) + "' AND [Face] = '" + face + "'"
                                 'Dim cmd As String = " UPDATE " & DbLogParameter & "
                                 '                                      SET [UploadTime] = '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "',
@@ -685,6 +698,7 @@ Public Class ReportUI
                                 '                                      WHERE [AreaID] = " + AreaID + " AND [ProcName] = '" + proc + "' AND [Lotnum] = '" + lot + "' AND [LayerName] = '" + layer + "' AND [ParameterName] = '" + ParaName + "' AND [Count] = " + count + "
                                 '                                      END"
                                 SQL_Query(cmd)
+                                cell.Style.BackColor = SystemColors.ControlLightLight
                                 'Else
                                 '    'Dim cmd As String = "UPDATE " & DbLog & "
                                 '    '                                      SET [Remark] = '" + Trim(cell.Value.ToString) + "'
@@ -789,7 +803,7 @@ Public Class ReportUI
             ' Dim proc As String() = ProcInfo(AreaName.SelectedItem.ToString)(1).Split(",")
             Dim wip_dt As New DataTable
             'For i = 0 To proc.Length - 1
-            Dim cmdWIP As String = "  SELECT [CurrProcName] AS [站點],[LotNum] AS [批號],[LayerName] AS [層別]
+            Dim cmdWIP As String = "  SELECT [CurrProcName] AS [站點],[LotNum] AS [批號],TRIM([LayerName]) AS [層別]
                                                                     FROM " & DbWIP & " AS w WITH(NOLOCK),
                                                                     " & DbProc & " AS p WITH(NOLOCK)
                                                                     WHERE [LineID] = 29 AND p.[Pkey] = " + AreaID + " AND [ProcName] LIKE SUBSTRING([CurrProcName],1,3) + '%' + SUBSTRING([CurrProcName],5,3)"
@@ -886,9 +900,9 @@ Public Class ReportUI
                     Else
                         '不包含在新的查詢結果則刪除此行
                         dgvReport.Rows.Remove(row)
-                            Continue For
-                        End If
+                        Continue For
                     End If
+                End If
             Next
 
         Catch ex As Exception
@@ -911,23 +925,43 @@ Public Class ReportUI
                     ElseIf Face = "PB" Then
                         NextFace = "PF"
                     End If
-                    Dim isFullData As Boolean = False
+                    Dim isFullData As Boolean = True
                     Dim now As String = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
-                    If row.Cells("操作員").Value IsNot Nothing AndAlso row.Cells("操作員").Value.ToString() <> "" Then
-                        isFullData = True
-                        For i = dgvReport.Columns("備註").Index + 1 To dgvReport.Columns("btnModify").Index - 1 Step 1
-                            If Convert.ToBoolean(Requirement(dgvReport.Columns(i).Name)(0)) Then
-                                If Not (row.Cells(i).Value IsNot Nothing AndAlso row.Cells(i).Value.ToString() <> "") Then
-                                    isFullData = False
-                                    Exit For
-                                End If
+
+                    For i = dgvReport.Columns("操作員").Index To dgvReport.Columns("btnModify").Index - 1 Step 1
+                        If dgvReport.Columns(i).Name <> "備註" AndAlso (Requirement.ContainsKey(dgvReport.Columns(i).Name) AndAlso Convert.ToBoolean(Requirement(dgvReport.Columns(i).Name)(0))) Then
+                            If Not (row.Cells(i).Value IsNot Nothing AndAlso row.Cells(i).Value.ToString() <> "") Then
+                                isFullData = False
+                                If Column.Contains(dgvReport.Columns(i).Name) Then row.Cells(i).Style.BackColor = Color.Yellow
                             End If
-                        Next
-                    Else
-                        isFullData = False
-                    End If
-                    '確認正反面資料
-                    If isFullData AndAlso row.Cells("結束時間").Value.ToString <> "" AndAlso Face.Contains("P") Then
+                            End If
+                    Next
+
+                    'If row.Cells("操作員").Value IsNot Nothing AndAlso row.Cells("操作員").Value.ToString() <> "" Then
+                    '    isFullData = True
+                    '    For i = dgvReport.Columns("備註").Index + 1 To dgvReport.Columns("btnModify").Index - 1 Step 1
+                    '        If Convert.ToBoolean(Requirement(dgvReport.Columns(i).Name)(0)) Then
+                    '            If Not (row.Cells(i).Value IsNot Nothing AndAlso row.Cells(i).Value.ToString() <> "") Then
+                    '                isFullData = False
+                    '                Exit For
+                    '            End If
+                    '        End If
+                    '    Next
+                    'Else
+                    '    isFullData = False
+                    'End If
+                    '化銅分批物料確認時間是否填寫完成
+                    If isFullData AndAlso PTH_AreaID.Contains(AreaID) AndAlso row.Cells("班別").Value.ToString = "分批" Then
+                        If row.Cells("開始時間").Value IsNot Nothing AndAlso row.Cells("開始時間").Value = "" Then
+                            isFullData = False
+                            row.Cells("開始時間").Style.BackColor = Color.Yellow
+                        End If
+                        If row.Cells("結束時間").Value IsNot Nothing AndAlso row.Cells("結束時間").Value = "" Then
+                            isFullData = False
+                            row.Cells("結束時間").Style.BackColor = Color.Yellow
+                        End If
+                        '確認正反面資料
+                    ElseIf isFullData AndAlso row.Cells("結束時間").Value.ToString <> "" AndAlso Face.Contains("P") AndAlso {"D", "N"}.Contains(row.Cells("班別").Value.ToString) Then
                         Dim row2 As New DataGridViewRow
                         For Each ro As DataGridViewRow In dgvReport.Rows
                             If ro.Cells("LogID").Value.ToString = PID Then
@@ -939,18 +973,25 @@ Public Class ReportUI
                             End If
                         Next
                         If row2.Index > 0 Then
-                            For i = dgvReport.Columns("備註").Index + 1 To dgvReport.Columns("btnModify").Index - 1 Step 1
-                                If Convert.ToBoolean(Requirement(dgvReport.Columns(i).Name)(0)) Then
+                            isFullData = True
+                            'For i = dgvReport.Columns("備註").Index + 1 To dgvReport.Columns("btnModify").Index - 1 Step 1
+                            '    If Convert.ToBoolean(Requirement(dgvReport.Columns(i).Name)(0)) Then
+                            '        If Not (row2.Cells(i).Value IsNot Nothing AndAlso row2.Cells(i).Value.ToString() <> "") Then
+                            '            isFullData = False
+                            '            Exit For
+                            '        End If
+                            '    End If
+                            'Next
+                            For i = dgvReport.Columns("操作員").Index To dgvReport.Columns("btnModify").Index - 1 Step 1
+                                If dgvReport.Columns(i).Name <> "備註" AndAlso (Requirement.ContainsKey(dgvReport.Columns(i).Name) AndAlso Convert.ToBoolean(Requirement(dgvReport.Columns(i).Name)(0))) Then
                                     If Not (row2.Cells(i).Value IsNot Nothing AndAlso row2.Cells(i).Value.ToString() <> "") Then
                                         isFullData = False
-                                        Exit For
+                                        If Column.Contains(dgvReport.Columns(i).Name) Then row2.Cells(i).Style.BackColor = Color.Yellow
                                     End If
                                 End If
-                                isFullData = True
                             Next
                         Else
                         End If
-
                     End If
 
                     '確認所有可填欄位接已填寫後變更資料Flag
@@ -985,13 +1026,18 @@ Public Class ReportUI
         End Try
     End Function
 
-    Private Sub ToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles Query.Click
-        MessageBox.Show("請從DM_Portal開啟此程式")
-        'Dim check() As Process = Process.GetProcessesByName("ProductionReportHist")
-        'If check.Length = 0 Then
-        '    Dim ProcessInfo As New ProcessStartInfo(HistPath)
-        '    Process.Start(ProcessInfo)
-        'End If
+    Private Sub Query_Click(sender As Object, e As EventArgs) Handles Query.Click
+        'MessageBox.Show("請從DM_Portal開啟此程式")
+        Dim check() As Process = Process.GetProcessesByName("ProductionReportHist")
+        If check.Length = 0 Then
+            Dim ProcessInfo As New ProcessStartInfo(HistPath)
+            Process.Start(ProcessInfo)
+        End If
+    End Sub
+
+    Private Sub MenuTime_Click(sender As Object, e As EventArgs) Handles MenuTime.Click
+        Time.Show()
+        Time.Focus()
     End Sub
 
     Private Sub ColumnFormula(ByVal row As DataGridViewRow, ByVal Cell As DataGridViewCell)
@@ -1291,10 +1337,6 @@ Public Class ReportUI
         End Try
     End Sub
 
-    Private Sub cboMachine_TextChanged(sender As Object, e As EventArgs) Handles cboMachine.TextChanged
-
-    End Sub
-
     Private Sub TimeSetting()
         Try
             'dtpStartTime.MaxDate = Now
@@ -1317,9 +1359,7 @@ Public Class ReportUI
         End If
     End Sub
 
-    Private Sub dtpEndTime_ValueChanged(sender As System.Object, e As System.EventArgs) Handles dtpEndTime.ValueChanged
 
-    End Sub
 
 
     'Private Sub ReportUI_DataGridView_CellEndEdit(sender As Object, e As DataGridViewCellEventArgs) Handles ReportUI_DataGridView.CellEndEdit

@@ -25,6 +25,7 @@ Partial Class ReportUI
         Me.components = New System.ComponentModel.Container()
         Me.MenuBar = New System.Windows.Forms.MenuStrip()
         Me.Query = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MenuTime = New System.Windows.Forms.ToolStripMenuItem()
         Me.dgvReport = New System.Windows.Forms.DataGridView()
         Me.TimerRefresh = New System.Windows.Forms.Timer(Me.components)
         Me.cboAreaName = New System.Windows.Forms.ComboBox()
@@ -69,7 +70,7 @@ Partial Class ReportUI
         'MenuBar
         '
         Me.MenuBar.BackColor = System.Drawing.Color.Transparent
-        Me.MenuBar.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.Query})
+        Me.MenuBar.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.Query, Me.MenuTime})
         Me.MenuBar.Location = New System.Drawing.Point(0, 0)
         Me.MenuBar.Name = "MenuBar"
         Me.MenuBar.Size = New System.Drawing.Size(1584, 25)
@@ -82,6 +83,12 @@ Partial Class ReportUI
         Me.Query.Name = "Query"
         Me.Query.Size = New System.Drawing.Size(46, 21)
         Me.Query.Text = "查詢"
+        '
+        'MenuTime
+        '
+        Me.MenuTime.Name = "MenuTime"
+        Me.MenuTime.Size = New System.Drawing.Size(79, 21)
+        Me.MenuTime.Text = "時間(Time)"
         '
         'dgvReport
         '
@@ -548,4 +555,5 @@ Partial Class ReportUI
     Friend WithEvents lblModule As Label
     Friend WithEvents lblModule_Eng As Label
     Friend WithEvents lblAreaName_Eng As Label
+    Friend WithEvents MenuTime As ToolStripMenuItem
 End Class

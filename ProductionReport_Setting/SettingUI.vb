@@ -12,7 +12,7 @@ Public Class ProductionReport_Setting
     '
     ' 作者名稱 : Boris_Li@unimicron.com
     ' 更新日期 : 2023/07/25
-    Dim Version As String = "1.0.23.8.25.1"
+    Dim Version As String = "1.0.24.03.08.1"
     Dim Program As String = "ProductionReport_Setting"
     Dim isException As Boolean = False
     Dim ProcPkey As String = ""
@@ -28,6 +28,7 @@ Public Class ProductionReport_Setting
     Dim isError As Boolean = False
     Dim ParaColumn As String
     Dim F_SaveType As String
+    Dim AreaID As String = ""
 
     '-----------------------------------DB參數----------------------------------------
     Dim DbProc As String = "[H3_Systematic].[dbo].[H3_Proc]" '報表設定Config DB
@@ -98,7 +99,7 @@ Public Class ProductionReport_Setting
             DgvProc.Columns.Clear()
             '查詢目前站點資料
 
-            Dim cmd As String = "SELECT [Pkey],[Module] AS [模組] ,[Section] AS [課別] ,[Area] AS [區域名稱] ,[ProcName] AS [站點]  ,[Password] AS [密碼] ,ISNULL([Location],'') AS [Location] ,ISNULL([MachineNo],'') AS [機台愉進編號] ,[Machine] AS [機台愉進名稱] 
+            Dim cmd As String = "SELECT [Pkey],[Module] AS [模組] ,[Section] AS [課別] ,[Area] AS [區域名稱] ,[ProcName] AS [站點] ,[hasFace] ,[Password] AS [密碼] ,ISNULL([Location],'') AS [Location] ,ISNULL([MachineNo],'') AS [機台愉進編號] ,[Machine] AS [機台愉進名稱] 
                                                       FROM " & DbProc & " WITH(NOLOCK) 
                                                       ORDER BY [Pkey] DESC"
             'Dim cmd As String = "SELECT [Pkey],[Module] AS [模組] ,[Section] AS [課別] ,[Area] AS [區域名稱] ,[ProcName] AS [站點]  ,'****' AS [密碼] ,ISNULL([Location],'') AS [Location] ,ISNULL([MachineNo],'') AS [機台愉進編號] ,[Machine] AS [機台愉進名稱] 
@@ -685,7 +686,9 @@ Public Class ProductionReport_Setting
             DgvTest.Rows.Add("版序", "VarRev", "")
             CboF_Value.Items.Clear()
             CboF_Value.Enabled = True
-            CboF_Value.Items.Add("OP參數")
+            CboF_Value.Items.Add("參數中值")
+            CboF_Value.Items.Add("參數上限")
+            CboF_Value.Items.Add("參數下限")
             CboF_Value.SelectedIndex = 0
 
         ElseIf CboF_Type.SelectedIndex = 1 Then
@@ -1232,7 +1235,9 @@ End Class")
 
 
         '結果查詢
-        SelectCommand.Add("OP參數", "SELECT TOP 1 [PARAMETER_VALUE]")
+        SelectCommand.Add("參數中值", "SELECT TOP 1 [PARAMETER_VALUE]")
+        SelectCommand.Add("參數上限", "SELECT TOP 1 ISNULL([PARAMETER_VALUE_MAX],'') AS [PARAMETER_VALUE_MAX]")
+        SelectCommand.Add("參數下限", "SELECT TOP 1 ISNULL([PARAMETER_VALUE_Min],'') AS [PARAMETER_VALUE_Min]")
         SelectCommand.Add("AVG", "SELECT TOP 1 ISNULL(ROUND(AVG(CONVERT(float,a.[MeasData])),3),'') as 'AVG'")
         SelectCommand.Add("MAX", "SELECT TOP 1 ISNULL(ROUND(MAX(CONVERT(float,a.[MeasData])),3),'') as 'MAX'")
         SelectCommand.Add("MIN", "SELECT TOP 1 ISNULL(ROUND(MIN(CONVERT(float,a.[MeasData])),3),'') as 'MIN'")

@@ -12,7 +12,7 @@ Imports System.Data.SqlClient
 '20231030 Boris            建立Table & SP名稱的變數
 
 Public Class ReportUI
-    Dim Version As String = "2.1.24.04.02.1"
+    Dim Version As String = "2.1.24.04.02.2"
     Dim Program As String = "ProductionReport"
     Public Area As String = ""
     Public AreaID As String = ""
@@ -1037,6 +1037,7 @@ Public Class ReportUI
 
     Private Sub MenuTime_Click(sender As Object, e As EventArgs) Handles MenuTime.Click
         Time.Show()
+        Clipboard.SetText(Time.TxtTime.Text)
         Time.Focus()
     End Sub
 

@@ -22,6 +22,8 @@ Partial Class ProductionReport_Setting
     '請勿使用程式碼編輯器進行修改。
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
+        Dim DataGridViewCellStyle2 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle1 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Me.TabMain = New System.Windows.Forms.TabControl()
         Me.TabProc = New System.Windows.Forms.TabPage()
         Me.BtnProc_ProcQuery = New System.Windows.Forms.Button()
@@ -84,6 +86,9 @@ Partial Class ProductionReport_Setting
         Me.BtnPara_Refresh = New System.Windows.Forms.Button()
         Me.DgvPara = New System.Windows.Forms.DataGridView()
         Me.TabQuery = New System.Windows.Forms.TabPage()
+        Me.btnF_QID_Copy = New System.Windows.Forms.Button()
+        Me.txtF_QID_Copy = New System.Windows.Forms.TextBox()
+        Me.lblF_QID_Copy = New System.Windows.Forms.Label()
         Me.BtnF_Test = New System.Windows.Forms.Button()
         Me.DgvTest = New System.Windows.Forms.DataGridView()
         Me.DgvTest_ParaName = New System.Windows.Forms.DataGridViewTextBoxColumn()
@@ -112,9 +117,6 @@ Partial Class ProductionReport_Setting
         Me.DgvF_Operator = New System.Windows.Forms.DataGridViewComboBoxColumn()
         Me.DgvF_Values = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.DgvF_Remark = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.txtF_QID_Copy = New System.Windows.Forms.TextBox()
-        Me.lblF_QID_Copy = New System.Windows.Forms.Label()
-        Me.btnF_QID_Copy = New System.Windows.Forms.Button()
         Me.TabMain.SuspendLayout()
         Me.TabProc.SuspendLayout()
         Me.PnlProc_Optional1.SuspendLayout()
@@ -851,6 +853,37 @@ Partial Class ProductionReport_Setting
         Me.TabQuery.Text = "參數查詢(運算)設定"
         Me.TabQuery.UseVisualStyleBackColor = True
         '
+        'btnF_QID_Copy
+        '
+        Me.btnF_QID_Copy.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.btnF_QID_Copy.Font = New System.Drawing.Font("微軟正黑體", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.btnF_QID_Copy.Location = New System.Drawing.Point(1071, 46)
+        Me.btnF_QID_Copy.Name = "btnF_QID_Copy"
+        Me.btnF_QID_Copy.Size = New System.Drawing.Size(85, 29)
+        Me.btnF_QID_Copy.TabIndex = 45
+        Me.btnF_QID_Copy.Text = "複製"
+        Me.btnF_QID_Copy.UseVisualStyleBackColor = True
+        '
+        'txtF_QID_Copy
+        '
+        Me.txtF_QID_Copy.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.txtF_QID_Copy.Font = New System.Drawing.Font("微軟正黑體", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.txtF_QID_Copy.Location = New System.Drawing.Point(971, 46)
+        Me.txtF_QID_Copy.Name = "txtF_QID_Copy"
+        Me.txtF_QID_Copy.Size = New System.Drawing.Size(45, 25)
+        Me.txtF_QID_Copy.TabIndex = 44
+        Me.txtF_QID_Copy.Tag = "1"
+        '
+        'lblF_QID_Copy
+        '
+        Me.lblF_QID_Copy.AutoSize = True
+        Me.lblF_QID_Copy.Font = New System.Drawing.Font("微軟正黑體", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.lblF_QID_Copy.Location = New System.Drawing.Point(914, 49)
+        Me.lblF_QID_Copy.Name = "lblF_QID_Copy"
+        Me.lblF_QID_Copy.Size = New System.Drawing.Size(51, 20)
+        Me.lblF_QID_Copy.TabIndex = 43
+        Me.lblF_QID_Copy.Text = "QID : "
+        '
         'BtnF_Test
         '
         Me.BtnF_Test.Font = New System.Drawing.Font("微軟正黑體", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
@@ -1091,6 +1124,14 @@ Partial Class ProductionReport_Setting
         Me.DgvF.ClipboardCopyMode = System.Windows.Forms.DataGridViewClipboardCopyMode.EnableWithoutHeaderText
         Me.DgvF.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
         Me.DgvF.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.DgvF_Filter, Me.DgvF_ColumnName, Me.DgvF_Operator, Me.DgvF_Values, Me.DgvF_Remark})
+        DataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window
+        DataGridViewCellStyle2.Font = New System.Drawing.Font("新細明體", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        DataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText
+        DataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight
+        DataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText
+        DataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
+        Me.DgvF.DefaultCellStyle = DataGridViewCellStyle2
         Me.DgvF.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter
         Me.DgvF.Location = New System.Drawing.Point(7, 84)
         Me.DgvF.Name = "DgvF"
@@ -1126,6 +1167,8 @@ Partial Class ProductionReport_Setting
         'DgvF_Values
         '
         Me.DgvF_Values.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells
+        DataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
+        Me.DgvF_Values.DefaultCellStyle = DataGridViewCellStyle1
         Me.DgvF_Values.FillWeight = 48.24385!
         Me.DgvF_Values.HeaderText = "Values"
         Me.DgvF_Values.MinimumWidth = 400
@@ -1141,37 +1184,6 @@ Partial Class ProductionReport_Setting
         Me.DgvF_Remark.Name = "DgvF_Remark"
         Me.DgvF_Remark.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
         Me.DgvF_Remark.Width = 300
-        '
-        'txtF_QID_Copy
-        '
-        Me.txtF_QID_Copy.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.txtF_QID_Copy.Font = New System.Drawing.Font("微軟正黑體", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
-        Me.txtF_QID_Copy.Location = New System.Drawing.Point(971, 46)
-        Me.txtF_QID_Copy.Name = "txtF_QID_Copy"
-        Me.txtF_QID_Copy.Size = New System.Drawing.Size(45, 25)
-        Me.txtF_QID_Copy.TabIndex = 44
-        Me.txtF_QID_Copy.Tag = "1"
-        '
-        'lblF_QID_Copy
-        '
-        Me.lblF_QID_Copy.AutoSize = True
-        Me.lblF_QID_Copy.Font = New System.Drawing.Font("微軟正黑體", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
-        Me.lblF_QID_Copy.Location = New System.Drawing.Point(914, 49)
-        Me.lblF_QID_Copy.Name = "lblF_QID_Copy"
-        Me.lblF_QID_Copy.Size = New System.Drawing.Size(51, 20)
-        Me.lblF_QID_Copy.TabIndex = 43
-        Me.lblF_QID_Copy.Text = "QID : "
-        '
-        'btnF_QID_Copy
-        '
-        Me.btnF_QID_Copy.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.btnF_QID_Copy.Font = New System.Drawing.Font("微軟正黑體", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
-        Me.btnF_QID_Copy.Location = New System.Drawing.Point(1071, 46)
-        Me.btnF_QID_Copy.Name = "btnF_QID_Copy"
-        Me.btnF_QID_Copy.Size = New System.Drawing.Size(85, 29)
-        Me.btnF_QID_Copy.TabIndex = 45
-        Me.btnF_QID_Copy.Text = "複製"
-        Me.btnF_QID_Copy.UseVisualStyleBackColor = True
         '
         'ProductionReport_Setting
         '
@@ -1275,11 +1287,6 @@ Partial Class ProductionReport_Setting
     Friend WithEvents LblProc_ProcQuery As Label
     Friend WithEvents TxtPara_AreaID As TextBox
     Friend WithEvents LblPara_AreaID As Label
-    Friend WithEvents DgvF_Filter As DataGridViewTextBoxColumn
-    Friend WithEvents DgvF_ColumnName As DataGridViewTextBoxColumn
-    Friend WithEvents DgvF_Operator As DataGridViewComboBoxColumn
-    Friend WithEvents DgvF_Values As DataGridViewTextBoxColumn
-    Friend WithEvents DgvF_Remark As DataGridViewTextBoxColumn
     Friend WithEvents CboF_SPC_Group As ComboBox
     Friend WithEvents LblF_SPC_Group As Label
     Friend WithEvents BtnF_Test As Button
@@ -1297,4 +1304,9 @@ Partial Class ProductionReport_Setting
     Friend WithEvents btnF_QID_Copy As Button
     Friend WithEvents txtF_QID_Copy As TextBox
     Friend WithEvents lblF_QID_Copy As Label
+    Friend WithEvents DgvF_Filter As DataGridViewTextBoxColumn
+    Friend WithEvents DgvF_ColumnName As DataGridViewTextBoxColumn
+    Friend WithEvents DgvF_Operator As DataGridViewComboBoxColumn
+    Friend WithEvents DgvF_Values As DataGridViewTextBoxColumn
+    Friend WithEvents DgvF_Remark As DataGridViewTextBoxColumn
 End Class

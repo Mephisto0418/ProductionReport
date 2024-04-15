@@ -12,7 +12,7 @@ Imports System.Data.SqlClient
 '20231030 Boris            建立Table & SP名稱的變數
 
 Public Class ReportUI
-    Dim Version As String = "2.1.24.04.02.2"
+    Dim Version As String = "2.1.24.04.10.1"
     Dim Program As String = "ProductionReport"
     Public Area As String = ""
     Public AreaID As String = ""
@@ -441,6 +441,10 @@ Public Class ReportUI
 
                     If new_dr("已上傳").ToString = "True" Then
                         dgvReport.Rows(0).Cells("完成").Style.BackColor = Color.Lime
+                    Else
+                        For i As Integer = dgvReport.Columns("備註").Index + 1 To dgvReport.Columns("btnModify").Index - 1
+                            If Column.Contains(dgvReport.Columns(i).Name) AndAlso (dgvReport.Rows(RIndex).Cells(i).Value Is Nothing OrElse dgvReport.Rows(RIndex).Cells(i).Value.ToString = "") AndAlso dgvReport.Rows(0).Cells("開始時間").Value IsNot Nothing AndAlso dgvReport.Rows(0).Cells("開始時間").Value.ToString <> "" Then dgvReport.Rows(0).Cells(i).Style.BackColor = Color.Yellow
+                        Next
                     End If
                 Else
                     Dim MoveInTime As String = ""
@@ -484,6 +488,10 @@ Public Class ReportUI
 
                     If new_dr("已上傳").ToString = "True" Then
                         dgvReport.Rows(RIndex).Cells("完成").Style.BackColor = Color.Lime
+                    Else
+                        For i As Integer = dgvReport.Columns("備註").Index + 1 To dgvReport.Columns("btnModify").Index - 1
+                            If Column.Contains(dgvReport.Columns(i).Name) AndAlso (dgvReport.Rows(RIndex).Cells(i).Value Is Nothing OrElse dgvReport.Rows(RIndex).Cells(i).Value.ToString = "") AndAlso dgvReport.Rows(0).Cells("開始時間").Value IsNot Nothing AndAlso dgvReport.Rows(0).Cells("開始時間").Value.ToString <> "" Then dgvReport.Rows(RIndex).Cells(i).Style.BackColor = Color.Yellow
+                        Next
                     End If
                 End If
             Next
@@ -698,7 +706,7 @@ Public Class ReportUI
                                 '                                      WHERE [AreaID] = " + AreaID + " AND [ProcName] = '" + proc + "' AND [Lotnum] = '" + lot + "' AND [LayerName] = '" + layer + "' AND [ParameterName] = '" + ParaName + "' AND [Count] = " + count + "
                                 '                                      END"
                                 SQL_Query(cmd)
-                                cell.Style.BackColor = SystemColors.ControlLightLight
+                                If Column.Contains(dgvReport.Columns(cell.ColumnIndex).Name) Then cell.Style.BackColor = SystemColors.ControlLightLight
                                 'Else
                                 '    'Dim cmd As String = "UPDATE " & DbLog & "
                                 '    '                                      SET [Remark] = '" + Trim(cell.Value.ToString) + "'
@@ -932,9 +940,9 @@ Public Class ReportUI
                         If dgvReport.Columns(i).Name <> "備註" AndAlso (Requirement.ContainsKey(dgvReport.Columns(i).Name) AndAlso Convert.ToBoolean(Requirement(dgvReport.Columns(i).Name)(0))) Then
                             If Not (row.Cells(i).Value IsNot Nothing AndAlso row.Cells(i).Value.ToString() <> "") Then
                                 isFullData = False
-                                If Column.Contains(dgvReport.Columns(i).Name) Then row.Cells(i).Style.BackColor = Color.Yellow
+                                'If Column.Contains(dgvReport.Columns(i).Name) Then row.Cells(i).Style.BackColor = Color.Yellow
                             End If
-                            End If
+                        End If
                     Next
 
                     'If row.Cells("操作員").Value IsNot Nothing AndAlso row.Cells("操作員").Value.ToString() <> "" Then
@@ -1359,7 +1367,6 @@ Public Class ReportUI
             dtpEndTime.Value = Format(result.AddHours(1), "yyyy/MM/dd HH:mm")
         End If
     End Sub
-
 
 
 

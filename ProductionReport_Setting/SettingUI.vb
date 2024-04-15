@@ -577,7 +577,7 @@ Public Class ProductionReport_Setting
                     TabMain.SelectedIndex = 2
                 If DgvPara.Rows(e.RowIndex).Cells("QID").Value.ToString = "0" Then TxtF_QID.Text = "" Else TxtF_QID.Text = DgvPara.Rows(e.RowIndex).Cells("QID").Value.ToString
                 TxtF_Pkey.Text = DgvPara.Rows(e.RowIndex).Cells("Pkey").Value.ToString
-                ParaColumn = "入料片數,出料片數,"
+                ParaColumn = "入料片數,出料片數,料號,"
                 For Each pararow As DataGridViewRow In DgvPara.Rows
                     ParaColumn += pararow.Cells("欄位名稱").Value.ToString + ","
                 Next

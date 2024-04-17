@@ -12,7 +12,7 @@ Imports System.Data.SqlClient
 '20231030 Boris            建立Table & SP名稱的變數
 
 Public Class ReportUI
-    Dim Version As String = "2.1.24.04.10.1"
+    Dim Version As String = "2.1.24.04.17.1"
     Dim Program As String = "ProductionReport"
     Public Area As String = ""
     Public AreaID As String = ""
@@ -316,7 +316,7 @@ Public Class ReportUI
             End If
             'SAP_CheckID(AreaID)
             PTH_CheckID(AreaID)
-            dgvReport.Columns(dgvReport.Columns("面次").Index).Frozen = True '凍結欄位
+            If Not {"102", "62"}.Contains(AreaID) Then dgvReport.Columns(dgvReport.Columns("面次").Index).Frozen = True '凍結欄位
 
             TimerRefresh.Start()
             TimerRefresh_Tick(sender, e)

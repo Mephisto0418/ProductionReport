@@ -12,7 +12,7 @@ Imports System.Data.SqlClient
 '20231030 Boris            建立Table & SP名稱的變數
 
 Public Class ReportUI
-    Dim Version As String = "2.1.24.04.17.1"
+    Dim Version As String = "2.1.24.04.19.1"
     Dim Program As String = "ProductionReport"
     Public Area As String = ""
     Public AreaID As String = ""
@@ -524,7 +524,7 @@ Public Class ReportUI
         ' 將該行特定欄位 ReadOnly 屬性改為 False
         For i = dgvReport.Columns("備註").Index To dgvReport.Columns("btnModify").Index - 1
             '判斷是否為手動欄位或是特別欄位
-            If Column.Contains(dgvReport.Columns(i).Name) OrElse Column_Special.Contains(dgvReport.Columns(i).Name) OrElse (dgvReport.Rows(e.RowIndex).Cells(i).Value IsNot Nothing AndAlso dgvReport.Rows(e.RowIndex).Cells(i).Value.ToString = "") Then
+            If Column.Contains(dgvReport.Columns(i).Name) OrElse Column_Special.Contains(dgvReport.Columns(i).Name) OrElse (dgvReport.Rows(e.RowIndex).Cells(i).Value Is Nothing OrElse dgvReport.Rows(e.RowIndex).Cells(i).Value.ToString = "") Then
                 dgvReport.Rows(e.RowIndex).Cells(i).ReadOnly = False
                 dgvReport.Rows(e.RowIndex).Cells(i).Style.BackColor = SystemColors.ControlLightLight
             End If

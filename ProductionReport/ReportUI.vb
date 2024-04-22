@@ -12,7 +12,7 @@ Imports System.Data.SqlClient
 '20231030 Boris            建立Table & SP名稱的變數
 
 Public Class ReportUI
-    Dim Version As String = "2.1.24.04.19.1"
+    Dim Version As String = "2.1.24.04.22.1"
     Dim Program As String = "ProductionReport"
     Public Area As String = ""
     Public AreaID As String = ""
@@ -442,9 +442,11 @@ Public Class ReportUI
                     If new_dr("已上傳").ToString = "True" Then
                         dgvReport.Rows(0).Cells("完成").Style.BackColor = Color.Lime
                     Else
-                        For i As Integer = dgvReport.Columns("備註").Index + 1 To dgvReport.Columns("btnModify").Index - 1
-                            If Column.Contains(dgvReport.Columns(i).Name) AndAlso (dgvReport.Rows(RIndex).Cells(i).Value Is Nothing OrElse dgvReport.Rows(RIndex).Cells(i).Value.ToString = "") AndAlso dgvReport.Rows(0).Cells("開始時間").Value IsNot Nothing AndAlso dgvReport.Rows(0).Cells("開始時間").Value.ToString <> "" Then dgvReport.Rows(0).Cells(i).Style.BackColor = Color.Yellow
-                        Next
+                        If dgvReport.Rows(0).Cells("開始時間").Value IsNot Nothing AndAlso dgvReport.Rows(0).Cells("開始時間").Value.ToString <> "" Then
+                            For i As Integer = dgvReport.Columns("備註").Index + 1 To dgvReport.Columns("btnModify").Index - 1
+                                If Column.Contains(dgvReport.Columns(i).Name) AndAlso (dgvReport.Rows(0).Cells(i).Value Is Nothing OrElse dgvReport.Rows(0).Cells(i).Value.ToString = "") Then dgvReport.Rows(0).Cells(i).Style.BackColor = Color.Yellow
+                            Next
+                        End If
                     End If
                 Else
                     Dim MoveInTime As String = ""
@@ -489,9 +491,11 @@ Public Class ReportUI
                     If new_dr("已上傳").ToString = "True" Then
                         dgvReport.Rows(RIndex).Cells("完成").Style.BackColor = Color.Lime
                     Else
-                        For i As Integer = dgvReport.Columns("備註").Index + 1 To dgvReport.Columns("btnModify").Index - 1
-                            If Column.Contains(dgvReport.Columns(i).Name) AndAlso (dgvReport.Rows(RIndex).Cells(i).Value Is Nothing OrElse dgvReport.Rows(RIndex).Cells(i).Value.ToString = "") AndAlso dgvReport.Rows(0).Cells("開始時間").Value IsNot Nothing AndAlso dgvReport.Rows(0).Cells("開始時間").Value.ToString <> "" Then dgvReport.Rows(RIndex).Cells(i).Style.BackColor = Color.Yellow
-                        Next
+                        If dgvReport.Rows(RIndex).Cells("開始時間").Value IsNot Nothing AndAlso dgvReport.Rows(RIndex).Cells("開始時間").Value.ToString <> "" Then
+                            For i As Integer = dgvReport.Columns("備註").Index + 1 To dgvReport.Columns("btnModify").Index - 1
+                                If Column.Contains(dgvReport.Columns(i).Name) AndAlso (dgvReport.Rows(RIndex).Cells(i).Value Is Nothing OrElse dgvReport.Rows(RIndex).Cells(i).Value.ToString = "") Then dgvReport.Rows(RIndex).Cells(i).Style.BackColor = Color.Yellow
+                            Next
+                        End If
                     End If
                 End If
             Next

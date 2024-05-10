@@ -62,6 +62,9 @@ Partial Class ReportUI
         Me.lblModule = New System.Windows.Forms.Label()
         Me.lblModule_Eng = New System.Windows.Forms.Label()
         Me.lblAreaName_Eng = New System.Windows.Forms.Label()
+        Me.lblSpiltNum = New System.Windows.Forms.Label()
+        Me.txtSpiltNum = New System.Windows.Forms.TextBox()
+        Me.btnFreeze = New System.Windows.Forms.Button()
         Me.MenuBar.SuspendLayout()
         CType(Me.dgvReport, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.grpRemark.SuspendLayout()
@@ -100,10 +103,10 @@ Partial Class ReportUI
         Me.dgvReport.ClipboardCopyMode = System.Windows.Forms.DataGridViewClipboardCopyMode.EnableWithoutHeaderText
         Me.dgvReport.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
         Me.dgvReport.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter
-        Me.dgvReport.Location = New System.Drawing.Point(0, 97)
+        Me.dgvReport.Location = New System.Drawing.Point(0, 120)
         Me.dgvReport.Name = "dgvReport"
         Me.dgvReport.RowTemplate.Height = 24
-        Me.dgvReport.Size = New System.Drawing.Size(1584, 498)
+        Me.dgvReport.Size = New System.Drawing.Size(1584, 475)
         Me.dgvReport.TabIndex = 155
         '
         'TimerRefresh
@@ -116,14 +119,14 @@ Partial Class ReportUI
         Me.cboAreaName.FlatStyle = System.Windows.Forms.FlatStyle.System
         Me.cboAreaName.Font = New System.Drawing.Font("微軟正黑體", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
         Me.cboAreaName.FormattingEnabled = True
-        Me.cboAreaName.Location = New System.Drawing.Point(94, 63)
+        Me.cboAreaName.Location = New System.Drawing.Point(89, 79)
         Me.cboAreaName.Name = "cboAreaName"
         Me.cboAreaName.Size = New System.Drawing.Size(172, 25)
         Me.cboAreaName.TabIndex = 156
         '
         'Btn_TEST
         '
-        Me.Btn_TEST.Location = New System.Drawing.Point(1507, 28)
+        Me.Btn_TEST.Location = New System.Drawing.Point(500, 57)
         Me.Btn_TEST.Name = "Btn_TEST"
         Me.Btn_TEST.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.Btn_TEST.Size = New System.Drawing.Size(75, 23)
@@ -137,7 +140,7 @@ Partial Class ReportUI
         Me.Notice.AutoSize = True
         Me.Notice.Font = New System.Drawing.Font("新細明體", 14.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
         Me.Notice.ForeColor = System.Drawing.Color.Red
-        Me.Notice.Location = New System.Drawing.Point(220, 33)
+        Me.Notice.Location = New System.Drawing.Point(215, 49)
         Me.Notice.Name = "Notice"
         Me.Notice.Size = New System.Drawing.Size(0, 19)
         Me.Notice.TabIndex = 158
@@ -145,7 +148,7 @@ Partial Class ReportUI
         'Btn_First
         '
         Me.Btn_First.Font = New System.Drawing.Font("微軟正黑體", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
-        Me.Btn_First.Location = New System.Drawing.Point(272, 66)
+        Me.Btn_First.Location = New System.Drawing.Point(267, 82)
         Me.Btn_First.Name = "Btn_First"
         Me.Btn_First.Size = New System.Drawing.Size(75, 23)
         Me.Btn_First.TabIndex = 159
@@ -155,7 +158,7 @@ Partial Class ReportUI
         'TxtLot
         '
         Me.TxtLot.Font = New System.Drawing.Font("微軟正黑體", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
-        Me.TxtLot.Location = New System.Drawing.Point(417, 66)
+        Me.TxtLot.Location = New System.Drawing.Point(412, 82)
         Me.TxtLot.Name = "TxtLot"
         Me.TxtLot.Size = New System.Drawing.Size(159, 25)
         Me.TxtLot.TabIndex = 160
@@ -164,7 +167,7 @@ Partial Class ReportUI
         '
         Me.lblLot.AutoSize = True
         Me.lblLot.Font = New System.Drawing.Font("微軟正黑體", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
-        Me.lblLot.Location = New System.Drawing.Point(366, 62)
+        Me.lblLot.Location = New System.Drawing.Point(361, 78)
         Me.lblLot.Name = "lblLot"
         Me.lblLot.Size = New System.Drawing.Size(45, 20)
         Me.lblLot.TabIndex = 161
@@ -173,7 +176,7 @@ Partial Class ReportUI
         'Btn_RefreshStop
         '
         Me.Btn_RefreshStop.Font = New System.Drawing.Font("微軟正黑體", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
-        Me.Btn_RefreshStop.Location = New System.Drawing.Point(1480, 50)
+        Me.Btn_RefreshStop.Location = New System.Drawing.Point(1475, 66)
         Me.Btn_RefreshStop.Name = "Btn_RefreshStop"
         Me.Btn_RefreshStop.Size = New System.Drawing.Size(102, 42)
         Me.Btn_RefreshStop.TabIndex = 162
@@ -307,7 +310,7 @@ Partial Class ReportUI
         Me.grpRemark.Controls.Add(Me.lblEndTime_Eng)
         Me.grpRemark.Controls.Add(Me.lblRemarkUpload_Eng)
         Me.grpRemark.Font = New System.Drawing.Font("微軟正黑體", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
-        Me.grpRemark.Location = New System.Drawing.Point(583, 12)
+        Me.grpRemark.Location = New System.Drawing.Point(578, 28)
         Me.grpRemark.Name = "grpRemark"
         Me.grpRemark.Size = New System.Drawing.Size(860, 83)
         Me.grpRemark.TabIndex = 174
@@ -420,7 +423,7 @@ Partial Class ReportUI
         '
         Me.lblLot_Eng.AutoSize = True
         Me.lblLot_Eng.Font = New System.Drawing.Font("微軟正黑體", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
-        Me.lblLot_Eng.Location = New System.Drawing.Point(363, 82)
+        Me.lblLot_Eng.Location = New System.Drawing.Point(358, 98)
         Me.lblLot_Eng.Name = "lblLot_Eng"
         Me.lblLot_Eng.Size = New System.Drawing.Size(51, 15)
         Me.lblLot_Eng.TabIndex = 182
@@ -434,7 +437,7 @@ Partial Class ReportUI
         Me.cboModule.Font = New System.Drawing.Font("微軟正黑體", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
         Me.cboModule.FormattingEnabled = True
         Me.cboModule.Items.AddRange(New Object() {"1", "2", "3", "4", "5"})
-        Me.cboModule.Location = New System.Drawing.Point(94, 34)
+        Me.cboModule.Location = New System.Drawing.Point(89, 50)
         Me.cboModule.Name = "cboModule"
         Me.cboModule.RightToLeft = System.Windows.Forms.RightToLeft.Yes
         Me.cboModule.Size = New System.Drawing.Size(114, 25)
@@ -445,7 +448,7 @@ Partial Class ReportUI
         Me.lblAreaName.AutoSize = True
         Me.lblAreaName.BackColor = System.Drawing.Color.Transparent
         Me.lblAreaName.Font = New System.Drawing.Font("微軟正黑體", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
-        Me.lblAreaName.Location = New System.Drawing.Point(14, 62)
+        Me.lblAreaName.Location = New System.Drawing.Point(9, 78)
         Me.lblAreaName.Name = "lblAreaName"
         Me.lblAreaName.Size = New System.Drawing.Size(81, 20)
         Me.lblAreaName.TabIndex = 184
@@ -456,7 +459,7 @@ Partial Class ReportUI
         Me.lblModule.AutoSize = True
         Me.lblModule.BackColor = System.Drawing.Color.Transparent
         Me.lblModule.Font = New System.Drawing.Font("微軟正黑體", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
-        Me.lblModule.Location = New System.Drawing.Point(45, 31)
+        Me.lblModule.Location = New System.Drawing.Point(40, 47)
         Me.lblModule.Name = "lblModule"
         Me.lblModule.Size = New System.Drawing.Size(49, 20)
         Me.lblModule.TabIndex = 185
@@ -466,7 +469,7 @@ Partial Class ReportUI
         '
         Me.lblModule_Eng.AutoSize = True
         Me.lblModule_Eng.Font = New System.Drawing.Font("微軟正黑體", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
-        Me.lblModule_Eng.Location = New System.Drawing.Point(39, 49)
+        Me.lblModule_Eng.Location = New System.Drawing.Point(34, 65)
         Me.lblModule_Eng.Name = "lblModule_Eng"
         Me.lblModule_Eng.Size = New System.Drawing.Size(56, 15)
         Me.lblModule_Eng.TabIndex = 186
@@ -477,18 +480,52 @@ Partial Class ReportUI
         '
         Me.lblAreaName_Eng.AutoSize = True
         Me.lblAreaName_Eng.Font = New System.Drawing.Font("微軟正黑體", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
-        Me.lblAreaName_Eng.Location = New System.Drawing.Point(13, 82)
+        Me.lblAreaName_Eng.Location = New System.Drawing.Point(8, 98)
         Me.lblAreaName_Eng.Name = "lblAreaName_Eng"
         Me.lblAreaName_Eng.Size = New System.Drawing.Size(84, 15)
         Me.lblAreaName_Eng.TabIndex = 187
         Me.lblAreaName_Eng.Text = "(Report Name)"
         Me.lblAreaName_Eng.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
+        'lblSpiltNum
+        '
+        Me.lblSpiltNum.AutoSize = True
+        Me.lblSpiltNum.Font = New System.Drawing.Font("微軟正黑體", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.lblSpiltNum.Location = New System.Drawing.Point(1468, 47)
+        Me.lblSpiltNum.Name = "lblSpiltNum"
+        Me.lblSpiltNum.Size = New System.Drawing.Size(66, 17)
+        Me.lblSpiltNum.TabIndex = 189
+        Me.lblSpiltNum.Text = "分批數量 :"
+        Me.lblSpiltNum.Visible = False
+        '
+        'txtSpiltNum
+        '
+        Me.txtSpiltNum.Font = New System.Drawing.Font("微軟正黑體", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.txtSpiltNum.Location = New System.Drawing.Point(1540, 41)
+        Me.txtSpiltNum.Name = "txtSpiltNum"
+        Me.txtSpiltNum.Size = New System.Drawing.Size(37, 25)
+        Me.txtSpiltNum.TabIndex = 188
+        Me.txtSpiltNum.Text = "1"
+        Me.txtSpiltNum.Visible = False
+        '
+        'btnFreeze
+        '
+        Me.btnFreeze.Location = New System.Drawing.Point(500, 34)
+        Me.btnFreeze.Name = "btnFreeze"
+        Me.btnFreeze.RightToLeft = System.Windows.Forms.RightToLeft.No
+        Me.btnFreeze.Size = New System.Drawing.Size(75, 23)
+        Me.btnFreeze.TabIndex = 190
+        Me.btnFreeze.Text = "凍結/解凍"
+        Me.btnFreeze.UseVisualStyleBackColor = True
+        '
         'ReportUI
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 12.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(1584, 599)
+        Me.Controls.Add(Me.btnFreeze)
+        Me.Controls.Add(Me.lblSpiltNum)
+        Me.Controls.Add(Me.txtSpiltNum)
         Me.Controls.Add(Me.cboAreaName)
         Me.Controls.Add(Me.lblAreaName)
         Me.Controls.Add(Me.cboModule)
@@ -556,4 +593,7 @@ Partial Class ReportUI
     Friend WithEvents lblModule_Eng As Label
     Friend WithEvents lblAreaName_Eng As Label
     Friend WithEvents MenuTime As ToolStripMenuItem
+    Friend WithEvents lblSpiltNum As Label
+    Friend WithEvents txtSpiltNum As TextBox
+    Friend WithEvents btnFreeze As Button
 End Class

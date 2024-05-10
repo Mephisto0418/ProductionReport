@@ -1,5 +1,5 @@
 ﻿Module PTH_Custom
-    Public PTH_AreaID As String() = {"49", "61", "62", "101", "102", "103"}
+    Public PTH_AreaID As String() = {"49", "61", "62", "83", "101", "102", "103"}
     Private DeletePw As String = "0000"
 
     Sub PTH_CheckID(ByVal AreaID As String)

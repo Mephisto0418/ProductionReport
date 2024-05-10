@@ -12,7 +12,7 @@ Imports System.Data.SqlClient
 '20231030 Boris            建立Table & SP名稱的變數
 
 Public Class ReportUI
-    Dim Version As String = "2.1.24.04.22.1"
+    Dim Version As String = "2.1.24.05.10.1"
     Dim Program As String = "ProductionReport"
     Public Area As String = ""
     Public AreaID As String = ""
@@ -41,6 +41,9 @@ Public Class ReportUI
     Dim MachineState As New Dictionary(Of String, String)
     '12/08 新增
     Public ChangeValueIgnore As Boolean = False
+    '24/05/10 新增
+    Dim isFreeze As Boolean = False
+    Dim FreezeColumnIndex As Integer = 0
     '-----------------------------------DB參數----------------------------------------
     Dim DbVersion As String = "[Datamation_H3].[dbo].[H3_Leo_Program_Version]" '版本卡控DB
     Dim DbProc As String = "[H3_Systematic].[dbo].[H3_Proc]" '報表設定Config DB
@@ -80,6 +83,7 @@ Public Class ReportUI
         '站點名稱搜尋
 
         cboModule.SelectedIndex = 0
+        btnFreeze.Visible = False
 
 
         'dgv雙重緩衝
@@ -316,8 +320,15 @@ Public Class ReportUI
             End If
             'SAP_CheckID(AreaID)
             PTH_CheckID(AreaID)
-            If Not {"102", "62"}.Contains(AreaID) Then dgvReport.Columns(dgvReport.Columns("面次").Index).Frozen = True '凍結欄位
-
+            If Not {"102", "62"}.Contains(AreaID) Then
+                FreezeColumnIndex = 10
+                dgvReport.Columns(FreezeColumnIndex).Frozen = True '凍結欄位
+                isFreeze = True
+            Else
+                isFreeze = False
+                FreezeColumnIndex = 0
+            End If
+            btnFreeze.Visible = True
             TimerRefresh.Start()
             TimerRefresh_Tick(sender, e)
         Catch ex As Exception
@@ -1369,6 +1380,35 @@ Public Class ReportUI
         Dim result As DateTime
         If DateTime.TryParse(dtpStartTime.Value, result) Then
             dtpEndTime.Value = Format(result.AddHours(1), "yyyy/MM/dd HH:mm")
+        End If
+    End Sub
+
+    Private Sub txtSpiltNum_TextChanged(sender As Object, e As EventArgs) Handles txtSpiltNum.TextChanged
+        If Not IsNumeric(txtSpiltNum.Text) AndAlso (CInt(txtSpiltNum.Text) < 1 OrElse CInt(txtSpiltNum.Text) > 48) Then
+            MessageBox.Show("請輸入數字1~48")
+            txtSpiltNum.Text = "1"
+        Else
+            txtSpiltNum.Text = CInt(txtSpiltNum.Text).ToString
+        End If
+    End Sub
+
+    Private Sub btnFreeze_Click(sender As Object, e As EventArgs) Handles btnFreeze.Click
+        If isFreeze Then
+            For i As Integer = 0 To FreezeColumnIndex
+                dgvReport.Columns(i).Frozen = False
+            Next
+            isFreeze = False
+            FreezeColumnIndex = 0
+        Else
+            FreezeColumnIndex = dgvReport.SelectedCells(0).ColumnIndex
+            Dim result As DialogResult = MessageBox.Show("請確認是否要凍結欄位 : " + dgvReport.Columns(FreezeColumnIndex).Name, "確認是否凍結欄位", MessageBoxButtons.YesNo)
+
+            If result = DialogResult.Yes Then
+                dgvReport.Columns(FreezeColumnIndex).Frozen = True '凍結欄位
+                isFreeze = True
+            ElseIf result = DialogResult.No Then
+                FreezeColumnIndex = 0
+            End If
         End If
     End Sub
 

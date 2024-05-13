@@ -31,6 +31,12 @@
                 btndel.CellTemplate = bc2
                 ReportUI.dgvReport.Columns.Add(btndel)
                 ReportUI.dgvReport.Columns("btnDelete").Width = 40
+
+                ReportUI.txtSpiltNum.Visible = True
+                ReportUI.lblSpiltNum.Visible = True
+            Else
+                ReportUI.txtSpiltNum.Visible = False
+                ReportUI.lblSpiltNum.Visible = False
             End If
         Catch ex As Exception
             WriteLog(ex, LogFilePath, "PTH_CheckID")
@@ -39,22 +45,22 @@
 
     Sub PTH_SplitClick(ByVal e As DataGridViewCellEventArgs, ByRef ChangeValueIgnore As Boolean)
         Try
+            ReportUI.TimerRefresh.Stop()
             '判斷此筆資料是否已上傳
             If ReportUI.dgvReport.Rows(e.RowIndex).Cells("完成").Value IsNot Nothing AndAlso ReportUI.dgvReport.Rows(e.RowIndex).Cells("完成").Value.ToString <> "" Then
                 MessageBox.Show("此筆資料已上傳完畢")
                 Return
             End If
-            ''請使用者輸入分批數量，必須輸入整數1~4
-            'Dim Num As String = InputBox("請輸入分批數量：", "輸入分批數量", " ")
-            'If Num = " " Then
-            '    Return
-            'ElseIf Not IsNumeric(Num) OrElse Int(Num) < 1 OrElse Int(Num) > 4 Then
-            '    MessageBox.Show("請輸入1~4的整數")
-            '    Return
-            'End If
-            Dim RowNum As Integer = e.RowIndex + 1
 
-            ChangeValueIgnore = True
+            If ReportUI.txtSpiltNum.Text <> "" AndAlso IsNumeric(ReportUI.txtSpiltNum.Text) AndAlso (CInt(ReportUI.txtSpiltNum.Text) > 0 AndAlso CInt(ReportUI.txtSpiltNum.Text) <= 48) Then
+                ReportUI.txtSpiltNum.Text = CInt(ReportUI.txtSpiltNum.Text).ToString
+            Else
+                MessageBox.Show("請在分批數量的欄位內輸入1~48的數字")
+                ReportUI.txtSpiltNum.Focus()
+                ReportUI.txtSpiltNum.Text = "1"
+                Return
+            End If
+
             Dim paralist As New List(Of String)
             For i As Integer = 0 To ReportUI.dgvReport.Columns("備註").Index
                 If ReportUI.dgvReport.Columns(i).Name = "班別" Then
@@ -65,27 +71,37 @@
                     paralist.Add("")
                 End If
             Next
-            ReportUI.dgvReport.Rows.Insert(RowNum, paralist.ToArray)
-            Dim dgvcbocFace As New DataGridViewComboBoxCell
-            dgvcbocFace.Items.Add("N/A")
-            dgvcbocFace.Items.Add("PF")
-            dgvcbocFace.Items.Add("PB")
 
-            ReportUI.dgvReport.Rows(RowNum).Cells("面次") = dgvcbocFace
+            Dim RowNum As Integer = e.RowIndex + 1
 
-            ReportUI.dgvReport.Rows(RowNum).Cells("面次").Value = "N/A"
+            For j As Integer = 0 To CInt(ReportUI.txtSpiltNum.Text) - 1
 
-            ChangeValueIgnore = False
-            For i = 0 To ReportUI.dgvReport.Columns("備註").Index - 2
-                If Not {"班別", "料號", "批號", "層別", "站點", "機台", "日期", "前站結束時間", "產品類型"}.Contains(ReportUI.dgvReport.Columns(i).Name) Then
-                    ReportUI.dgvReport.Rows(RowNum).Cells(i).ReadOnly = False
-                    ReportUI.dgvReport.Rows(RowNum).Cells(i).Style.BackColor = SystemColors.ControlLightLight
-                End If
+                Dim dgvcbocFace As New DataGridViewComboBoxCell
+                dgvcbocFace.Items.Add("N/A")
+                dgvcbocFace.Items.Add("PF")
+                dgvcbocFace.Items.Add("PB")
+
+                ChangeValueIgnore = True
+
+                ReportUI.dgvReport.Rows.Insert(RowNum, paralist.ToArray)
+
+                ReportUI.dgvReport.Rows(RowNum).Cells("面次") = dgvcbocFace
+                ReportUI.dgvReport.Rows(RowNum).Cells("面次").Value = "N/A"
+
+
+                For k = 0 To ReportUI.dgvReport.Columns("備註").Index - 2
+                    If Not {"班別", "料號", "批號", "層別", "站點", "機台", "日期", "前站結束時間", "產品類型"}.Contains(ReportUI.dgvReport.Columns(k).Name) Then
+                        ReportUI.dgvReport.Rows(RowNum).Cells(k).ReadOnly = False
+                        ReportUI.dgvReport.Rows(RowNum).Cells(k).Style.BackColor = SystemColors.ControlLightLight
+                    End If
+                Next
             Next
-
+            ChangeValueIgnore = False
+            ReportUI.TimerRefresh.Start()
         Catch ex As Exception
             WriteLog(ex, LogFilePath, "PTH_SplitClick")
             ChangeValueIgnore = False
+            ReportUI.TimerRefresh.Start()
         End Try
 
     End Sub

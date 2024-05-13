@@ -12,7 +12,7 @@ Imports System.Data.SqlClient
 '20231030 Boris            建立Table & SP名稱的變數
 
 Public Class ReportUI
-    Dim Version As String = "2.1.24.05.10.1"
+    Dim Version As String = "2.1.24.05.13.1"
     Dim Program As String = "ProductionReport"
     Public Area As String = ""
     Public AreaID As String = ""
@@ -1383,14 +1383,14 @@ Public Class ReportUI
         End If
     End Sub
 
-    Private Sub txtSpiltNum_TextChanged(sender As Object, e As EventArgs) Handles txtSpiltNum.TextChanged
-        If Not IsNumeric(txtSpiltNum.Text) AndAlso (CInt(txtSpiltNum.Text) < 1 OrElse CInt(txtSpiltNum.Text) > 48) Then
-            MessageBox.Show("請輸入數字1~48")
-            txtSpiltNum.Text = "1"
-        Else
-            txtSpiltNum.Text = CInt(txtSpiltNum.Text).ToString
-        End If
-    End Sub
+    'Private Sub txtSpiltNum_TextChanged(sender As Object, e As EventArgs) Handles txtSpiltNum.TextChanged
+    '    If Not IsNumeric(txtSpiltNum.Text) AndAlso (CInt(txtSpiltNum.Text) < 1 OrElse CInt(txtSpiltNum.Text) > 48) Then
+    '        MessageBox.Show("請輸入數字1~48")
+    '        txtSpiltNum.Text = "1"
+    '    Else
+    '        txtSpiltNum.Text = CInt(txtSpiltNum.Text).ToString
+    '    End If
+    'End Sub
 
     Private Sub btnFreeze_Click(sender As Object, e As EventArgs) Handles btnFreeze.Click
         If isFreeze Then

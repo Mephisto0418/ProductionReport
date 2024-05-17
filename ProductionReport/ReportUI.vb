@@ -12,7 +12,7 @@ Imports System.Data.SqlClient
 '20231030 Boris            建立Table & SP名稱的變數
 
 Public Class ReportUI
-    Dim Version As String = "2.1.24.05.13.1"
+    Dim Version As String = "2.1.24.05.17.1"
     Dim Program As String = "ProductionReport"
     Public Area As String = ""
     Public AreaID As String = ""
@@ -253,7 +253,7 @@ Public Class ReportUI
                 dgvReport.Columns("完成").ReadOnly = True
                 dgvReport.Columns("LogID").Width = 60
                 dgvReport.Columns("LogID").ReadOnly = True
-                dgvReport.Columns("LogID").Visible = False
+                dgvReport.Columns("LogID").Visible = True
                 'For Each dgvCol As DataGridViewColumn In ReportUI_DataGridView.Columns
                 '    'dgvCol.SortMode = DataGridViewColumnSortMode.NotSortable
                 '    If dgvCol.HeaderText = "修改" Then dgvCol.Width = 40
@@ -835,6 +835,7 @@ Public Class ReportUI
 
             ' 比較 DataTable 中的每一行，更新 DataGridView 中的值
             For Each row As DataGridViewRow In dgvReport.Rows
+
                 Dim proc_dgv As String = row.Cells("站點").Value.ToString()
                 Dim lot_dgv As String = row.Cells("批號").Value.ToString()
                 Dim layer_dgv As String = row.Cells("層別").Value.ToString()
@@ -848,7 +849,7 @@ Public Class ReportUI
 
                 If PTH_AreaID.Contains(AreaID) Then
                     If (row.Cells("LogID").Value Is Nothing OrElse row.Cells("LogID").Value.ToString() = "") AndAlso row.Cells("班別").Value.ToString() = "分批" Then
-                        First_Upload(row, AreaID, lot_dgv, proc_dgv, layer_dgv, face)
+                        First_Upload(row, AreaID, lot_dgv, proc_dgv, layer_dgv, face, True)
                     End If
                 End If
 

@@ -62,13 +62,19 @@
             End If
 
             Dim paralist As New List(Of String)
+            Dim face As String = ""
             For i As Integer = 0 To ReportUI.dgvReport.Columns("備註").Index
                 If ReportUI.dgvReport.Columns(i).Name = "班別" Then
                     paralist.Add("分批")
-                ElseIf {"料號", "批號", "層別", "站點", "機台", "前站結束時間", "產品類型"}.Contains(ReportUI.dgvReport.Columns(i).Name) Then
+                ElseIf ReportUI.AreaID = "83" AndAlso {"日期", "班別", "前站結束時間", "開始時間", "結束時間", "料號", "批號", "層別", "站點", "機台", "面次", "產品類型", "入料片數", "出料片數", "過帳工號", "過帳人員"}.Contains(ReportUI.dgvReport.Columns(i).Name) Then
+                    If ReportUI.dgvReport.Columns(i).Name = "面次" Then
+                        face = ReportUI.dgvReport.Rows(e.RowIndex).Cells(i).Value.ToString
+                    End If
                     paralist.Add(ReportUI.dgvReport.Rows(e.RowIndex).Cells(i).Value.ToString)
-                Else
-                    paralist.Add("")
+                ElseIf {"料號", "批號", "層別", "站點", "機台", "前站結束時間", "產品類型"}.Contains(ReportUI.dgvReport.Columns(i).Name) Then
+                        paralist.Add(ReportUI.dgvReport.Rows(e.RowIndex).Cells(i).Value.ToString)
+                    Else
+                        paralist.Add("")
                 End If
             Next
 
@@ -86,7 +92,12 @@
                 ReportUI.dgvReport.Rows.Insert(RowNum, paralist.ToArray)
 
                 ReportUI.dgvReport.Rows(RowNum).Cells("面次") = dgvcbocFace
-                ReportUI.dgvReport.Rows(RowNum).Cells("面次").Value = "N/A"
+                If face = "" OrElse face = "N/A" Then
+                    ReportUI.dgvReport.Rows(RowNum).Cells("面次").Value = "N/A"
+                Else
+                    ReportUI.dgvReport.Rows(RowNum).Cells("面次").Value = face
+                End If
+
 
 
                 For k = 0 To ReportUI.dgvReport.Columns("備註").Index - 2
@@ -96,6 +107,7 @@
                     End If
                 Next
             Next
+            face = ""
             ChangeValueIgnore = False
             ReportUI.TimerRefresh.Start()
         Catch ex As Exception
@@ -109,12 +121,14 @@
     Sub PTH_DeleteClick(ByVal e As DataGridViewCellEventArgs)
         Try
             '請使用者確認是否刪除
-            Dim pw As String = InputBox("請輸入刪除密碼：", "輸入刪除密碼", " ")
-            If pw = " " Then
-                Return
-            ElseIf pw <> DeletePw Then
-                MessageBox.Show("密碼輸入錯誤")
-                Return
+            If ReportUI.dgvReport.Rows(e.RowIndex).Cells("LogID").Value IsNot Nothing AndAlso ReportUI.dgvReport.Rows(e.RowIndex).Cells("LogID").Value.ToString <> "" Then
+                Dim pw As String = InputBox("請輸入刪除密碼：", "輸入刪除密碼", " ")
+                If pw = " " Then
+                    Return
+                ElseIf pw <> DeletePw Then
+                    MessageBox.Show("密碼輸入錯誤")
+                    Return
+                End If
             End If
 
             If ReportUI.dgvReport.Rows(e.RowIndex).Cells("班別").Value.ToString = "分批" AndAlso ReportUI.dgvReport.Rows(e.RowIndex).Cells("LogID").Value IsNot Nothing AndAlso ReportUI.dgvReport.Rows(e.RowIndex).Cells("LogID").Value.ToString <> "" Then

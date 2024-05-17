@@ -1,17 +1,19 @@
 ﻿Module First_Pnl
 
-    Sub First_Upload(ByVal row As DataGridViewRow, ByVal AreaID As String, ByVal lot As String, ByVal proc As String, ByVal layer As String, ByVal face As String)
+    Sub First_Upload(ByVal row As DataGridViewRow, ByVal AreaID As String, ByVal lot As String, ByVal proc As String, ByVal layer As String, ByVal face As String, Optional ByVal IsMulti As Boolean = False)
         Try
-            Dim msg As String
-            Dim title As String
-            Dim style As MsgBoxStyle
-            Dim response As MsgBoxResult
-            msg = "請確認""料號""、""批號""、""站點""、""層別""是否正確?"
-            style = MsgBoxStyle.DefaultButton2 Or MsgBoxStyle.Question Or MsgBoxStyle.YesNo
-            title = "內容確認"
-            response = MsgBox(msg, style, title)
-            If response = MsgBoxResult.No Then
-                Return
+            If IsMulti = False Then
+                Dim msg As String
+                Dim title As String
+                Dim style As MsgBoxStyle
+                Dim response As MsgBoxResult
+                msg = "請確認""料號""、""批號""、""站點""、""層別""是否正確?"
+                style = MsgBoxStyle.DefaultButton2 Or MsgBoxStyle.Question Or MsgBoxStyle.YesNo
+                title = "內容確認"
+                response = MsgBox(msg, style, title)
+                If response = MsgBoxResult.No Then
+                    Return
+                End If
             End If
 
             Dim cmdCount As String = "SELECT ISNULL(MAX([Count]),0) AS [Count]

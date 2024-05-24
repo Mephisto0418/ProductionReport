@@ -72,9 +72,9 @@
                     End If
                     paralist.Add(ReportUI.dgvReport.Rows(e.RowIndex).Cells(i).Value.ToString)
                 ElseIf {"料號", "批號", "層別", "站點", "機台", "前站結束時間", "產品類型"}.Contains(ReportUI.dgvReport.Columns(i).Name) Then
-                        paralist.Add(ReportUI.dgvReport.Rows(e.RowIndex).Cells(i).Value.ToString)
-                    Else
-                        paralist.Add("")
+                    paralist.Add(ReportUI.dgvReport.Rows(e.RowIndex).Cells(i).Value.ToString)
+                Else
+                    paralist.Add("")
                 End If
             Next
 

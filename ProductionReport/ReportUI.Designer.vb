@@ -65,6 +65,13 @@ Partial Class ReportUI
         Me.lblSpiltNum = New System.Windows.Forms.Label()
         Me.txtSpiltNum = New System.Windows.Forms.TextBox()
         Me.btnFreeze = New System.Windows.Forms.Button()
+        Me.lblLayer = New System.Windows.Forms.Label()
+        Me.lblLayer_Eng = New System.Windows.Forms.Label()
+        Me.txtLayer = New System.Windows.Forms.TextBox()
+        Me.lblFace = New System.Windows.Forms.Label()
+        Me.lblFace_Eng = New System.Windows.Forms.Label()
+        Me.CboFace = New System.Windows.Forms.ComboBox()
+        Me.btnLotSearchClear = New System.Windows.Forms.Button()
         Me.MenuBar.SuspendLayout()
         CType(Me.dgvReport, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.grpRemark.SuspendLayout()
@@ -126,7 +133,7 @@ Partial Class ReportUI
         '
         'Btn_TEST
         '
-        Me.Btn_TEST.Location = New System.Drawing.Point(500, 57)
+        Me.Btn_TEST.Location = New System.Drawing.Point(1502, 21)
         Me.Btn_TEST.Name = "Btn_TEST"
         Me.Btn_TEST.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.Btn_TEST.Size = New System.Drawing.Size(75, 23)
@@ -140,10 +147,11 @@ Partial Class ReportUI
         Me.Notice.AutoSize = True
         Me.Notice.Font = New System.Drawing.Font("新細明體", 14.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
         Me.Notice.ForeColor = System.Drawing.Color.Red
-        Me.Notice.Location = New System.Drawing.Point(215, 49)
+        Me.Notice.Location = New System.Drawing.Point(215, 25)
         Me.Notice.Name = "Notice"
-        Me.Notice.Size = New System.Drawing.Size(0, 19)
+        Me.Notice.Size = New System.Drawing.Size(85, 19)
         Me.Notice.TabIndex = 158
+        Me.Notice.Text = "測試文字"
         '
         'Btn_First
         '
@@ -158,16 +166,16 @@ Partial Class ReportUI
         'TxtLot
         '
         Me.TxtLot.Font = New System.Drawing.Font("微軟正黑體", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
-        Me.TxtLot.Location = New System.Drawing.Point(412, 82)
+        Me.TxtLot.Location = New System.Drawing.Point(411, 82)
         Me.TxtLot.Name = "TxtLot"
-        Me.TxtLot.Size = New System.Drawing.Size(159, 25)
+        Me.TxtLot.Size = New System.Drawing.Size(118, 25)
         Me.TxtLot.TabIndex = 160
         '
         'lblLot
         '
         Me.lblLot.AutoSize = True
         Me.lblLot.Font = New System.Drawing.Font("微軟正黑體", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
-        Me.lblLot.Location = New System.Drawing.Point(361, 78)
+        Me.lblLot.Location = New System.Drawing.Point(360, 84)
         Me.lblLot.Name = "lblLot"
         Me.lblLot.Size = New System.Drawing.Size(45, 20)
         Me.lblLot.TabIndex = 161
@@ -423,7 +431,7 @@ Partial Class ReportUI
         '
         Me.lblLot_Eng.AutoSize = True
         Me.lblLot_Eng.Font = New System.Drawing.Font("微軟正黑體", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
-        Me.lblLot_Eng.Location = New System.Drawing.Point(358, 98)
+        Me.lblLot_Eng.Location = New System.Drawing.Point(357, 104)
         Me.lblLot_Eng.Name = "lblLot_Eng"
         Me.lblLot_Eng.Size = New System.Drawing.Size(51, 15)
         Me.lblLot_Eng.TabIndex = 182
@@ -510,7 +518,7 @@ Partial Class ReportUI
         '
         'btnFreeze
         '
-        Me.btnFreeze.Location = New System.Drawing.Point(500, 34)
+        Me.btnFreeze.Location = New System.Drawing.Point(267, 57)
         Me.btnFreeze.Name = "btnFreeze"
         Me.btnFreeze.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.btnFreeze.Size = New System.Drawing.Size(75, 23)
@@ -518,11 +526,93 @@ Partial Class ReportUI
         Me.btnFreeze.Text = "凍結/解凍"
         Me.btnFreeze.UseVisualStyleBackColor = True
         '
+        'lblLayer
+        '
+        Me.lblLayer.AutoSize = True
+        Me.lblLayer.Font = New System.Drawing.Font("微軟正黑體", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.lblLayer.Location = New System.Drawing.Point(361, 48)
+        Me.lblLayer.Name = "lblLayer"
+        Me.lblLayer.Size = New System.Drawing.Size(45, 20)
+        Me.lblLayer.TabIndex = 192
+        Me.lblLayer.Text = "層別:"
+        '
+        'lblLayer_Eng
+        '
+        Me.lblLayer_Eng.AutoSize = True
+        Me.lblLayer_Eng.Font = New System.Drawing.Font("微軟正黑體", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.lblLayer_Eng.Location = New System.Drawing.Point(360, 68)
+        Me.lblLayer_Eng.Name = "lblLayer_Eng"
+        Me.lblLayer_Eng.Size = New System.Drawing.Size(43, 15)
+        Me.lblLayer_Eng.TabIndex = 193
+        Me.lblLayer_Eng.Text = "(Layer)"
+        Me.lblLayer_Eng.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        '
+        'txtLayer
+        '
+        Me.txtLayer.AutoCompleteCustomSource.AddRange(New String() {"-L1L2", "-L2L3", "-L2L5", "-L2L7", "-L2L9", "-L2L11", "-L2L13", "-L2L15", "-L2L17", "-L2L19", "-L2L21", "-L2L23", "-L2L25", "-L3L4", "-L3L6", "-L3L8", "-L3L10", "-L3L12", "-L3L14", "-L3L16", "-L3L18", "-L3L20", "-L3L22", "-L3L24", "-L4L5", "-L4L7", "-L4L9", "-L4L11", "-L4L13", "-L4L15", "-L4L17", "-L4L19", "-L4L21", "-L4L23", "-L5L6", "-L5L8", "-L5L10", "-L5L12", "-L5L14", "-L5L16", "-L5L18", "-L5L20", "-L5L22", "-L6L7", "-L6L9", "-L6L11", "-L6L13", "-L6L15", "-L6L17", "-L6L19", "-L6L21", "-L7L8", "-L7L10", "-L7L12", "-L7L14", "-L7L16", "-L7L18", "-L7L20", "-L8L9", "-L8L11", "-L8L13", "-L8L15", "-L8L17", "-L8L19", "-L9L10", "-L9L12", "-L9L14", "-L9L16", "-L9L18", "-L10L11", "-L10L13", "-L10L15", "-L10L17", "-L11L12", "-L11L14", "-L12L13", "-L14L15", "-Outer"})
+        Me.txtLayer.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend
+        Me.txtLayer.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource
+        Me.txtLayer.Font = New System.Drawing.Font("微軟正黑體", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.txtLayer.Location = New System.Drawing.Point(412, 50)
+        Me.txtLayer.Name = "txtLayer"
+        Me.txtLayer.Size = New System.Drawing.Size(61, 25)
+        Me.txtLayer.TabIndex = 191
+        '
+        'lblFace
+        '
+        Me.lblFace.AutoSize = True
+        Me.lblFace.Font = New System.Drawing.Font("微軟正黑體", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.lblFace.Location = New System.Drawing.Point(473, 48)
+        Me.lblFace.Name = "lblFace"
+        Me.lblFace.Size = New System.Drawing.Size(45, 20)
+        Me.lblFace.TabIndex = 195
+        Me.lblFace.Text = "面次:"
+        '
+        'lblFace_Eng
+        '
+        Me.lblFace_Eng.AutoSize = True
+        Me.lblFace_Eng.Font = New System.Drawing.Font("微軟正黑體", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.lblFace_Eng.Location = New System.Drawing.Point(472, 68)
+        Me.lblFace_Eng.Name = "lblFace_Eng"
+        Me.lblFace_Eng.Size = New System.Drawing.Size(43, 15)
+        Me.lblFace_Eng.TabIndex = 196
+        Me.lblFace_Eng.Text = "(Layer)"
+        Me.lblFace_Eng.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        '
+        'CboFace
+        '
+        Me.CboFace.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.CboFace.FlatStyle = System.Windows.Forms.FlatStyle.System
+        Me.CboFace.Font = New System.Drawing.Font("微軟正黑體", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.CboFace.FormattingEnabled = True
+        Me.CboFace.Items.AddRange(New Object() {"N/A", "PF", "PB"})
+        Me.CboFace.Location = New System.Drawing.Point(519, 50)
+        Me.CboFace.Name = "CboFace"
+        Me.CboFace.Size = New System.Drawing.Size(51, 25)
+        Me.CboFace.TabIndex = 197
+        '
+        'btnLotSearchClear
+        '
+        Me.btnLotSearchClear.Font = New System.Drawing.Font("微軟正黑體", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.btnLotSearchClear.Location = New System.Drawing.Point(530, 84)
+        Me.btnLotSearchClear.Name = "btnLotSearchClear"
+        Me.btnLotSearchClear.Size = New System.Drawing.Size(47, 23)
+        Me.btnLotSearchClear.TabIndex = 198
+        Me.btnLotSearchClear.Text = "Clear"
+        Me.btnLotSearchClear.UseVisualStyleBackColor = True
+        '
         'ReportUI
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 12.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(1584, 599)
+        Me.Controls.Add(Me.btnLotSearchClear)
+        Me.Controls.Add(Me.CboFace)
+        Me.Controls.Add(Me.lblFace)
+        Me.Controls.Add(Me.lblFace_Eng)
+        Me.Controls.Add(Me.lblLayer)
+        Me.Controls.Add(Me.txtLayer)
+        Me.Controls.Add(Me.lblLayer_Eng)
         Me.Controls.Add(Me.btnFreeze)
         Me.Controls.Add(Me.lblSpiltNum)
         Me.Controls.Add(Me.txtSpiltNum)
@@ -596,4 +686,11 @@ Partial Class ReportUI
     Friend WithEvents lblSpiltNum As Label
     Friend WithEvents txtSpiltNum As TextBox
     Friend WithEvents btnFreeze As Button
+    Friend WithEvents lblLayer As Label
+    Friend WithEvents lblLayer_Eng As Label
+    Friend WithEvents txtLayer As TextBox
+    Friend WithEvents lblFace As Label
+    Friend WithEvents lblFace_Eng As Label
+    Friend WithEvents CboFace As ComboBox
+    Friend WithEvents btnLotSearchClear As Button
 End Class

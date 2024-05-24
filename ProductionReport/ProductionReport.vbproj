@@ -72,7 +72,9 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Class\Search_Lot.vb" />
     <Compile Include="Module\DataGridViewExport.vb" />
+    <Compile Include="Module\DataGridView_LotSearch.vb" />
     <Compile Include="Module\ErrorLog.vb" />
     <Compile Include="Module\First_Pnl.vb" />
     <Compile Include="Module\PTH_Custom.vb" />

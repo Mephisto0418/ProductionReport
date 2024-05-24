@@ -12,7 +12,7 @@ Imports System.Data.SqlClient
 '20231030 Boris            建立Table & SP名稱的變數
 
 Public Class ReportUI
-    Dim Version As String = "2.1.24.05.17.1"
+    Dim Version As String = "2.1.24.05.24.1"
     Dim Program As String = "ProductionReport"
     Public Area As String = ""
     Public AreaID As String = ""
@@ -44,6 +44,7 @@ Public Class ReportUI
     '24/05/10 新增
     Dim isFreeze As Boolean = False
     Dim FreezeColumnIndex As Integer = 0
+
     '-----------------------------------DB參數----------------------------------------
     Dim DbVersion As String = "[Datamation_H3].[dbo].[H3_Leo_Program_Version]" '版本卡控DB
     Dim DbProc As String = "[H3_Systematic].[dbo].[H3_Proc]" '報表設定Config DB
@@ -82,9 +83,10 @@ Public Class ReportUI
         TimerRefresh.Stop()
         '站點名稱搜尋
 
+        Notice.Text = ""
         cboModule.SelectedIndex = 0
         btnFreeze.Visible = False
-
+        CboFace.Items.Insert(0, "")
 
         'dgv雙重緩衝
         Dim type As Type = dgvReport.GetType()
@@ -152,6 +154,9 @@ Public Class ReportUI
                 MachineState.Clear()
                 Machine.Clear()
                 txtRemark.Text = ""
+                TxtLot.Text = ""
+                txtLayer.Text = ""
+                CboFace.SelectedIndex = 0
 
                 Area = cboAreaName.SelectedItem.ToString '報表名稱變數
                 AreaID = ProcInfo(cboAreaName.SelectedItem.ToString)(3) '報表ID變數
@@ -1191,26 +1196,36 @@ Public Class ReportUI
 
     Private Sub TxtLot_KeyUp(sender As Object, e As KeyEventArgs) Handles TxtLot.KeyUp
         Try
-            Dim isMatch As Boolean = False
             Dim MatchCount As Integer = 0
             If e.KeyData = Keys.Enter Then
                 If TxtLot.Text.Length >= 14 AndAlso TxtLot.Text.Length <= 18 Then
                     TimerRefresh.Stop()
-                    For Each row As DataGridViewRow In dgvReport.Rows
-                        If row.Cells("批號").Value IsNot Nothing AndAlso row.Cells("批號").Value.ToString Like "*" + Trim(TxtLot.Text.Substring(0, 14)) + "*" AndAlso Not isMatch Then
-                            dgvReport.Rows.RemoveAt(row.Index)
-                            dgvReport.Rows.Insert(0, row)
-                            isMatch = True
-                            MatchCount += 1
-                        Else
-                            isMatch = False
-                        End If
-                    Next
-                    If MatchCount = 0 Then
-                        MessageBox.Show("未偵測到目標批號 : " + TxtLot.Text)
-                    Else
-                        MessageBox.Show("已將批號" + TxtLot.Text + "資料 " + MatchCount.ToString + " 筆移至資料列頂端")
+
+                    Dim lot As String = Trim(TxtLot.Text.Substring(0, 14))
+                    Dim layer As String = Trim(txtLayer.Text)
+                    Dim face As String = CboFace.Text
+
+                    If CurrentFindLot.Lot <> lot OrElse CurrentFindLot.Layer <> layer OrElse CurrentFindLot.Face <> face Then
+                        CurrentFindLot.Lot = lot
+                        CurrentFindLot.Layer = layer
+                        CurrentFindLot.Face = face
+                        CurrentFindIndex = 0
                     End If
+                    'LotSearch(dgvReport, MatchCount, Trim(TxtLot.Text.Substring(0, 14)), txtLayer.Text, CboFace.Text)
+                    LotSearch_Focus(dgvReport, MatchCount, lot, layer, face)
+
+                    'If MatchCount = 0 Then
+                    'MessageBox.Show("未偵測到目標批號 : " + TxtLot.Text)
+                    'Else
+                    '    MessageBox.Show("已將批號" + TxtLot.Text + "資料 " + MatchCount.ToString + " 筆移至資料列頂端")
+                    '    TxtLot.Text = ""
+                    '    txtLayer.Text = ""
+                    '    CboFace.SelectedIndex = 0
+                    'End If
+                    If MatchCount = 0 AndAlso CurrentFindIndex = 0 Then
+                        MessageBox.Show("未偵測到目標批號 : " + TxtLot.Text)
+                    End If
+
                 Else
                     TxtLot.Text = ""
                 End If
@@ -1220,6 +1235,12 @@ Public Class ReportUI
             WriteLog(ex, LogFilePath, "TxtLot_KeyUp")
             TimerRefresh.Start()
         End Try
+    End Sub
+
+    Private Sub btnLotSearchClear_Click(sender As Object, e As EventArgs) Handles btnLotSearchClear.Click
+        TxtLot.Text = ""
+        txtLayer.Text = ""
+        CboFace.SelectedIndex = 0
     End Sub
 
     Private Sub Btn_RefreshStop_Click(sender As Object, e As EventArgs) Handles Btn_RefreshStop.Click
@@ -1385,7 +1406,7 @@ Public Class ReportUI
     End Sub
 
     'Private Sub txtSpiltNum_TextChanged(sender As Object, e As EventArgs) Handles txtSpiltNum.TextChanged
-    '    If Not IsNumeric(txtSpiltNum.Text) AndAlso (CInt(txtSpiltNum.Text) < 1 OrElse CInt(txtSpiltNum.Text) > 48) Then
+    '    If Not IsNumeric(txtSpiltNum.Text) AndAlso (CInt(txtSpiltNum.Text) <1 OrElse CInt(txtSpiltNum.Text) > 48) Then
     '        MessageBox.Show("請輸入數字1~48")
     '        txtSpiltNum.Text = "1"
     '    Else
@@ -1412,6 +1433,8 @@ Public Class ReportUI
             End If
         End If
     End Sub
+
+
 
 
 

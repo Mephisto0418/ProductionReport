@@ -12,7 +12,7 @@ Public Class ProductionReport_Setting
     '
     ' 作者名稱 : Boris_Li@unimicron.com
     ' 更新日期 : 2023/07/25
-    Dim Version As String = "1.0.24.03.08.1"
+    Dim Version As String = "1.0.24.05.30.1"
     Dim Program As String = "ProductionReport_Setting"
     Dim isException As Boolean = False
     Dim ProcPkey As String = ""
@@ -29,6 +29,9 @@ Public Class ProductionReport_Setting
     Dim ParaColumn As String
     Dim F_SaveType As String
     Dim AreaID As String = ""
+    '2024/05/29新增
+    Dim F_IPQC_Proc As New Dictionary(Of String, String)
+
 
     '-----------------------------------DB參數----------------------------------------
     Dim DbProc As String = "[H3_Systematic].[dbo].[H3_Proc]" '報表設定Config DB
@@ -45,6 +48,10 @@ Public Class ProductionReport_Setting
     Dim DbSPCFile As String = "[10.44.65.110].[SPC_PPT].[dbo].[Var_File]" 'SPC 檔案 SPC第三階
     Dim DbSPCFileGroup As String = "[10.44.65.110].[SPC_PPT].[dbo].[Var_FileGroup]" 'SPC第一、二階
     Dim DbHist As String = "[utchfacmrpt].[report].[dbo].[view_HIST]" '愉進過帳資料View表
+    Dim DbIPQC_Panel As String = "[MES-C].[IPQC_Mapping_H3].[dbo].[RawData_Panel]" 'IPQC_Panel檢驗資訊
+    Dim DbIPQC_Pcs As String = "[MES-C].[IPQC_Mapping_H3].[dbo].[RawData_Pcs]" 'IPQC_Pcs缺點資料
+
+
 
 
     Private Sub ProductionReport_Setting_Load(sender As Object, e As EventArgs) Handles MyBase.Load
@@ -329,7 +336,7 @@ Public Class ProductionReport_Setting
                 CboF_Type.Items.Clear()
                 CboF_Value.Items.Clear()
                 CboF_Value.Enabled = False
-                SPC_ComboBox_Invisible()
+                ComboBox_Invisible()
                 TxtF_QueryCommand.Text = ""
             End If
         Catch ex As Exception
@@ -561,20 +568,20 @@ Public Class ProductionReport_Setting
                     CboPara_Sort.Text = DgvPara.Rows(e.RowIndex).Cells("順序").Value.ToString
                 End If
                 TxtPara_ParaName.Text = DgvPara.Rows(e.RowIndex).Cells("欄位名稱").Value.ToString
-                    TxtPara_EngName.Text = DgvPara.Rows(e.RowIndex).Cells("英文名稱").Value.ToString
-                    ChkPara_isQuery.Checked = Convert.ToBoolean(DgvPara.Rows(e.RowIndex).Cells("是否自動代入數值").Value)
-                    TxtPara_QID.Text = DgvPara.Rows(e.RowIndex).Cells("QID").Value.ToString
-                    ChkPara_isRequire.Checked = Convert.ToBoolean(DgvPara.Rows(e.RowIndex).Cells("是否為必填欄位").Value)
-                    TxtPara_Default.Text = DgvPara.Rows(e.RowIndex).Cells("欄位預設值").Value.ToString
+                TxtPara_EngName.Text = DgvPara.Rows(e.RowIndex).Cells("英文名稱").Value.ToString
+                ChkPara_isQuery.Checked = Convert.ToBoolean(DgvPara.Rows(e.RowIndex).Cells("是否自動代入數值").Value)
+                TxtPara_QID.Text = DgvPara.Rows(e.RowIndex).Cells("QID").Value.ToString
+                ChkPara_isRequire.Checked = Convert.ToBoolean(DgvPara.Rows(e.RowIndex).Cells("是否為必填欄位").Value)
+                TxtPara_Default.Text = DgvPara.Rows(e.RowIndex).Cells("欄位預設值").Value.ToString
                 If CboPara_Sort.Text = "" Then
                     ParaSort = 0
                 Else
                     ParaSort = CboPara_Sort.Text
                 End If
                 BtnPara_Update.Enabled = True
-                    BtnPara_Add.Enabled = False
-                ElseIf e.ColumnIndex = DgvPara.Columns("編輯").Index AndAlso e.RowIndex >= 0 Then
-                    TabMain.SelectedIndex = 2
+                BtnPara_Add.Enabled = False
+            ElseIf e.ColumnIndex = DgvPara.Columns("編輯").Index AndAlso e.RowIndex >= 0 Then
+                TabMain.SelectedIndex = 2
                 If DgvPara.Rows(e.RowIndex).Cells("QID").Value.ToString = "0" Then TxtF_QID.Text = "" Else TxtF_QID.Text = DgvPara.Rows(e.RowIndex).Cells("QID").Value.ToString
                 TxtF_Pkey.Text = DgvPara.Rows(e.RowIndex).Cells("Pkey").Value.ToString
                 ParaColumn = "入料片數,出料片數,料號,"
@@ -633,14 +640,10 @@ Public Class ProductionReport_Setting
             txtF_QID_Copy.Text = ""
             QueryCommand = ""
             DgvF.AllowUserToAddRows = False
-            SPC_ComboBox_Invisible()
+            ComboBox_Invisible()
             DgvF_Operator.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
-            CboF_Type.Items.Clear()
-            CboF_Type.Items.Add("OP參數")
-            CboF_Type.Items.Add("SPC")
-            CboF_Type.Items.Add("愉進系統")
-            CboF_Type.Items.Add("欄位間計算")
-            CboF_Type.Items.Add("其他")
+            FunctionParameterLoad()
+            AddFunctionType(CboF_Type)
             CboF_Value.Items.Clear()
             CboF_Value.Enabled = False
             If TxtF_QID.Text <> "" Then
@@ -659,11 +662,11 @@ Public Class ProductionReport_Setting
                     row.Cells(DgvF_Operator.Index).Value = dt(0)(2 + index * 2 - 1)
                     row.Cells(DgvF_Values.Index).Value = dt(0)(2 + index * 2)
                 Next
-                CboF_SPC_Condition.Text = dt(0)(11)
-                CboF_SPC_Group.Text = dt(0)(12)
+                CboF_Condition.Text = dt(0)(11)
+                CboF_Group.Text = dt(0)(12)
             End If
 
-            TxtF_QueryCommand.ReadOnly = True
+            If CboF_Type.SelectedItem = "其他" Then TxtF_QueryCommand.ReadOnly = False
             If TxtF_QID.Text = "" Then TxtF_QueryCommand.Text = ""
 
         Catch ex As Exception
@@ -673,117 +676,149 @@ Public Class ProductionReport_Setting
 
     Private Sub CboF_Type_SelectedIndexChanged(sender As Object, e As EventArgs) Handles CboF_Type.SelectedIndexChanged
         DgvF.ReadOnly = False
-        If CboF_Type.SelectedIndex = 0 Then
-            '初始化
-            SPC_ComboBox_Invisible()
-            DgvF_Operator.ReadOnly = False
-            TxtF_QueryCommand.ReadOnly = True
-            TxtF_QueryCommand.Text = ""
-            DgvF.Rows.Add("製程代碼(8碼)", "[ProcName]", "=", "", "若留空白則查詢當站資訊 Ex. SMK1CLN1")
-            DgvF.Rows.Add("OP參數名稱", "[PARAMETER_DESC]", "=", "", "Ex. 基材銅厚中值")
-            DgvTest.Rows.Add("層別", "VarLayer", "")
-            DgvTest.Rows.Add("料號", "VarPart", "")
-            DgvTest.Rows.Add("版序", "VarRev", "")
-            CboF_Value.Items.Clear()
-            CboF_Value.Enabled = True
-            CboF_Value.Items.Add("參數中值")
-            CboF_Value.Items.Add("參數上限")
-            CboF_Value.Items.Add("參數下限")
-            CboF_Value.SelectedIndex = 0
 
-        ElseIf CboF_Type.SelectedIndex = 1 Then
-            '初始化
-            DgvF.Rows.Clear()
-            CboF_SPC_Condition.Visible = True
-            LblF_SPC_Condition.Visible = True
-            CboF_SPC_Group.Visible = True
-            LblF_SPC_Group.Visible = True
-            DgvF_Operator.ReadOnly = False
-            TxtF_QueryCommand.ReadOnly = True
-            TxtF_QueryCommand.Text = ""
-            DgvF.Rows.Add("一階", "d.[FileFactory]", "=", "", "Ex. 13新豐廠H3")
-            DgvF.Rows.Add("二階", "e.[FileGroupName]", "=", "", "Ex. 15MDL_機械鑽孔")
-            DgvF.Rows.Add("三階", "d.[FileName]", "=", "", "Ex. 15MDL_SUEP_ETCHINIG AMOUNT_EQP")
-            DgvF.Rows.Add("四階", "c.[CtrlName]", "=", "", "Ex. Etching Amount")
-            DgvTest.Rows.Clear()
-            DgvTest.Rows.Add("批號", "VarLot", "")
-            CboF_Value.Items.Clear()
-            CboF_Value.Enabled = True
-            CboF_Value.Items.Add("AVG")
-            CboF_Value.Items.Add("MAX")
-            CboF_Value.Items.Add("MIN")
-            CboF_Value.Items.Add("CL")
-            CboF_Value.Items.Add("SL")
-            CboF_Value.Items.Add("AL")
-            CboF_Value.SelectedIndex = 0
-            CboF_SPC_Condition.Items.Clear()
-            CboF_SPC_Condition.Items.Add("批號")
-            CboF_SPC_Condition.Items.Add("最近一筆")
-            CboF_SPC_Condition.SelectedIndex = 0
+        Select Case CboF_Type.SelectedItem
+            Case "OP參數"
+                ComboBox_Invisible()
+                DgvF_Operator.ReadOnly = False
+                TxtF_QueryCommand.ReadOnly = True
+                TxtF_QueryCommand.Text = ""
+                DgvF.Rows.Add("製程代碼(8碼)", "[ProcName]", "=", "", "若留空白則查詢當站資訊 Ex. SMK1CLN1")
+                DgvF.Rows.Add("OP參數名稱", "[PARAMETER_DESC]", "=", "", "Ex. 基材銅厚中值")
+                DgvTest.Rows.Add("層別", "VarLayer", "")
+                DgvTest.Rows.Add("料號", "VarPart", "")
+                DgvTest.Rows.Add("版序", "VarRev", "")
+                CboF_Value.Items.Clear()
+                CboF_Value.Enabled = True
+                CboF_Value.Items.Add("參數中值")
+                CboF_Value.Items.Add("參數上限")
+                CboF_Value.Items.Add("參數下限")
+                CboF_Value.SelectedIndex = 0
+            Case "SPC"
+                DgvF.Rows.Clear()
+                CboF_Condition.Visible = True
+                LblF_Condition.Visible = True
+                CboF_Group.Visible = True
+                LblF_Group.Visible = True
+                DgvF_Operator.ReadOnly = False
+                TxtF_QueryCommand.ReadOnly = True
+                TxtF_QueryCommand.Text = ""
+                DgvF.Rows.Add("一階", "d.[FileFactory]", "=", "", "Ex. 13新豐廠H3")
+                DgvF.Rows.Add("二階", "e.[FileGroupName]", "=", "", "Ex. 15MDL_機械鑽孔")
+                DgvF.Rows.Add("三階", "d.[FileName]", "=", "", "Ex. 15MDL_SUEP_ETCHINIG AMOUNT_EQP")
+                DgvF.Rows.Add("四階", "c.[CtrlName]", "=", "", "Ex. Etching Amount")
+                DgvTest.Rows.Clear()
+                DgvTest.Rows.Add("批號", "VarLot", "")
+                CboF_Value.Items.Clear()
+                CboF_Value.Enabled = True
+                CboF_Value.Items.Add("AVG")
+                CboF_Value.Items.Add("MAX")
+                CboF_Value.Items.Add("MIN")
+                CboF_Value.Items.Add("CL")
+                CboF_Value.Items.Add("SL")
+                CboF_Value.Items.Add("AL")
+                CboF_Value.SelectedIndex = 0
+                CboF_Condition.Items.Clear()
+                CboF_Condition.Items.Add("批號")
+                CboF_Condition.Items.Add("最近一筆")
+                CboF_Condition.SelectedIndex = 0
+            Case "愉進系統"
+                ComboBox_Invisible()
+                DgvF_Operator.ReadOnly = False
+                TxtF_QueryCommand.ReadOnly = True
+                TxtF_QueryCommand.Text = ""
+                DgvF.Rows.Add("製程代碼(8碼)", "[ProcName]", "=", "", "若留空白則查詢當站資訊 Ex. SMK1CLN1")
+                DgvF.Rows.Add("愉進過帳狀態", "[AftStatus]", "=", "", "MoveIn Or CheckIn Or CheckOut Or MoveOut")
+                DgvTest.Rows.Add("批號", "VarLot", "")
+                DgvTest.Rows.Add("層別", "VarLayer", "")
+                CboF_Value.Items.Clear()
+                CboF_Value.Enabled = True
+                CboF_Value.Items.Add("過帳時間")
+                CboF_Value.Items.Add("PCS數量")
+                CboF_Value.SelectedIndex = 0
+            Case "欄位間計算"
+                ComboBox_Invisible()
+                DgvF_Operator.ReadOnly = True
+                TxtF_QueryCommand.ReadOnly = True
+                TxtF_QueryCommand.Text = ""
+                DgvF.Rows.Add("計算欄位", "Var", "", "", "請按照順序填寫，複數欄位請以逗號("","")分隔 Ex. " & ParaColumn & " ")
+                DgvF.Rows.Add("計算公式", "Formula", "", "", "填寫公式時請按照上面填寫的順序將變數命名為var1、var2... Ex. (var1/var2)*100")
+                CboF_Value.Items.Clear()
+                CboF_Value.Items.Add("數字")
+                CboF_Value.Items.Add("文字")
+                CboF_Value.Items.Add("其他")
+                CboF_Value.Enabled = True
 
-        ElseIf CboF_Type.SelectedIndex = 2 Then
-            '初始化
-            SPC_ComboBox_Invisible()
-            DgvF_Operator.ReadOnly = False
-            TxtF_QueryCommand.ReadOnly = True
-            TxtF_QueryCommand.Text = ""
-            DgvF.Rows.Add("製程代碼(8碼)", "[ProcName]", "=", "", "若留空白則查詢當站資訊 Ex. SMK1CLN1")
-            DgvF.Rows.Add("愉進過帳狀態", "[AftStatus]", "=", "", "MoveIn Or CheckIn Or CheckOut Or MoveOut")
-            DgvTest.Rows.Add("批號", "VarLot", "")
-            DgvTest.Rows.Add("層別", "VarLayer", "")
-            CboF_Value.Items.Clear()
-            CboF_Value.Enabled = True
-            CboF_Value.Items.Add("過帳時間")
-            CboF_Value.Items.Add("PCS數量")
-            CboF_Value.SelectedIndex = 0
-
-        ElseIf CboF_Type.SelectedIndex = 3 Then
-            '初始化
-            SPC_ComboBox_Invisible()
-            DgvF_Operator.ReadOnly = True
-            TxtF_QueryCommand.ReadOnly = True
-            TxtF_QueryCommand.Text = ""
-            DgvF.Rows.Add("計算欄位", "Var", "", "", "請按照順序填寫，複數欄位請以逗號("","")分隔 Ex. " & ParaColumn & " ")
-            DgvF.Rows.Add("計算公式", "Formula", "", "", "填寫公式時請按照上面填寫的順序將變數命名為var1、var2... Ex. (var1/var2)*100")
-            CboF_Value.Items.Clear()
-            CboF_Value.Items.Add("數字")
-            CboF_Value.Items.Add("文字")
-            CboF_Value.Items.Add("其他")
-            CboF_Value.Enabled = True
-
-            '建立語法
-            QueryCommand_Create()
-        ElseIf CboF_Type.SelectedIndex = 4 Then
-            '初始化
-            SPC_ComboBox_Invisible()
-            TxtF_QueryCommand.ReadOnly = False
-            CboF_Value.Items.Clear()
-            CboF_Value.Enabled = False
-
-        End If
+                '建立語法
+                QueryCommand_Create()
+            Case "IPQC" 'H3客製
+                ComboBox_Invisible()
+                DgvF_Operator.ReadOnly = False
+                TxtF_QueryCommand.ReadOnly = True
+                TxtF_QueryCommand.Text = ""
+                Dim cmdProc As String = "SELECT [ProcName],[ProcNo]FROM [MES-C].[IPQC_Mapping_H3].[dbo].[DefineProcess] WITH(NOLOCK)"
+                Dim dtProc As DataTable = SQL_Query(SQL_Conn_MQL03, cmdProc)
+                Dim dgvcboProc As New DataGridViewComboBoxCell
+                F_IPQC_Proc.Clear()
+                For Each row As DataRow In dtProc.Rows
+                    F_IPQC_Proc.Add(row("ProcName").ToString, row("ProcNo").ToString)
+                    dgvcboProc.Items.Add(row("ProcName"))
+                Next
+                DgvF.Rows.Add("Process", "ProcNo", "=", "", "請填入IPQC佔點 Ex. SM Cure UV")
+                DgvF.Rows(0).Cells(DgvF_Values.Index) = dgvcboProc
+                DgvF.Rows.Add("缺點名稱", "ItemName", "=", "", "Ex. 其他主缺 (Other Major)")
+                DgvTest.Rows.Add("批號", "VarLot", "")
+                DgvTest.Rows.Add("面次", "VarFace", "")
+                CboF_Value.Items.Clear()
+                CboF_Value.Enabled = True
+                CboF_Value.Items.Add("缺點數量")
+                CboF_Condition.Visible = True
+                CboF_Condition.Items.Clear()
+                CboF_Condition.Items.Add("需篩選層別")
+                CboF_Condition.Items.Add("不需篩選層別")
+                CboF_Condition.SelectedIndex = 0
+                CboF_Value.SelectedIndex = 0
+            Case "其他"
+                ComboBox_Invisible()
+                TxtF_QueryCommand.ReadOnly = False
+                CboF_Value.Items.Clear()
+                CboF_Value.Enabled = False
+        End Select
     End Sub
 
     Private Sub CboF_Value_SelectedIndexChanged(sender As Object, e As EventArgs) Handles CboF_Value.SelectedIndexChanged
         QueryCommand_Create()
     End Sub
 
-    Private Sub CboF_SPC_Condition_SelectedIndexChanged(sender As Object, e As EventArgs) Handles CboF_SPC_Condition.SelectedIndexChanged
-        CboF_SPC_Group.Items.Clear()
-        If CboF_SPC_Condition.SelectedIndex = 0 Then
-            CboF_SPC_Group.Items.Add("一階")
-            CboF_SPC_Group.Items.Add("二階")
-            CboF_SPC_Group.Items.Add("三階")
-            CboF_SPC_Group.Items.Add("四階")
-            CboF_SPC_Group.Items.Add("樣本平均")
-            CboF_SPC_Group.SelectedIndex = 0
-            DgvTest.Rows.Clear()
-            DgvTest.Rows.Add("批號", "VarLot", "")
-        Else
-            DgvTest.Rows.Clear()
-        End If
+    Private Sub CboF_SPC_Condition_SelectedIndexChanged(sender As Object, e As EventArgs) Handles CboF_Condition.SelectedIndexChanged
+        Select Case CboF_Condition.SelectedItem
+            Case "批號"
+                CboF_Group.Items.Clear()
+                CboF_Group.Items.Add("一階")
+                CboF_Group.Items.Add("二階")
+                CboF_Group.Items.Add("三階")
+                CboF_Group.Items.Add("四階")
+                CboF_Group.Items.Add("樣本平均")
+                CboF_Group.SelectedIndex = 0
+                DgvTest.Rows.Clear()
+                DgvTest.Rows.Add("批號", "VarLot", "")
+            Case "最近一筆"
+                DgvTest.Rows.Clear()
+            Case "需篩選層別"
+                DgvTest.Rows.Clear()
+                DgvTest.Rows.Add("批號", "VarLot", "")
+                DgvTest.Rows.Add("層別", "VarLayer", "")
+                DgvTest.Rows.Add("面次", "VarFace", "")
+            Case "不需篩選層別"
+                DgvTest.Rows.Clear()
+                DgvTest.Rows.Add("批號", "VarLot", "")
+                DgvTest.Rows.Add("面次", "VarFace", "")
+        End Select
+
+
         QueryCommand_Create()
     End Sub
-    Private Sub CboF_SPC_Group_SelectedIndexChanged(sender As Object, e As EventArgs) Handles CboF_SPC_Group.SelectedIndexChanged
+    Private Sub CboF_SPC_Group_SelectedIndexChanged(sender As Object, e As EventArgs) Handles CboF_Group.SelectedIndexChanged
         QueryCommand_Create()
     End Sub
 
@@ -836,7 +871,7 @@ Public Class ProductionReport_Setting
                 Next
                 For i = index + 1 To 5
                     If i = 5 Then
-                        cmd = cmd.Replace("ff5", CboF_SPC_Condition.Text).Replace("f5", CboF_SPC_Group.Text)
+                        cmd = cmd.Replace("ff5", CboF_Condition.Text).Replace("f5", CboF_Group.Text)
                     Else
                         cmd = cmd.Replace("ff" + i.ToString, "").Replace("f" + i.ToString, "")
                     End If
@@ -871,7 +906,7 @@ Public Class ProductionReport_Setting
                 Next
                 For i = index + 1 To 5
                     If i = 5 Then
-                        cmd = cmd.Replace("ff5", CboF_SPC_Condition.Text).Replace("f5", CboF_SPC_Group.Text)
+                        cmd = cmd.Replace("ff5", CboF_Condition.Text).Replace("f5", CboF_Group.Text)
                     Else
                         cmd = cmd.Replace("ff" + i.ToString, "").Replace("f" + i.ToString, "")
                     End If
@@ -916,13 +951,13 @@ Public Class ProductionReport_Setting
 
 
     Private Function F_Check() As Boolean
-
+        Dim Required As String() = {"AftStatus", "Var", "Formula", "PARAMETER_DESC", "FileFactory", "FileGroupName", "ProcNo", "ItemName"}
         If CboF_Type.SelectedItem = "" Then
             MessageBox.Show("請確認必填欄位輸入完畢")
             Return True
         Else
             For Each row As DataGridViewRow In DgvF.Rows
-                If (row.Cells(DgvF_ColumnName.Index).Value.ToString.Contains("AftStatus") OrElse row.Cells(DgvF_ColumnName.Index).Value.ToString.Contains("Var") OrElse row.Cells(DgvF_ColumnName.Index).Value.ToString.Contains("Formula") OrElse row.Cells(DgvF_ColumnName.Index).Value.ToString.Contains("PARAMETER_DESC") OrElse row.Cells(DgvF_ColumnName.Index).Value.ToString.Contains("FileFactory") OrElse row.Cells(DgvF_ColumnName.Index).Value.ToString.Contains("FileGroupName")) And (row.Cells(DgvF_Values.Index).Value Is Nothing OrElse row.Cells(DgvF_Values.Index).Value.ToString = "") Then
+                If Required.Contains(row.Cells(DgvF_ColumnName.Index).Value.ToString) AndAlso (row.Cells(DgvF_Values.Index).Value Is Nothing OrElse row.Cells(DgvF_Values.Index).Value.ToString = "") Then
                     MessageBox.Show("請確認必填欄位輸入完畢")
                     Return True
                 End If
@@ -997,90 +1032,123 @@ AftError:
         End Try
     End Sub
 
-    Private Sub SPC_ComboBox_Invisible()
+    Private Sub ComboBox_Invisible()
         DgvF.Rows.Clear()
         DgvTest.Rows.Clear()
-        LblF_SPC_Condition.Visible = False
-        CboF_SPC_Condition.Visible = False
-        CboF_SPC_Condition.Items.Clear()
-        LblF_SPC_Group.Visible = False
-        CboF_SPC_Group.Visible = False
-        CboF_SPC_Group.Items.Clear()
+        LblF_Condition.Visible = False
+        CboF_Condition.Visible = False
+        CboF_Condition.Items.Clear()
+        LblF_Group.Visible = False
+        CboF_Group.Visible = False
+        CboF_Group.Items.Clear()
     End Sub
 
     Private Sub QueryCommand_Create()
         Try
-            If CboF_Type.SelectedIndex <> 3 AndAlso CboF_Type.SelectedIndex <> 4 Then
-                QueryCommand = SelectCommand(CboF_Value.SelectedItem.ToString) + vbCrLf + ServerCommand(CboF_Type.SelectedItem.ToString)
-                For Each row As DataGridViewRow In DgvF.Rows
-                    Dim column As String = row.Cells(DgvF_ColumnName.Index).Value.ToString
-                    Dim op As String = ""
-                    If row.Cells(DgvF_Operator.Index).Value IsNot Nothing AndAlso row.Cells(DgvF_Operator.Index).Value.ToString <> "" Then
-                        op = row.Cells(DgvF_Operator.Index).Value.ToString
+            Select Case CboF_Type.SelectedItem
+                Case "其他"
+                Case "欄位間計算"
+                    QueryCommand = ServerCommand(CboF_Type.SelectedItem.ToString)
+                    If DgvF.Rows(0).Cells(DgvF_Values.Index).Value IsNot Nothing AndAlso DgvF.Rows(1).Cells(DgvF_Values.Index).Value IsNot Nothing AndAlso DgvF.Rows(0).Cells(DgvF_Values.Index).Value.ToString <> "" AndAlso DgvF.Rows(1).Cells(DgvF_Values.Index).Value.ToString <> "" Then
+                        Dim FormulaCommand As String = ""
+                        Dim FormulaColumn As String()
+                        FormulaColumn = DgvF.Rows(0).Cells(DgvF_Values.Index).Value.ToString.Split(",")
+                        FormulaCommand = DgvF.Rows(1).Cells(DgvF_Values.Index).Value.ToString
+                        FormulaCommand = FormulaCommand.Replace("var", "VAR").Replace("Var", "VAR")
+                        If CboF_Value.SelectedIndex = 0 Then
+                            For i = FormulaColumn.Count To 1 Step -1
+                                FormulaCommand = FormulaCommand.Replace("VAR" + i.ToString + "", "CDbl(""var" + i.ToString + """)")
+                            Next
+                            QueryCommand = QueryCommand.Replace("0.0", "(" & FormulaCommand & ").ToString")
+                        ElseIf CboF_Value.SelectedIndex = 1 Then
+                            For i = FormulaColumn.Count To 1 Step -1
+                                FormulaCommand = FormulaCommand.Replace("VAR" + i.ToString + "", """var" + i.ToString + """")
+                            Next
+                            QueryCommand = QueryCommand.Replace("0.0", FormulaCommand)
+                        ElseIf CboF_Value.SelectedIndex = 2 Then
+                            For i = FormulaColumn.Count To 1 Step -1
+                                FormulaCommand = FormulaCommand.Replace("VAR" + i.ToString + "", """var" + i.ToString + """")
+                            Next
+                            QueryCommand = QueryCommand.Replace("result = 0.0", FormulaCommand)
+                        Else
+                            For i = FormulaColumn.Count To 1 Step -1
+                                FormulaCommand = FormulaCommand.Replace("VAR" + i.ToString + "", "CDbl(""var" + i.ToString + """)")
+                            Next
+                            QueryCommand = QueryCommand.Replace("0.0", FormulaCommand)
+                        End If
                     End If
-                    Dim val As String = ""
-                    If row.Cells(DgvF_Values.Index).Value IsNot Nothing AndAlso row.Cells(DgvF_Values.Index).Value.ToString <> "" Then
-                        val = Trim(row.Cells(DgvF_Values.Index).Value.ToString)
-                    End If
-                    If op <> "" And val <> "" Then
-                        QueryCommand += vbCrLf + "AND " + column + Space(1) + Operator_Values_Check(op, val)
-                    ElseIf DefaulfFilter.ContainsKey(column) Then
-                        QueryCommand += vbCrLf + "AND " + DefaulfFilter(column)
-                    End If
-                Next
+                Case "IPQC" 'H3客製
+                    QueryCommand = ServerCommand(CboF_Type.SelectedItem.ToString)
+                    For Each row As DataGridViewRow In DgvF.Rows
+                        '每個篩選條件名稱
+                        Dim column As String = row.Cells(DgvF_ColumnName.Index).Value.ToString
+                        '每個篩選條件運算子
+                        Dim op As String = ""
+                        If row.Cells(DgvF_Operator.Index).Value IsNot Nothing AndAlso row.Cells(DgvF_Operator.Index).Value.ToString <> "" Then
+                            op = row.Cells(DgvF_Operator.Index).Value.ToString
+                        End If
+                        '每個篩選條件
+                        Dim val As String = ""
+                        If row.Cells(DgvF_Values.Index).Value IsNot Nothing AndAlso row.Cells(DgvF_Values.Index).Value.ToString <> "" Then
+                            val = Trim(row.Cells(DgvF_Values.Index).Value.ToString)
+                        End If
 
-                If CboF_SPC_Condition.SelectedIndex = 0 Then
-                    QueryCommand += vbCrLf + "AND b.[L2] LIKE '%VarLot%'" + vbCrLf + SPCGroup(CboF_SPC_Group.SelectedItem)
-                    If CboF_Value.SelectedItem = "CL" Then
-                        QueryCommand += ",c.[TopCL],c.[TopUCL],c.[TopLCL]"
-                    ElseIf CboF_Value.SelectedItem = "SL" Then
-                        QueryCommand += ",c.[SL],c.[USL],c.[LSL]"
-                    ElseIf CboF_Value.SelectedItem = "AL" Then
-                        QueryCommand += ",c.[AL],c.[UAL],c.[LAL]"
-                    End If
-                ElseIf CboF_Type.SelectedIndex = 1 Then
-                    QueryCommand += vbCrLf + "GROUP BY a.[MeasTime]"
-                    If CboF_Value.SelectedItem = "CL" Then
-                        QueryCommand += ",c.[TopCL],c.[TopUCL],c.[TopLCL]"
-                    ElseIf CboF_Value.SelectedItem = "SL" Then
-                        QueryCommand += ",c.[SL],c.[USL],c.[LSL]"
-                    ElseIf CboF_Value.SelectedItem = "AL" Then
-                        QueryCommand += ",c.[AL],c.[UAL],c.[LAL]"
-                    End If
-                    QueryCommand += vbCrLf + "ORDER BY a.[MeasTime] DESC"
-                End If
+                        If op <> "" And val <> "" Then
+                            If column = "ProcNo" Then val = F_IPQC_Proc(val)
+                            QueryCommand = QueryCommand.Replace("= '" & column & "'", Operator_Values_Check(op, val))
+                        End If
+                    Next
 
-            ElseIf CboF_Type.SelectedIndex = 3 Then
-                QueryCommand = ServerCommand(CboF_Type.SelectedItem.ToString)
-                If DgvF.Rows(0).Cells(DgvF_Values.Index).Value IsNot Nothing AndAlso DgvF.Rows(1).Cells(DgvF_Values.Index).Value IsNot Nothing AndAlso DgvF.Rows(0).Cells(DgvF_Values.Index).Value.ToString <> "" AndAlso DgvF.Rows(1).Cells(DgvF_Values.Index).Value.ToString <> "" Then
-                    Dim FormulaCommand As String = ""
-                    Dim FormulaColumn As String()
-                    FormulaColumn = DgvF.Rows(0).Cells(DgvF_Values.Index).Value.ToString.Split(",")
-                    FormulaCommand = DgvF.Rows(1).Cells(DgvF_Values.Index).Value.ToString
-                    FormulaCommand = FormulaCommand.Replace("var", "VAR").Replace("Var", "VAR")
-                    If CboF_Value.SelectedIndex = 0 Then
-                        For i = FormulaColumn.Count To 1 Step -1
-                            FormulaCommand = FormulaCommand.Replace("VAR" + i.ToString + "", "CDbl(""var" + i.ToString + """)")
-                        Next
-                        QueryCommand = QueryCommand.Replace("0.0", "(" & FormulaCommand & ").ToString")
-                    ElseIf CboF_Value.SelectedIndex = 1 Then
-                        For i = FormulaColumn.Count To 1 Step -1
-                            FormulaCommand = FormulaCommand.Replace("VAR" + i.ToString + "", """var" + i.ToString + """")
-                        Next
-                        QueryCommand = QueryCommand.Replace("0.0", FormulaCommand)
-                    ElseIf CboF_Value.SelectedIndex = 2 Then
-                        For i = FormulaColumn.Count To 1 Step -1
-                            FormulaCommand = FormulaCommand.Replace("VAR" + i.ToString + "", """var" + i.ToString + """")
-                        Next
-                        QueryCommand = QueryCommand.Replace("result = 0.0", FormulaCommand)
-                    Else
-                        For i = FormulaColumn.Count To 1 Step -1
-                            FormulaCommand = FormulaCommand.Replace("VAR" + i.ToString + "", "CDbl(""var" + i.ToString + """)")
-                        Next
-                        QueryCommand = QueryCommand.Replace("0.0", FormulaCommand)
+                    If CboF_Condition.SelectedItem = "需篩選層別" Then
+
+                        QueryCommand = QueryCommand.Replace("@Face", "@Face
+AND [LayerName] = 'VarLayer'")
+
                     End If
-                End If
-            End If
+                Case Else
+                    QueryCommand = SelectCommand(CboF_Value.SelectedItem.ToString) + vbCrLf + ServerCommand(CboF_Type.SelectedItem.ToString)
+                    For Each row As DataGridViewRow In DgvF.Rows
+                        '每個篩選條件名稱
+                        Dim column As String = row.Cells(DgvF_ColumnName.Index).Value.ToString
+                        '每個篩選條件運算子
+                        Dim op As String = ""
+                        If row.Cells(DgvF_Operator.Index).Value IsNot Nothing AndAlso row.Cells(DgvF_Operator.Index).Value.ToString <> "" Then
+                            op = row.Cells(DgvF_Operator.Index).Value.ToString
+                        End If
+                        '每個篩選條件
+                        Dim val As String = ""
+                        If row.Cells(DgvF_Values.Index).Value IsNot Nothing AndAlso row.Cells(DgvF_Values.Index).Value.ToString <> "" Then
+                            val = Trim(row.Cells(DgvF_Values.Index).Value.ToString)
+                        End If
+
+                        If op <> "" And val <> "" Then
+                            QueryCommand += vbCrLf + "AND " + column + Space(1) + Operator_Values_Check(op, val)
+                        ElseIf DefaulfFilter.ContainsKey(column) Then
+                            QueryCommand += vbCrLf + "AND " + DefaulfFilter(column)
+                        End If
+                    Next
+
+                    If CboF_Condition.SelectedIndex = 0 Then
+                        QueryCommand += vbCrLf + "AND b.[L2] LIKE '%VarLot%'" + vbCrLf + SPCGroup(CboF_Group.SelectedItem)
+                        If CboF_Value.SelectedItem = "CL" Then
+                            QueryCommand += ",c.[TopCL],c.[TopUCL],c.[TopLCL]"
+                        ElseIf CboF_Value.SelectedItem = "SL" Then
+                            QueryCommand += ",c.[SL],c.[USL],c.[LSL]"
+                        ElseIf CboF_Value.SelectedItem = "AL" Then
+                            QueryCommand += ",c.[AL],c.[UAL],c.[LAL]"
+                        End If
+                    ElseIf CboF_Type.SelectedIndex = 1 Then
+                        QueryCommand += vbCrLf + "GROUP BY a.[MeasTime]"
+                        If CboF_Value.SelectedItem = "CL" Then
+                            QueryCommand += ",c.[TopCL],c.[TopUCL],c.[TopLCL]"
+                        ElseIf CboF_Value.SelectedItem = "SL" Then
+                            QueryCommand += ",c.[SL],c.[USL],c.[LSL]"
+                        ElseIf CboF_Value.SelectedItem = "AL" Then
+                            QueryCommand += ",c.[AL],c.[UAL],c.[LAL]"
+                        End If
+                        QueryCommand += vbCrLf + "ORDER BY a.[MeasTime] DESC"
+                    End If
+            End Select
 
             TxtF_QueryCommand.Text = QueryCommand
         Catch ex As Exception
@@ -1110,7 +1178,7 @@ AftError:
                 End If
             Next
 
-            If CboF_Type.SelectedIndex <> 3 AndAlso CboF_Type.SelectedIndex <> 4 Then
+            If CboF_Type.SelectedItem <> "欄位間計算" AndAlso CboF_Type.SelectedItem <> "其他" Then
 
                 Dim dt As DataTable = SQL_Query(SQL_Conn_MQL03, cmd)
                 If dt.Rows.Count > 0 Then
@@ -1143,19 +1211,24 @@ AftError:
         End Try
     End Sub
 
+    Private Sub txtF_QID_Copy_KeyUp(sender As Object, e As KeyEventArgs) Handles txtF_QID_Copy.KeyUp
+        Try
+            If e.KeyData = Keys.Enter Then
+                Call btnF_QID_Copy_Click(sender, e)
+            End If
+        Catch ex As Exception
+            WriteLog(ex, "txtF_QID_Copy_KeyUp")
+        End Try
+    End Sub
+
     Private Sub btnF_QID_Copy_Click(sender As Object, e As EventArgs) Handles btnF_QID_Copy.Click
         Try
             If txtF_QID_Copy.Text <> "" Then
                 QueryCommand = ""
                 DgvF.AllowUserToAddRows = False
-                SPC_ComboBox_Invisible()
+                ComboBox_Invisible()
                 DgvF_Operator.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
-                CboF_Type.Items.Clear()
-                CboF_Type.Items.Add("OP參數")
-                CboF_Type.Items.Add("SPC")
-                CboF_Type.Items.Add("愉進系統")
-                CboF_Type.Items.Add("欄位間計算")
-                CboF_Type.Items.Add("其他")
+                AddFunctionType(CboF_Type)
                 CboF_Value.Items.Clear()
                 CboF_Value.Enabled = False
 
@@ -1174,8 +1247,8 @@ AftError:
                     row.Cells(DgvF_Operator.Index).Value = dt(0)(2 + index * 2 - 1)
                     row.Cells(DgvF_Values.Index).Value = dt(0)(2 + index * 2)
                 Next
-                CboF_SPC_Condition.Text = dt(0)(11)
-                CboF_SPC_Group.Text = dt(0)(12)
+                CboF_Condition.Text = dt(0)(11)
+                CboF_Group.Text = dt(0)(12)
                 TxtF_QueryCommand.ReadOnly = True
             End If
         Catch ex As Exception
@@ -1232,6 +1305,27 @@ AND [LayerName] = 'VarLayer'")
     Return result
   End Function
 End Class")
+        ServerCommand.Add("IPQC", "DECLARE @Face AS varchar(5)
+SET @Face = CASE WHEN 'VarFace' = '1' THEN 1 WHEN 'VarFace' = '2' THEN 0 END
+
+SELECT 
+    CASE 
+        WHEN EXISTS (
+SELECT TOP 1 [InspTime] FROM " & DbIPQC_Panel & " AS pnl WITH(NOLOCK) 
+WHERE [LotID] + [LotNo] = 'VarLot'
+AND [Side] = @Face
+AND [ProcNo] = 'ProcNo'
+        )
+        THEN (
+SELECT TOP 1 CAST(ISNULL(SUM([DefectQty]),0) AS varchar) AS [Qty] FROM " & DbIPQC_Panel & " AS pnl WITH(NOLOCK) 
+LEFT JOIN " & DbIPQC_Pcs & " AS pcs WITH(NOLOCK) ON pnl.[RecNo] = pcs.[RecNo] 
+WHERE pnl.[LotID] + pnl.[LotNo] = 'VarLot'
+AND pnl.[Side] = @Face
+AND pnl.[ProcNo] = 'ProcNo'
+AND TRIM(pcs.[ItemName]) = 'ItemName'
+        )
+        ELSE ''
+    END")
 
 
         '結果查詢

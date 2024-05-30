@@ -15,7 +15,7 @@
         End Try
     End Sub
 
-    Sub LotSearch_Focus(ByVal dgv As DataGridView, ByRef MatchCount As Integer, ByVal Lot As String, Optional ByVal Layer As String = "", Optional ByVal Face As String = "")
+    Sub LotSearch_Focus(ByRef dgv As DataGridView, ByRef MatchCount As Integer, ByVal Lot As String, Optional ByVal Layer As String = "", Optional ByVal Face As String = "")
         Try
             For Each row As DataGridViewRow In dgv.Rows
                 If CurrentFindIndex > row.Index Then

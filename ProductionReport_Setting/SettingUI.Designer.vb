@@ -22,8 +22,8 @@ Partial Class ProductionReport_Setting
     '請勿使用程式碼編輯器進行修改。
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
-        Dim DataGridViewCellStyle2 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle1 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle4 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle3 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Me.TabMain = New System.Windows.Forms.TabControl()
         Me.TabProc = New System.Windows.Forms.TabPage()
         Me.BtnProc_ProcQuery = New System.Windows.Forms.Button()
@@ -98,10 +98,10 @@ Partial Class ProductionReport_Setting
         Me.TxtF_QueryCommand = New System.Windows.Forms.TextBox()
         Me.BtnF_Save = New System.Windows.Forms.Button()
         Me.PnlF = New System.Windows.Forms.Panel()
-        Me.CboF_SPC_Group = New System.Windows.Forms.ComboBox()
-        Me.LblF_SPC_Group = New System.Windows.Forms.Label()
-        Me.CboF_SPC_Condition = New System.Windows.Forms.ComboBox()
-        Me.LblF_SPC_Condition = New System.Windows.Forms.Label()
+        Me.CboF_Group = New System.Windows.Forms.ComboBox()
+        Me.LblF_Group = New System.Windows.Forms.Label()
+        Me.CboF_Condition = New System.Windows.Forms.ComboBox()
+        Me.LblF_Condition = New System.Windows.Forms.Label()
         Me.CboF_Value = New System.Windows.Forms.ComboBox()
         Me.LblF_Value = New System.Windows.Forms.Label()
         Me.CboF_Type = New System.Windows.Forms.ComboBox()
@@ -959,10 +959,10 @@ Partial Class ProductionReport_Setting
         '
         'PnlF
         '
-        Me.PnlF.Controls.Add(Me.CboF_SPC_Group)
-        Me.PnlF.Controls.Add(Me.LblF_SPC_Group)
-        Me.PnlF.Controls.Add(Me.CboF_SPC_Condition)
-        Me.PnlF.Controls.Add(Me.LblF_SPC_Condition)
+        Me.PnlF.Controls.Add(Me.CboF_Group)
+        Me.PnlF.Controls.Add(Me.LblF_Group)
+        Me.PnlF.Controls.Add(Me.CboF_Condition)
+        Me.PnlF.Controls.Add(Me.LblF_Condition)
         Me.PnlF.Controls.Add(Me.CboF_Value)
         Me.PnlF.Controls.Add(Me.LblF_Value)
         Me.PnlF.Controls.Add(Me.CboF_Type)
@@ -976,49 +976,49 @@ Partial Class ProductionReport_Setting
         Me.PnlF.Size = New System.Drawing.Size(1060, 37)
         Me.PnlF.TabIndex = 37
         '
-        'CboF_SPC_Group
+        'CboF_Group
         '
-        Me.CboF_SPC_Group.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.CboF_SPC_Group.Font = New System.Drawing.Font("微軟正黑體", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
-        Me.CboF_SPC_Group.FormattingEnabled = True
-        Me.CboF_SPC_Group.Location = New System.Drawing.Point(964, 4)
-        Me.CboF_SPC_Group.Name = "CboF_SPC_Group"
-        Me.CboF_SPC_Group.Size = New System.Drawing.Size(93, 25)
-        Me.CboF_SPC_Group.TabIndex = 42
-        Me.CboF_SPC_Group.Visible = False
+        Me.CboF_Group.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.CboF_Group.Font = New System.Drawing.Font("微軟正黑體", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.CboF_Group.FormattingEnabled = True
+        Me.CboF_Group.Location = New System.Drawing.Point(964, 5)
+        Me.CboF_Group.Name = "CboF_Group"
+        Me.CboF_Group.Size = New System.Drawing.Size(93, 25)
+        Me.CboF_Group.TabIndex = 42
+        Me.CboF_Group.Visible = False
         '
-        'LblF_SPC_Group
+        'LblF_Group
         '
-        Me.LblF_SPC_Group.AutoSize = True
-        Me.LblF_SPC_Group.Font = New System.Drawing.Font("微軟正黑體", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
-        Me.LblF_SPC_Group.Location = New System.Drawing.Point(852, 7)
-        Me.LblF_SPC_Group.Name = "LblF_SPC_Group"
-        Me.LblF_SPC_Group.Size = New System.Drawing.Size(106, 20)
-        Me.LblF_SPC_Group.TabIndex = 41
-        Me.LblF_SPC_Group.Text = "SPC_Group : "
-        Me.LblF_SPC_Group.Visible = False
+        Me.LblF_Group.AutoSize = True
+        Me.LblF_Group.Font = New System.Drawing.Font("微軟正黑體", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.LblF_Group.Location = New System.Drawing.Point(889, 7)
+        Me.LblF_Group.Name = "LblF_Group"
+        Me.LblF_Group.Size = New System.Drawing.Size(69, 20)
+        Me.LblF_Group.TabIndex = 41
+        Me.LblF_Group.Text = "Group : "
+        Me.LblF_Group.Visible = False
         '
-        'CboF_SPC_Condition
+        'CboF_Condition
         '
-        Me.CboF_SPC_Condition.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.CboF_SPC_Condition.Font = New System.Drawing.Font("微軟正黑體", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
-        Me.CboF_SPC_Condition.FormattingEnabled = True
-        Me.CboF_SPC_Condition.Location = New System.Drawing.Point(750, 5)
-        Me.CboF_SPC_Condition.Name = "CboF_SPC_Condition"
-        Me.CboF_SPC_Condition.Size = New System.Drawing.Size(96, 25)
-        Me.CboF_SPC_Condition.TabIndex = 40
-        Me.CboF_SPC_Condition.Visible = False
+        Me.CboF_Condition.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.CboF_Condition.Font = New System.Drawing.Font("微軟正黑體", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.CboF_Condition.FormattingEnabled = True
+        Me.CboF_Condition.Location = New System.Drawing.Point(750, 5)
+        Me.CboF_Condition.Name = "CboF_Condition"
+        Me.CboF_Condition.Size = New System.Drawing.Size(96, 25)
+        Me.CboF_Condition.TabIndex = 40
+        Me.CboF_Condition.Visible = False
         '
-        'LblF_SPC_Condition
+        'LblF_Condition
         '
-        Me.LblF_SPC_Condition.AutoSize = True
-        Me.LblF_SPC_Condition.Font = New System.Drawing.Font("微軟正黑體", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
-        Me.LblF_SPC_Condition.Location = New System.Drawing.Point(629, 8)
-        Me.LblF_SPC_Condition.Name = "LblF_SPC_Condition"
-        Me.LblF_SPC_Condition.Size = New System.Drawing.Size(115, 20)
-        Me.LblF_SPC_Condition.TabIndex = 39
-        Me.LblF_SPC_Condition.Text = "SPC查詢條件 : "
-        Me.LblF_SPC_Condition.Visible = False
+        Me.LblF_Condition.AutoSize = True
+        Me.LblF_Condition.Font = New System.Drawing.Font("微軟正黑體", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.LblF_Condition.Location = New System.Drawing.Point(659, 7)
+        Me.LblF_Condition.Name = "LblF_Condition"
+        Me.LblF_Condition.Size = New System.Drawing.Size(85, 20)
+        Me.LblF_Condition.TabIndex = 39
+        Me.LblF_Condition.Text = "查詢條件 : "
+        Me.LblF_Condition.Visible = False
         '
         'CboF_Value
         '
@@ -1124,14 +1124,14 @@ Partial Class ProductionReport_Setting
         Me.DgvF.ClipboardCopyMode = System.Windows.Forms.DataGridViewClipboardCopyMode.EnableWithoutHeaderText
         Me.DgvF.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
         Me.DgvF.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.DgvF_Filter, Me.DgvF_ColumnName, Me.DgvF_Operator, Me.DgvF_Values, Me.DgvF_Remark})
-        DataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
-        DataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window
-        DataGridViewCellStyle2.Font = New System.Drawing.Font("新細明體", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
-        DataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText
-        DataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight
-        DataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText
-        DataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
-        Me.DgvF.DefaultCellStyle = DataGridViewCellStyle2
+        DataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Window
+        DataGridViewCellStyle4.Font = New System.Drawing.Font("新細明體", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        DataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.ControlText
+        DataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight
+        DataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText
+        DataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
+        Me.DgvF.DefaultCellStyle = DataGridViewCellStyle4
         Me.DgvF.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter
         Me.DgvF.Location = New System.Drawing.Point(7, 84)
         Me.DgvF.Name = "DgvF"
@@ -1167,8 +1167,8 @@ Partial Class ProductionReport_Setting
         'DgvF_Values
         '
         Me.DgvF_Values.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells
-        DataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
-        Me.DgvF_Values.DefaultCellStyle = DataGridViewCellStyle1
+        DataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
+        Me.DgvF_Values.DefaultCellStyle = DataGridViewCellStyle3
         Me.DgvF_Values.FillWeight = 48.24385!
         Me.DgvF_Values.HeaderText = "Values"
         Me.DgvF_Values.MinimumWidth = 400
@@ -1280,15 +1280,15 @@ Partial Class ProductionReport_Setting
     Friend WithEvents LblF_Type As Label
     Friend WithEvents CboF_Value As ComboBox
     Friend WithEvents LblF_Value As Label
-    Friend WithEvents CboF_SPC_Condition As ComboBox
-    Friend WithEvents LblF_SPC_Condition As Label
+    Friend WithEvents CboF_Condition As ComboBox
+    Friend WithEvents LblF_Condition As Label
     Friend WithEvents BtnProc_ProcQuery As Button
     Friend WithEvents TxtProc_ProcQuery As TextBox
     Friend WithEvents LblProc_ProcQuery As Label
     Friend WithEvents TxtPara_AreaID As TextBox
     Friend WithEvents LblPara_AreaID As Label
-    Friend WithEvents CboF_SPC_Group As ComboBox
-    Friend WithEvents LblF_SPC_Group As Label
+    Friend WithEvents CboF_Group As ComboBox
+    Friend WithEvents LblF_Group As Label
     Friend WithEvents BtnF_Test As Button
     Friend WithEvents DgvTest As DataGridView
     Friend WithEvents DgvTest_ParaName As DataGridViewTextBoxColumn

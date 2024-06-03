@@ -12,7 +12,7 @@ Imports System.Data.SqlClient
 '20231030 Boris            建立Table & SP名稱的變數
 
 Public Class ReportUI
-    Dim Version As String = "2.1.24.05.24.1"
+    Dim Version As String = "2.1.24.06.03.1"
     Dim Program As String = "ProductionReport"
     Public Area As String = ""
     Public AreaID As String = ""
@@ -1212,7 +1212,10 @@ Public Class ReportUI
                         CurrentFindIndex = 0
                     End If
                     'LotSearch(dgvReport, MatchCount, Trim(TxtLot.Text.Substring(0, 14)), txtLayer.Text, CboFace.Text)
+                    ChangeValueIgnore = True
                     LotSearch_Focus(dgvReport, MatchCount, lot, layer, face)
+                    ChangeValueIgnore = False
+
 
                     'If MatchCount = 0 Then
                     'MessageBox.Show("未偵測到目標批號 : " + TxtLot.Text)
@@ -1224,6 +1227,8 @@ Public Class ReportUI
                     'End If
                     If MatchCount = 0 AndAlso CurrentFindIndex = 0 Then
                         MessageBox.Show("未偵測到目標批號 : " + TxtLot.Text)
+                    Else
+                        CurrentFindIndex = 0
                     End If
 
                 Else

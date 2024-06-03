@@ -23,7 +23,6 @@
                     Continue For
                 ElseIf row.Index + 1 >= dgv.Rows.Count AndAlso CurrentFindIndex > 0 Then
                     MessageBox.Show("已到最後一行")
-                    CurrentFindIndex = 0
                     Return
                 End If
                 If row.Cells("批號").Value IsNot Nothing AndAlso row.Cells("批號").Value.ToString.Contains(Lot) AndAlso row.Cells("層別").Value.ToString.Contains(Layer) AndAlso row.Cells("面次").Value.ToString.Contains(Face) Then
@@ -34,6 +33,30 @@
                     ' 更新下一次尋找的起始索引
                     CurrentFindIndex = row.Index + 1
                     MatchCount += 1
+
+                    Dim SelectRow As DataGridViewRow = ReportUI.dgvReport.Rows(row.Index)
+                    If PTH_AreaID.Contains(ReportUI.AreaID) AndAlso ReportUI.AreaID <> "83" AndAlso (SelectRow.Cells("完成").Value Is Nothing OrElse SelectRow.Cells("完成").Value.ToString = "") Then
+                        Dim MaxVal As Integer = 0
+                        Dim CurrentLotMax As Double = 0
+                        For Each rowmax As DataGridViewRow In ReportUI.dgvReport.Rows
+                            If IsNumeric(rowmax.Cells("排序").Value.ToString) Then
+                                If rowmax.Cells("排序").Value > MaxVal Then
+                                    MaxVal = rowmax.Cells("排序").Value
+                                ElseIf rowmax.Cells("排序").Value > CurrentLotMax AndAlso rowmax.Cells("批號").Value.ToString.Contains(Lot) AndAlso rowmax.Cells("層別").Value.ToString.Contains(Layer) AndAlso rowmax.Cells("面次").Value.ToString.Contains(Face) Then
+                                    CurrentLotMax = rowmax.Cells("排序").Value
+                                End If
+                            End If
+                        Next
+                        If SelectRow.Cells("排序").Value Is Nothing OrElse SelectRow.Cells("排序").Value.ToString = "" OrElse SelectRow.Cells("排序").Value.ToString = "NA" Then
+                            If SelectRow.Cells("班別").Value.ToString = "分批" Then
+                                CurrentLotMax += 0.1
+                                SelectRow.Cells("排序").Value = CurrentLotMax.ToString
+                            ElseIf SelectRow.Cells("班別").Value.ToString = "D" OrElse SelectRow.Cells("班別").Value.ToString = "N" Then
+                                MaxVal += 1
+                                SelectRow.Cells("排序").Value = MaxVal.ToString
+                            End If
+                        End If
+                    End If
                     Return
                 End If
             Next

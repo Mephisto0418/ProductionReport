@@ -128,8 +128,6 @@
                     ReportUI.dgvReport.Rows(RowNum).Cells("面次").Value = face
                 End If
 
-
-
                 For k = 0 To ReportUI.dgvReport.Columns("備註").Index - 2
                     If Not {"班別", "料號", "批號", "層別", "站點", "機台", "日期", "前站結束時間", "產品類型"}.Contains(ReportUI.dgvReport.Columns(k).Name) Then
                         ReportUI.dgvReport.Rows(RowNum).Cells(k).ReadOnly = False
@@ -137,10 +135,18 @@
                     End If
                 Next
                 ChangeValueIgnore = False
-
-                First_Upload(ReportUI.dgvReport.Rows(RowNum), ReportUI.AreaID, lot, proc, layer, face, True)
+                Dim facenum As String = ""
 
                 If ReportUI.AreaID <> "83" Then
+                    Select Case face
+                        Case "PB"
+                            facenum = "2"
+                        Case Else
+                            facenum = "1"
+                    End Select
+
+                    First_Upload(ReportUI.dgvReport.Rows(RowNum), ReportUI.AreaID, lot, proc, layer, facenum, True)
+
                     If ReportUI.dgvReport.Rows(RowNum).Cells("排序").Value Is Nothing OrElse ReportUI.dgvReport.Rows(RowNum).Cells("排序").Value.ToString = "" OrElse ReportUI.dgvReport.Rows(RowNum).Cells("排序").Value.ToString = "NA" Then
                         If ReportUI.dgvReport.Rows(RowNum).Cells("班別").Value.ToString = "分批" Then
                             CurrentLotMax += 0.1

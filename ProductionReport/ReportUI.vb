@@ -12,7 +12,7 @@ Imports System.Data.SqlClient
 '20231030 Boris            建立Table & SP名稱的變數
 
 Public Class ReportUI
-    Dim Version As String = "2.1.24.06.04.1"
+    Dim Version As String = "2.1.24.06.04.2"
     Dim Program As String = "ProductionReport"
     Public Area As String = ""
     Public AreaID As String = ""

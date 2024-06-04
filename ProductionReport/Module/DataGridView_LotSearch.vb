@@ -42,7 +42,8 @@
                             If IsNumeric(rowmax.Cells("排序").Value.ToString) Then
                                 If rowmax.Cells("排序").Value > MaxVal Then
                                     MaxVal = rowmax.Cells("排序").Value
-                                ElseIf rowmax.Cells("排序").Value > CurrentLotMax AndAlso rowmax.Cells("批號").Value.ToString.Contains(Lot) AndAlso rowmax.Cells("層別").Value.ToString.Contains(Layer) AndAlso rowmax.Cells("面次").Value.ToString.Contains(Face) Then
+                                End If
+                                If rowmax.Cells("排序").Value > CurrentLotMax AndAlso rowmax.Cells("批號").Value.ToString.Contains(Lot) AndAlso rowmax.Cells("層別").Value.ToString.Contains(Layer) AndAlso rowmax.Cells("面次").Value.ToString.Contains(Face) Then
                                     CurrentLotMax = rowmax.Cells("排序").Value
                                 End If
                             End If
@@ -50,10 +51,10 @@
                         If SelectRow.Cells("排序").Value Is Nothing OrElse SelectRow.Cells("排序").Value.ToString = "" OrElse SelectRow.Cells("排序").Value.ToString = "NA" Then
                             If SelectRow.Cells("班別").Value.ToString = "分批" Then
                                 CurrentLotMax += 0.1
-                                SelectRow.Cells("排序").Value = CurrentLotMax.ToString
+                                SelectRow.Cells("排序").Value = CurrentLotMax.ToString.Substring(0, CurrentLotMax.ToString.Length - 2).PadLeft(10, "0") + CurrentLotMax.ToString.Substring(CurrentLotMax.ToString.Length - 2, 2)
                             ElseIf SelectRow.Cells("班別").Value.ToString = "D" OrElse SelectRow.Cells("班別").Value.ToString = "N" Then
                                 MaxVal += 1
-                                SelectRow.Cells("排序").Value = MaxVal.ToString
+                                SelectRow.Cells("排序").Value = MaxVal.ToString.PadLeft(10, "0")
                             End If
                         End If
                     End If

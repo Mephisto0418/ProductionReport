@@ -91,7 +91,8 @@
                     If IsNumeric(rowmax.Cells("排序").Value.ToString) Then
                         If rowmax.Cells("排序").Value > MaxVal Then
                             MaxVal = rowmax.Cells("排序").Value
-                        ElseIf rowmax.Cells("排序").Value > CurrentLotMax AndAlso rowmax.Cells("批號").Value.ToString.Contains(lot) AndAlso rowmax.Cells("層別").Value.ToString.Contains(layer) AndAlso rowmax.Cells("站點").Value.ToString.Contains(proc) AndAlso rowmax.Cells("面次").Value.ToString.Contains(face) Then
+                        End If
+                        If rowmax.Cells("排序").Value > CurrentLotMax AndAlso rowmax.Cells("批號").Value.ToString.Contains(lot) AndAlso rowmax.Cells("層別").Value.ToString.Contains(layer) AndAlso rowmax.Cells("站點").Value.ToString.Contains(proc) Then
                             CurrentLotMax = rowmax.Cells("排序").Value
                         End If
                     End If

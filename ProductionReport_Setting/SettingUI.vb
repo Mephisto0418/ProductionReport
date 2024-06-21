@@ -412,10 +412,6 @@ Public Class ProductionReport_Setting
 
             TxtPara_ParaName.Text = ""
             TxtPara_EngName.Text = ""
-            CboPara_isQuery.Items.Clear()
-            CboPara_isQuery.Items.Add("否")
-            CboPara_isQuery.Items.Add("是")
-            CboPara_isQuery.SelectedIndex = 0
             ChkPara_isQuery.Checked = False
             TxtPara_QID.Text = ""
             TxtPara_Pkey.Text = ""
@@ -613,7 +609,7 @@ Public Class ProductionReport_Setting
         Dim e As New EventArgs
 
 
-        If TxtPara_ParaName.Text = "" OrElse CboPara_isQuery.Text = "" Then
+        If TxtPara_ParaName.Text = "" Then
             MessageBox.Show("請確認必填欄位輸入完畢")
             Return True
         End If
@@ -769,6 +765,7 @@ Public Class ProductionReport_Setting
                 DgvF.Rows.Add("缺點名稱", "ItemName", "=", "", "Ex. 其他主缺 (Other Major)")
                 DgvTest.Rows.Add("批號", "VarLot", "")
                 DgvTest.Rows.Add("面次", "VarFace", "")
+                DgvTest.Rows.Add("站點8碼", "VarProc", "")
                 CboF_Value.Items.Clear()
                 CboF_Value.Enabled = True
                 CboF_Value.Items.Add("缺點數量")
@@ -809,10 +806,12 @@ Public Class ProductionReport_Setting
                 DgvTest.Rows.Add("批號", "VarLot", "")
                 DgvTest.Rows.Add("層別", "VarLayer", "")
                 DgvTest.Rows.Add("面次", "VarFace", "")
+                DgvTest.Rows.Add("站點8碼", "VarProc", "")
             Case "不需篩選層別"
                 DgvTest.Rows.Clear()
                 DgvTest.Rows.Add("批號", "VarLot", "")
                 DgvTest.Rows.Add("面次", "VarFace", "")
+                DgvTest.Rows.Add("站點8碼", "VarProc", "")
         End Select
 
 
@@ -1101,7 +1100,7 @@ AftError:
 
                     If CboF_Condition.SelectedItem = "需篩選層別" Then
 
-                        QueryCommand = QueryCommand.Replace("@Face", "@Face
+                        QueryCommand = QueryCommand.Replace("= @Face", "= @Face
 AND [LayerName] = 'VarLayer'")
 
                     End If
@@ -1311,10 +1310,10 @@ SET @Face = CASE WHEN 'VarFace' = '1' THEN 1 WHEN 'VarFace' = '2' THEN 0 END
 SELECT 
     CASE 
         WHEN EXISTS (
-SELECT TOP 1 [InspTime] FROM " & DbIPQC_Panel & " AS pnl WITH(NOLOCK) 
-WHERE [LotID] + [LotNo] = 'VarLot'
-AND [Side] = @Face
-AND [ProcNo] = 'ProcNo'
+SELECT TOP 1 [ChangeTIme] FROM " & DbHist & " WITH(NOLOCK) 
+WHERE [lotnum] = 'VarLot'
+AND [LayerName] = 'VarLayer'
+AND [ProcName] = 'VarProc'
         )
         THEN (
 SELECT TOP 1 CAST(ISNULL(SUM([DefectQty]),0) AS varchar) AS [Qty] FROM " & DbIPQC_Panel & " AS pnl WITH(NOLOCK) 

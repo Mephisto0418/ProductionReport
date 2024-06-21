@@ -136,16 +136,16 @@
                 Next
                 ChangeValueIgnore = False
                 Dim facenum As String = ""
+                Select Case face
+                    Case "PB"
+                        facenum = "2"
+                    Case Else
+                        facenum = "1"
+                End Select
+
+                First_Upload(ReportUI.dgvReport.Rows(RowNum), ReportUI.AreaID, lot, proc, layer, facenum, True)
 
                 If ReportUI.AreaID <> "83" Then
-                    Select Case face
-                        Case "PB"
-                            facenum = "2"
-                        Case Else
-                            facenum = "1"
-                    End Select
-
-                    First_Upload(ReportUI.dgvReport.Rows(RowNum), ReportUI.AreaID, lot, proc, layer, facenum, True)
 
                     If ReportUI.dgvReport.Rows(RowNum).Cells("排序").Value Is Nothing OrElse ReportUI.dgvReport.Rows(RowNum).Cells("排序").Value.ToString = "" OrElse ReportUI.dgvReport.Rows(RowNum).Cells("排序").Value.ToString = "NA" Then
                         If ReportUI.dgvReport.Rows(RowNum).Cells("班別").Value.ToString = "分批" Then

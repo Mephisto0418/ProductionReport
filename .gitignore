@@ -260,3 +260,4 @@ paket-files/
 __pycache__/
 *.pyc
 /git-completion.bash
+/ProductionReport_Setting.zip

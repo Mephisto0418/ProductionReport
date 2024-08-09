@@ -1314,6 +1314,8 @@ SELECT TOP 1 [ChangeTIme] FROM " & DbHist & " WITH(NOLOCK)
 WHERE [lotnum] = 'VarLot'
 AND [LayerName] = 'VarLayer'
 AND [ProcName] = 'VarProc'
+AND [AftStatus] = 'MoveOut'
+AND [BefStatus] = 'CheckOut'
         )
         THEN (
 SELECT TOP 1 CAST(ISNULL(SUM([DefectQty]),0) AS varchar) AS [Qty] FROM " & DbIPQC_Panel & " AS pnl WITH(NOLOCK) 

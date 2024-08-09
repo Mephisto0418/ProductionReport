@@ -12,7 +12,7 @@ Imports System.Data.SqlClient
 '20231030 Boris            建立Table & SP名稱的變數
 
 Public Class ReportUI
-    Dim Version As String = "2.1.24.06.04.2"
+    Dim Version As String = "2.1.24.08.09.1"
     Dim Program As String = "ProductionReport"
     Public Area As String = ""
     Public AreaID As String = ""
@@ -695,6 +695,7 @@ Public Class ReportUI
                                                                           WHERE [Pkey] = " + PID
 
                                 SQL_Query(cmd)
+
                                 cell.Style.BackColor = SystemColors.ControlLightLight
                             ElseIf cell.ColumnIndex <> dgvReport.Columns("備註").Index Then
                                 ' 設定資料格為唯讀
@@ -1270,49 +1271,61 @@ Public Class ReportUI
 
     'End Sub
 
-    'Private Sub ReportUI_DataGridView_KeyDown(sender As Object, e As KeyEventArgs) Handles dgvReport.KeyDown
-    '    Try
-    '        If e.Control Then
-    '            Select Case e.KeyCode
-    '                Case Keys.C
-    '                    CopyCells()
-    '                    e.Handled = True
-    '                Case Keys.V
-    '                    PasteCells()
-    '                    e.Handled = True
-    '            End Select
-    '            'ElseIf e.KeyCode = Keys.Delete Then
-    '            '    ReportUI_DataGridView.CurrentCell.Value = ""
-    '            '    e.Handled = True
-    '        End If
-    '    Catch ex As Exception
-    '        WriteLog(ex, LogFilePath, "ReportUI_DataGridView_KeyDown")
-    '    End Try
+    Private Sub ReportUI_DataGridView_KeyDown(sender As Object, e As KeyEventArgs) Handles dgvReport.KeyDown
+        Try
+            'If AreaID = "83" Then
 
-    'End Sub
+            If e.Control Then
+                Select Case e.KeyCode
+                    Case Keys.C
+                        CopyCells()
+                        e.Handled = True
+                    Case Keys.V
+                        PasteCells()
+                        e.Handled = True
+                End Select
+            ElseIf e.KeyCode = Keys.Delete Then
+                DeleteCells()
+                e.Handled = True
+            End If
+            ' End If
+        Catch ex As Exception
+            WriteLog(ex, LogFilePath, "ReportUI_DataGridView_KeyDown")
+        End Try
 
-    'Private Sub CopyCells()
-    '    Clipboard.SetDataObject(dgvReport.GetClipboardContent)
-    'End Sub
+    End Sub
 
-    'Private Sub PasteCells()
-    '    Dim s = Clipboard.GetText
-    '    Dim ci = dgvReport.CurrentCell.ColumnIndex
-    '    Dim ri = dgvReport.CurrentCell.RowIndex
-    '    Dim colCount = dgvReport.Columns.Count
-    '    Dim rowCount = dgvReport.Rows.Count
+    Private Sub CopyCells()
+        Clipboard.SetDataObject(dgvReport.GetClipboardContent)
+    End Sub
 
-    '    For Each r In s.Split({ControlChars.CrLf}, StringSplitOptions.None)
-    '        Dim Cell = ci
-    '        For Each c In r.Split({ControlChars.Tab}, StringSplitOptions.None)
-    '            If Cell >= colCount Then Exit For
-    '            dgvReport(Cell, ri).Value = c
-    '            Cell += 1
-    '        Next
-    '        ri += 1
-    '        If ri >= rowCount Then Exit For
-    '    Next
-    'End Sub
+    Private Sub PasteCells()
+        Dim s = Clipboard.GetText
+        Dim ci = dgvReport.CurrentCell.ColumnIndex
+        Dim ri = dgvReport.CurrentCell.RowIndex
+        Dim colCount = dgvReport.Columns.Count
+        Dim rowCount = dgvReport.Rows.Count
+
+        For Each r In s.Split({ControlChars.CrLf}, StringSplitOptions.None)
+            Dim Cell = ci
+            For Each c In r.Split({ControlChars.Tab}, StringSplitOptions.None)
+                If Cell >= colCount Then Exit For
+                If dgvReport(Cell, ri).ReadOnly = True Then Continue For
+                dgvReport(Cell, ri).Value = c
+                Cell += 1
+            Next
+            ri += 1
+            If ri >= rowCount Then Exit For
+        Next
+    End Sub
+
+    Private Sub DeleteCells()
+        For Each cell As DataGridViewCell In dgvReport.SelectedCells
+            If cell.ReadOnly = True Then Continue For
+            cell.Value = ""
+
+        Next
+    End Sub
 
     Private Sub cboMachine_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cboMachine.SelectedIndexChanged
         Try

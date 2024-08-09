@@ -109,7 +109,6 @@ Partial Class ReportUI
         Me.dgvReport.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.ColumnHeader
         Me.dgvReport.ClipboardCopyMode = System.Windows.Forms.DataGridViewClipboardCopyMode.EnableWithoutHeaderText
         Me.dgvReport.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
-        Me.dgvReport.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter
         Me.dgvReport.Location = New System.Drawing.Point(0, 120)
         Me.dgvReport.Name = "dgvReport"
         Me.dgvReport.RowTemplate.Height = 24

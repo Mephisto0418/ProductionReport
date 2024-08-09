@@ -261,3 +261,4 @@ __pycache__/
 *.pyc
 /git-completion.bash
 /ProductionReport_Setting.zip
+/UI使用率.sql

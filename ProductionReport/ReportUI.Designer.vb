@@ -72,6 +72,7 @@ Partial Class ReportUI
         Me.lblFace_Eng = New System.Windows.Forms.Label()
         Me.CboFace = New System.Windows.Forms.ComboBox()
         Me.btnLotSearchClear = New System.Windows.Forms.Button()
+        Me.lblNotice_KeyinNumber = New System.Windows.Forms.Label()
         Me.MenuBar.SuspendLayout()
         CType(Me.dgvReport, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.grpRemark.SuspendLayout()
@@ -109,10 +110,10 @@ Partial Class ReportUI
         Me.dgvReport.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.ColumnHeader
         Me.dgvReport.ClipboardCopyMode = System.Windows.Forms.DataGridViewClipboardCopyMode.EnableWithoutHeaderText
         Me.dgvReport.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
-        Me.dgvReport.Location = New System.Drawing.Point(0, 120)
+        Me.dgvReport.Location = New System.Drawing.Point(0, 137)
         Me.dgvReport.Name = "dgvReport"
         Me.dgvReport.RowTemplate.Height = 24
-        Me.dgvReport.Size = New System.Drawing.Size(1584, 475)
+        Me.dgvReport.Size = New System.Drawing.Size(1584, 458)
         Me.dgvReport.TabIndex = 155
         '
         'TimerRefresh
@@ -600,11 +601,24 @@ Partial Class ReportUI
         Me.btnLotSearchClear.Text = "Clear"
         Me.btnLotSearchClear.UseVisualStyleBackColor = True
         '
+        'lblNotice_KeyinNumber
+        '
+        Me.lblNotice_KeyinNumber.AutoSize = True
+        Me.lblNotice_KeyinNumber.Font = New System.Drawing.Font("新細明體", 14.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.lblNotice_KeyinNumber.ForeColor = System.Drawing.Color.Red
+        Me.lblNotice_KeyinNumber.Location = New System.Drawing.Point(639, 114)
+        Me.lblNotice_KeyinNumber.Name = "lblNotice_KeyinNumber"
+        Me.lblNotice_KeyinNumber.Size = New System.Drawing.Size(937, 19)
+        Me.lblNotice_KeyinNumber.TabIndex = 199
+        Me.lblNotice_KeyinNumber.Text = "如要輸入數字請先將鍵盤切換到英文輸入法。To enter numbers, please switch your keyboard to English inpu" &
+    "t mode first."
+        '
         'ReportUI
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 12.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(1584, 599)
+        Me.Controls.Add(Me.lblNotice_KeyinNumber)
         Me.Controls.Add(Me.btnLotSearchClear)
         Me.Controls.Add(Me.CboFace)
         Me.Controls.Add(Me.lblFace)
@@ -692,4 +706,5 @@ Partial Class ReportUI
     Friend WithEvents lblFace_Eng As Label
     Friend WithEvents CboFace As ComboBox
     Friend WithEvents btnLotSearchClear As Button
+    Friend WithEvents lblNotice_KeyinNumber As Label
 End Class

@@ -1,7 +1,7 @@
 ﻿Imports System.IO
 Imports System.Text
 
-Module DataGridViewExport
+Module DataGridView_Export
 
     Public LogFolder As String = "C:\ProductionReport\Log\"
 

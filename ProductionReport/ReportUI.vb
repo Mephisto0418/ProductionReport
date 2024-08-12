@@ -12,7 +12,7 @@ Imports System.Data.SqlClient
 '20231030 Boris            建立Table & SP名稱的變數
 
 Public Class ReportUI
-    Dim Version As String = "2.1.24.08.09.1"
+    Dim Version As String = "2.1.24.08.12.1"
     Dim Program As String = "ProductionReport"
     Public Area As String = ""
     Public AreaID As String = ""
@@ -1278,14 +1278,14 @@ Public Class ReportUI
             If e.Control Then
                 Select Case e.KeyCode
                     Case Keys.C
-                        CopyCells()
+                        CopyCells(dgvReport)
                         e.Handled = True
                     Case Keys.V
-                        PasteCells()
+                        PasteCells(dgvReport, True, IgnoreColumns)
                         e.Handled = True
                 End Select
             ElseIf e.KeyCode = Keys.Delete Then
-                DeleteCells()
+                DeleteCells(dgvReport)
                 e.Handled = True
             End If
             ' End If
@@ -1295,37 +1295,6 @@ Public Class ReportUI
 
     End Sub
 
-    Private Sub CopyCells()
-        Clipboard.SetDataObject(dgvReport.GetClipboardContent)
-    End Sub
-
-    Private Sub PasteCells()
-        Dim s = Clipboard.GetText
-        Dim ci = dgvReport.CurrentCell.ColumnIndex
-        Dim ri = dgvReport.CurrentCell.RowIndex
-        Dim colCount = dgvReport.Columns.Count
-        Dim rowCount = dgvReport.Rows.Count
-
-        For Each r In s.Split({ControlChars.CrLf}, StringSplitOptions.None)
-            Dim Cell = ci
-            For Each c In r.Split({ControlChars.Tab}, StringSplitOptions.None)
-                If Cell >= colCount Then Exit For
-                If dgvReport(Cell, ri).ReadOnly = True Then Continue For
-                dgvReport(Cell, ri).Value = c
-                Cell += 1
-            Next
-            ri += 1
-            If ri >= rowCount Then Exit For
-        Next
-    End Sub
-
-    Private Sub DeleteCells()
-        For Each cell As DataGridViewCell In dgvReport.SelectedCells
-            If cell.ReadOnly = True Then Continue For
-            cell.Value = ""
-
-        Next
-    End Sub
 
     Private Sub cboMachine_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cboMachine.SelectedIndexChanged
         Try

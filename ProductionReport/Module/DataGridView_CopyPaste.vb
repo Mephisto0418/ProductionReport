@@ -39,7 +39,7 @@
                 Dim values As String() = s_Row(0).Split({ControlChars.Tab}, StringSplitOptions.None)
                 For k As Integer = 0 To values.Count - 1
                     If StartRow + i < rowMax AndAlso StartCol + k < colMax Then
-                        If dgv(StartCol + k, StartRow + i).ReadOnly = IgnoreReadOnly OrElse IgnoreCol.Contains(dgv.Columns(StartCol + k).Name) Then Continue For
+                        If (dgv(StartCol + k, StartRow + i).ReadOnly = True And IgnoreReadOnly) OrElse IgnoreCol.Contains(dgv.Columns(StartCol + k).Name) Then Continue For
                         dgv.Rows(StartRow + i).Cells(StartCol + k).Value = values(k)
                     End If
                 Next
@@ -125,7 +125,7 @@
     Public Function GetSelectedMinColumnIndex(ByVal cells As DataGridViewSelectedCellCollection) As Integer
         Dim selectedcols As New HashSet(Of Integer)()
         For Each cell As DataGridViewCell In cells
-            selectedcols.Add(cell.RowIndex)
+            selectedcols.Add(cell.ColumnIndex)
         Next
 
         Return selectedcols.Min

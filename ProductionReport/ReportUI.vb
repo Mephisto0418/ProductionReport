@@ -12,7 +12,7 @@ Imports System.Data.SqlClient
 '20231030 Boris            建立Table & SP名稱的變數
 
 Public Class ReportUI
-    Dim Version As String = "2.1.24.08.15.1"
+    Dim Version As String = "2.1.25.03.20.1"
     Dim Program As String = "ProductionReport"
     Public Area As String = ""
     Public AreaID As String = ""
@@ -172,7 +172,7 @@ Public Class ReportUI
                                                      ,ISNULL(r.[QueryType],'') AS [QueryType]
                                                      ,CASE WHEN [QueryType] = '欄位間計算' THEN ISNULL(r.[Filter1],'') ELSE '' END AS [FormulaColumn]
                                                      ,ISNULL(pr.[Machine],'') AS [Machine]
-													 ,ISNULL(pa.[isRequire],1) AS [isRequire]
+                                                     ,ISNULL(pa.[isRequire],1) AS [isRequire]
                                                      ,ISNULL(pa.[DefaultValues],'') AS [DefaultValues]
                                                      ,ISNULL(pr.[hasFace],'') AS [hasFace]
                                                      FROM " & DbProcParameter & " AS pa
@@ -379,20 +379,19 @@ Public Class ReportUI
             'Dim cmdcol As String = "EXECUTE [H3_Systematic].[dbo].[ProductionQuery_Columns_Insert] @AreaID = '" & AreaID & "'"
             Parameters.Clear()
             Parameters.Add({"@AreaID", AreaID})
-            Dim temp As String = "1,2"
-            temp.Split(",").Count
+
             Try
-                SQL_StoredProcedure(SpFixecColumnNew, Parameters)
+                ' SQL_StoredProcedure(SpFixecColumnNew, Parameters)
             Catch ex As SqlException
-                SQL_StoredProcedure(SpFixecColumnNew, Parameters)
+                'SQL_StoredProcedure(SpFixecColumnNew, Parameters)
             End Try
 
             Try
                 'SQL_Query(cmdcol)
-                SQL_StoredProcedure(SpFreeColumn, Parameters)
+                '  SQL_StoredProcedure(SpFreeColumn, Parameters)
             Catch ex As SqlException
                 'SQL_Query(cmdcol)
-                SQL_StoredProcedure(SpFreeColumn, Parameters)
+                '  SQL_StoredProcedure(SpFreeColumn, Parameters)
             End Try
             'Dim cmdquery As String = "EXECUTE [H3_Systematic].[dbo].[ProductionQuery_NEW] @AreaID = '" & AreaID & "'"
             'Dim new_dt As DataTable = SQL_Query(cmdquery)
@@ -1187,7 +1186,7 @@ Public Class ReportUI
 
     Private Sub ReportUI_DataGridView_CellDoubleClick(sender As Object, e As DataGridViewCellEventArgs) Handles dgvReport.CellDoubleClick
         Try
-            If e.RowIndex > 0 And e.ColumnIndex > 0 Then
+            If e.RowIndex >= 0 And e.ColumnIndex >= 0 AndAlso (dgvReport.Rows(e.RowIndex).Cells("完成").Value Is Nothing OrElse dgvReport.Rows(e.RowIndex).Cells("完成").Value.ToString = "") Then
                 SAP_CheckPnl(dgvReport.Rows(e.RowIndex), e, AreaID)
             End If
         Catch ex As Exception
@@ -1420,10 +1419,6 @@ Public Class ReportUI
             End If
         End If
     End Sub
-
-
-
-
 
     'Private Sub ReportUI_DataGridView_CellEndEdit(sender As Object, e As DataGridViewCellEventArgs) Handles ReportUI_DataGridView.CellEndEdit
     '    Try

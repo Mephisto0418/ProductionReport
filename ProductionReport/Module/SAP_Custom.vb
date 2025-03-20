@@ -1,5 +1,5 @@
 ﻿Module SAP_Custom
-    Private SAP_AreaID As String() = {"74", "75", "76"}
+    Private SAP_AreaID As String() = {"74", "75", "76", "125"}
     Public SAP_Pnlqty As String = ""
 
     Sub SAP_CheckID(ByVal AreaID As String)

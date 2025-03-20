@@ -46,8 +46,11 @@
             Next
 
         ElseIf s_Row.Count > 1 Then
+            Dim CurrentIndex As Integer = 0
             Dim CurrentRow = StartRow
             For Each r In s_Row
+                CurrentIndex += 1
+                If r = "" AndAlso CurrentIndex = s_Row.Count Then Exit For
                 Dim CurrentCol = StartCol
                 For Each c In r.Split({ControlChars.Tab}, StringSplitOptions.None)
                     If CurrentCol >= colMax Then Exit For

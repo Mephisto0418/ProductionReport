@@ -1,0 +1,14 @@
+﻿Pkey,Type,TypeName,Enable,Category
+1,Other,其他,1,1
+2,SB_Idle,待命,1,2
+3,EG_Lend,工程借機,1,2
+4,NS_Off,長期關線,1,2
+5,SB_FAI,等待首件,1,2
+6,SB_Setup,設定,1,2
+7,SD_PM,計畫保養,1,2
+8,UD_Down,設備異常,1,2
+9,UD_FacDown,廠務問題,1,2
+10,UD_Quality,品質疑慮,1,2
+11,UD_Reboot,復歸確認,1,2
+12,PD_Run,正常生產,1,2
+13,Dummy,Dummy,1,1

@@ -9,6 +9,26 @@ Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "ProductionReport_Setting", 
 EndProject
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "ProductionReportHist", "ProductionReportHist\ProductionReportHist.vbproj", "{526A8D8A-09BD-42DC-9947-941C97EC51E3}"
 EndProject
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "ProductionReport_Update", "ProductionReport_Update\ProductionReport_Update.vbproj", "{48733BDC-C735-41DB-A2D0-10401B8539CF}"
+EndProject
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "ProductionReport_Update_WIP", "ProductionReport_Update_WIP\ProductionReport_Update_WIP.vbproj", "{4AC236F5-86E9-44DC-B9D1-B84D96907C05}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{869499BC-9897-4868-8F56-4B92DE594E5B}"
+	ProjectSection(SolutionItems) = preProject
+		H3_Proc.csv = H3_Proc.csv
+		H3_Production_ProcParameter.csv = H3_Production_ProcParameter.csv
+		H3_Production_ProcParameter_Rule.csv = H3_Production_ProcParameter_Rule.csv
+		H3_Production_Record.csv = H3_Production_Record.csv
+		H3_Production_SettingRecord.csv = H3_Production_SettingRecord.csv
+		H3_ProductionLog.csv = H3_ProductionLog.csv
+		H3_ProductionParameter.csv = H3_ProductionParameter.csv
+		ProductionQuery.sql = ProductionQuery.sql
+		ProductionQuery_Columns_Insert.sql = ProductionQuery_Columns_Insert.sql
+		ProductionQuery_Insert.sql = ProductionQuery_Insert.sql
+		ProductionReport_Remark.csv = ProductionReport_Remark.csv
+		ProductionReport_Remark_Type.csv = ProductionReport_Remark_Type.csv
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +47,14 @@ Global
 		{526A8D8A-09BD-42DC-9947-941C97EC51E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{526A8D8A-09BD-42DC-9947-941C97EC51E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{526A8D8A-09BD-42DC-9947-941C97EC51E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48733BDC-C735-41DB-A2D0-10401B8539CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48733BDC-C735-41DB-A2D0-10401B8539CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48733BDC-C735-41DB-A2D0-10401B8539CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48733BDC-C735-41DB-A2D0-10401B8539CF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4AC236F5-86E9-44DC-B9D1-B84D96907C05}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4AC236F5-86E9-44DC-B9D1-B84D96907C05}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4AC236F5-86E9-44DC-B9D1-B84D96907C05}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4AC236F5-86E9-44DC-B9D1-B84D96907C05}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
